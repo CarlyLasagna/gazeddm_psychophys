@@ -9,12 +9,12 @@
 // no responses are assumed to be equal.
 
 data {
-  int N_obs;               // number of observations [single integer]                           
-  int N_subj;              // number of subjects [single integer]
-  int N_levels;            // number of stimuli signal strengths (i.e., gaze angles) [single integer]
-  array[N_obs] real level; // self referential signal strength for each trial (9 levels in .1 increments from .2 to 1; zscored)
-  int N_choice;            // number of choice alternatives [single integer]
-  int N_groups;            // number of diagnostic groups [single integer]
+  int N_obs;                // number of observations [single integer]                           
+  int N_subj;               // number of subjects [single integer]
+  int N_levels;             // number of stimuli signal strengths (i.e., gaze angles) [single integer]
+  array[N_obs] real level;  // self referential signal strength for each trial (9 levels in .1 increments from .2 to 1; zscored)
+  int N_choice;             // number of choice alternatives [single integer]
+  int N_groups;             // number of diagnostic groups [single integer]
   array[N_obs] real RT;     // RT in seconds for each trial [numeric vector; length N_obs]
   array[N_obs] int subj;    // subj id for each trial [integer vector; length N_obs]
   array[N_obs] int choice;  // response for each trial [integer vector; length N_obs]
@@ -80,7 +80,7 @@ model {
   mu_grp_beta_pr ~ normal(0, 1);    // prior on start point group mean
   mu_grp_delta_pr ~ normal(0, 1);   // prior on drift rate group mean
   mu_grp_ndt_pr ~ normal(0, 1);     // prior on NDT group mean
-  mu_grp_b1_pr ~ normal(0,1); // prior on modulation of drift rate by signal strength (group mean)
+  mu_grp_b1_pr ~ normal(0,1);       // prior on modulation of drift rate by signal strength (group mean)
   
   sig_grp_alpha_pr ~ normal(0, .2); // prior on threshold sep group SD 
   sig_grp_beta_pr ~ normal(0, .2);  // prior on start point group SD
