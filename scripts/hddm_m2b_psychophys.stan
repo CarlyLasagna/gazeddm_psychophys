@@ -14,7 +14,7 @@ data {
   int N_obs;               // number of observations [single integer]                           
   int N_subj;              // number of subjects [single integer]
   int N_levels;            // number of stimuli signal strengths (i.e., gaze angles) [single integer]
-  array[N_obs] real level;  // self referential signal strength for each trial (9 levels in .1 increments from .2 to 1; mean centered)
+  array[N_obs] real level; // self referential signal strength for each trial (9 levels in .1 increments from .2 to 1; mean centered)
   int N_choice;            // number of choice alternatives [single integer]
   int N_groups;            // number of diagnostic groups [single integer]
   array[N_obs] real RT;     // RT in seconds for each trial [numeric vector; length N_obs]
@@ -38,16 +38,16 @@ parameters {
   vector[N_groups] mu_grp_alpha_pr;           // threshold sep. group mean
   vector[N_groups] mu_grp_beta_pr;            // start point group mean
   vector[N_groups] mu_grp_delta_pr;           // drift rate group mean
-  vector[N_groups] mu_grp_ndt_pr;             // non-decision time group mean in sec
-  vector[N_groups] mu_grp_b1_pr; // group level hyperparamter indexing effect of signal strength on delta
+  vector[N_groups] mu_grp_ndt_pr;             // non-decision time group mean
+  vector[N_groups] mu_grp_b1_pr;              // group level hyperparamter indexing effect of signal strength on delta
   
   vector[N_groups] mu_sig_grp_delta_pr;           // trial level variability in drift rates, group mean
   
-  vector<lower=0>[N_groups] sig_grp_alpha_pr; // threshold sep. group SD // if any problems switch to lognormal (longer on the right; naturally bound 0 to inf)
+  vector<lower=0>[N_groups] sig_grp_alpha_pr; // threshold sep. group SD 
   vector<lower=0>[N_groups] sig_grp_beta_pr;  // start point group SD
   vector<lower=0>[N_groups] sig_grp_delta_pr; // drift rate group SD
   vector<lower=0>[N_groups] sig_grp_ndt_pr;   // non-decision time group SD
-  vector<lower=0>[N_groups] sig_grp_b1_pr; // group level between subject variance  indexing effect of signal strength on delta
+  vector<lower=0>[N_groups] sig_grp_b1_pr;    // group level between subject variance  indexing effect of signal strength on delta
   
   vector<lower=0>[N_groups] sig_sig_grp_delta_pr; // trial level variability in drift rates, between subjects variability
   
@@ -56,7 +56,7 @@ parameters {
   vector[N_subj] sub_beta_pr;   // start point subject mean
   vector[N_subj] sub_delta_pr;  // drift rate subject mean
   vector[N_subj] sub_ndt_pr;    // non-decision time subject mean in sec
-  vector[N_subj] sub_b1_pr; // subject level parameter indexing effect of signal strength on delta
+  vector[N_subj] sub_b1_pr;     // subject level parameter indexing effect of signal strength on delta
   
   vector<lower=0>[N_subj] sig_sub_delta_pr;        // subject level trial level drift variability
   
@@ -79,7 +79,6 @@ transformed parameters {
     sub_b1[i] = mu_grp_b1_pr[subj_group[i]]+sig_grp_b1_pr[subj_group[i]]*sub_b1_pr[i];
     sub_delta[i] = mu_grp_delta_pr[subj_group[i]] + sig_grp_delta_pr[subj_group[i]] * sub_delta_pr[i];
     sig_sub_delta[i] = mu_sig_grp_delta_pr[subj_group[i]] + sig_sig_grp_delta_pr[subj_group[i]] * sig_sub_delta_pr[i];
-    
   }
 }
 
@@ -91,15 +90,15 @@ model {
   mu_grp_delta_pr ~ normal(0, 1);   // prior on drift rate group mean
   mu_grp_delta_pr ~ normal(0, 1);   // prior on drift rate group mean
   mu_grp_ndt_pr ~ normal(0, 1);     // prior on NDT group mean
-  mu_grp_b1_pr ~ normal(0,1); // prior on modulation of drift rate by signal strength (group mean)
+  mu_grp_b1_pr ~ normal(0,1);       // prior on modulation of drift rate by signal strength (group mean)
   
   mu_sig_grp_delta_pr ~ normal(0,1);
   
-  sig_grp_alpha_pr ~ normal(0, .2); // prior on threshold sep group SD // lognormal(0,.2)
+  sig_grp_alpha_pr ~ normal(0, .2); // prior on threshold sep group SD 
   sig_grp_beta_pr ~ normal(0, .2);  // prior on start point group SD
   sig_grp_delta_pr ~ normal(0, .2); // prior on drift rate group SD
   sig_grp_ndt_pr ~ normal(0, .2);   // prior on NDT group SD
-  sig_grp_b1_pr ~ normal(0,.2); // prior on modulation of drift rate by signal strength (group variance)
+  sig_grp_b1_pr ~ normal(0,.2);     // prior on modulation of drift rate by signal strength (group variance)
   
   sig_sig_grp_delta_pr ~ normal(0,0.2);
   
@@ -118,7 +117,7 @@ model {
     if(choice[i]==1){ //if response is YES 
       drift = Phi(sub_delta[subj[i]]+sub_b1[subj[i]]*level[i])*10-5;
       RT[i] ~ wiener(sub_alpha[subj[i]], sub_ndt[subj[i]], sub_beta[subj[i]], drift, sig_sub_delta[subj[i]],0.0,0.0);
-    } else { //if response is NO (Note: we don't use b1*-1 here because level is zscored and therefore tends to be negative and align with the direction of the lower bound drift rate already)
+    } else { //if response is NO 
       drift = Phi(sub_delta[subj[i]]+sub_b1[subj[i]]*level[i])*10-5;
       RT[i] ~ wiener(sub_alpha[subj[i]], sub_ndt[subj[i]], 1-sub_beta[subj[i]], -drift, sig_sub_delta[subj[i]],0.0,0.0);
     }
@@ -139,7 +138,7 @@ generated quantities {
       if(choice[i]==1){ //if response is YES
         drift = Phi(sub_delta[subj[i]]+sub_b1[subj[i]]*level[i])*10-5;
         log_lik[i] += wiener_lpdf(RT[i] | sub_alpha[subj[i]], sub_ndt[subj[i]], sub_beta[subj[i]], drift,sig_sub_delta[subj[i]],0.0,0.0);
-      } else { //if response is NO (Note: we don't use b1*-1 here because level is mean centered and therefore tends to be negative and align with the direction of the lower bound drift rate already)
+      } else { //if response is NO 
         drift = Phi(sub_delta[subj[i]]+sub_b1[subj[i]]*level[i])*10-5;
         log_lik[i] += wiener_lpdf(RT[i] | sub_alpha[subj[i]], sub_ndt[subj[i]], 1-sub_beta[subj[i]], -drift,sig_sub_delta[subj[i]],0.0,0.0);
       }
