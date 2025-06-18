@@ -53,9 +53,9 @@ parameters {
 transformed parameters { 
   
   // SUBJECT-level transformed pars for non-centered parameterization
-  vector<lower=0.1,upper=4>[N_subj] sub_alpha;        // threshold sep. TRANSFORMED subject mean
-  vector<lower=0,upper=1>[N_subj] sub_beta;         // start point TRANSFORMED subject mean
-  vector[N_subj] sub_delta;         // drift rate TRANSFORMED subject mean (not yet scaled!)
+  vector<lower=0.1,upper=4>[N_subj] sub_alpha;                  // threshold sep. TRANSFORMED subject mean
+  vector<lower=0,upper=1>[N_subj] sub_beta;                     // start point TRANSFORMED subject mean
+  vector[N_subj] sub_delta;                                     // drift rate TRANSFORMED subject mean (not yet scaled!)
   vector<lower=rtBound,upper=max(minRT)*.98>[N_subj] sub_ndt;   // non-decision time in sec TRANSFORMED subject mean
   
   for (i in 1:N_subj) { 
