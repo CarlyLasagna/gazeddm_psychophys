@@ -12,7 +12,7 @@ data {
   int N_obs;               // number of observations [single integer]                           
   int N_subj;              // number of subjects [single integer]
   int N_levels;            // number of stimuli signal strengths (i.e., gaze angles) [single integer]
-  array[N_obs] real level;  // self referential signal strength for each trial (9 levels in .1 increments from .2 to 1; zscored)
+  array[N_obs] real level; // self referential signal strength for each trial (9 levels in .1 increments from .2 to 1; zscored)
   int N_choice;            // number of choice alternatives [single integer]
   int N_groups;            // number of diagnostic groups [single integer]
   array[N_obs] real RT;     // RT in seconds for each trial [numeric vector; length N_obs]
@@ -100,11 +100,11 @@ model {
   sig_sig_grp_delta_pr ~ normal(0,0.2);
   
   //SUBJECT-level priors
-  sub_alpha_pr ~ normal(0, 1);      // prior on untransformed threshold sep subj mean
-  sub_beta_pr  ~ normal(0, 1);      // prior on untransformed start point subj mean
+  sub_alpha_pr ~ normal(0, 1);             // prior on untransformed threshold sep subj mean
+  sub_beta_pr  ~ normal(0, 1);             // prior on untransformed start point subj mean
   sub_delta_female_pr  ~ normal(0, 1);     // prior on untransformed drift rate subj mean, female conditions
-  sub_delta_male_pr  ~ normal(0, 1);     // prior on untransformed drift rate subj mean, male conditions
-  sub_ndt_pr  ~ normal(0, 1);       // prior on untransformed NDT subj mean
+  sub_delta_male_pr  ~ normal(0, 1);       // prior on untransformed drift rate subj mean, male conditions
+  sub_ndt_pr  ~ normal(0, 1);              // prior on untransformed NDT subj mean
   
   sig_sub_delta_pr ~ student_t(4,0,1); //prior on trial level drift variability
   
