@@ -13,7 +13,7 @@ data {
   int N_obs;               // number of observations [single integer]                           
   int N_subj;              // number of subjects [single integer]
   int N_levels;            // number of stimuli signal strengths (i.e., gaze angles) [single integer]
-  array[N_obs] real level;  // self referential signal strength for each trial (9 levels in .1 increments from .2 to 1; mean centered)
+  array[N_obs] real level; // self referential signal strength for each trial (9 levels in .1 increments from .2 to 1; mean centered)
   int N_choice;            // number of choice alternatives [single integer]
   int N_groups;            // number of diagnostic groups [single integer]
   array[N_obs] real RT;     // RT in seconds for each trial [numeric vector; length N_obs]
@@ -51,19 +51,19 @@ parameters {
   vector[N_subj] sub_ndt_pr;    // non-decision time subject mean in sec
   
   //parameter indexing effect of signal strength on delta
-  vector[N_groups] mu_grp_b1_pr; // group level hyperparamter
+  vector[N_groups] mu_grp_b1_pr;           // group level hyperparamter
   vector<lower=0>[N_groups] sig_grp_b1_pr; // group level between subject variance
-  vector[N_subj] sub_b1_pr; // subject level parameter
+  vector[N_subj] sub_b1_pr;                // subject level parameter
 }
 
 transformed parameters { 
   
   // SUBJECT-level transformed pars for non-centered parameterization
-  vector<lower=0.1,upper=4>[N_subj] sub_alpha;        // threshold sep. TRANSFORMED subject mean
-  vector<lower=0,upper=1>[N_subj] sub_beta;         // start point TRANSFORMED subject mean
-  vector[N_subj] sub_delta;         // drift rate TRANSFORMED subject mean (not yet scaled!)
+  vector<lower=0.1,upper=4>[N_subj] sub_alpha;                   // threshold sep. TRANSFORMED subject mean
+  vector<lower=0,upper=1>[N_subj] sub_beta;                      // start point TRANSFORMED subject mean
+  vector[N_subj] sub_delta;                                      // drift rate TRANSFORMED subject mean (not yet scaled!)
   vector<lower=rtBound,upper=max(minRT)*0.98>[N_subj] sub_ndt;   // non-decision time in sec TRANSFORMED subject mean
-  vector[N_subj] sub_b1; // effect of gaze angle on drift rate
+  vector[N_subj] sub_b1;                                         // effect of gaze angle on drift rate
   
   for (i in 1:N_subj) { 
     sub_alpha[i] = 0.1 + 3.9 * Phi(mu_grp_alpha_pr[subj_group[i]] + sig_grp_alpha_pr[subj_group[i]] * sub_alpha_pr[i]);
@@ -83,7 +83,7 @@ model {
   mu_grp_ndt_pr ~ normal(0, 1);     // prior on NDT group mean
   mu_grp_b1_pr ~ normal(0,1); // prior on modulation of drift rate by signal strength (group mean)
   
-  sig_grp_alpha_pr ~ normal(0, .2); // prior on threshold sep group SD // lognormal(0,.2)
+  sig_grp_alpha_pr ~ normal(0, .2); // prior on threshold sep group SD 
   sig_grp_beta_pr ~ normal(0, .2);  // prior on start point group SD
   sig_grp_delta_pr ~ normal(0, .2); // prior on drift rate group SD
   sig_grp_ndt_pr ~ normal(0, .2);   // prior on NDT group SD
@@ -93,8 +93,8 @@ model {
   sub_beta_pr  ~ normal(0, 1);      // prior on untransformed start point subj mean
   sub_delta_pr  ~ normal(0, 1);     // prior on untransformed drift rate subj mean
   sub_ndt_pr  ~ normal(0, 1);       // prior on untransformed NDT subj mean
-  sub_b1_pr ~ normal(0,1); // prior on modulation of drift rate by signal strength (subj mean)
-  sig_grp_b1_pr ~ normal(0,.2); // prior on modulation of drift rate by signal strength (group variance)
+  sub_b1_pr ~ normal(0,1);          // prior on modulation of drift rate by signal strength (subj mean)
+  sig_grp_b1_pr ~ normal(0,.2);     // prior on modulation of drift rate by signal strength (group variance)
   
   // loop through observations
   for (i in 1:N_obs){ 
@@ -113,9 +113,9 @@ generated quantities {
   
   // GROUP-level transformed parameters
   vector<lower=0.1,upper=4>[N_groups] mu_alpha = 0.1 + 3.9*Phi(mu_grp_alpha_pr); // threshold sep group mean
-  vector<lower=0,upper=1>[N_groups] mu_beta = Phi(mu_grp_beta_pr);            // start point group mean
-  vector<lower=-5,upper=5>[N_groups] mu_delta = -5 + 10*Phi(mu_grp_delta_pr);   // drift rate group mean
-  vector<lower=0, upper=0.98>[N_groups] mu_ndt = Phi(mu_grp_ndt_pr); // NDT group, proportion
+  vector<lower=0,upper=1>[N_groups] mu_beta = Phi(mu_grp_beta_pr);               // start point group mean
+  vector<lower=-5,upper=5>[N_groups] mu_delta = -5 + 10*Phi(mu_grp_delta_pr);    // drift rate group mean
+  vector<lower=0, upper=0.98>[N_groups] mu_ndt = Phi(mu_grp_ndt_pr);             // NDT group, proportion
   
   {
     for (i in 1:N_obs){
