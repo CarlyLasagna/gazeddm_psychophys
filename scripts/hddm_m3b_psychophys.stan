@@ -9,12 +9,12 @@
 // are allowed to vary. 
 
 data {
-  int N_obs;               // number of observations [single integer]                           
-  int N_subj;              // number of subjects [single integer]
-  int N_levels;            // number of stimuli signal strengths (i.e., gaze angles) [single integer]
-  array[N_obs] real level; // self referential signal strength for each trial (9 levels in .1 increments from .2 to 1; zscored)
-  int N_choice;            // number of choice alternatives [single integer]
-  int N_groups;            // number of diagnostic groups [single integer]
+  int N_obs;                // number of observations [single integer]                           
+  int N_subj;               // number of subjects [single integer]
+  int N_levels;             // number of stimuli signal strengths (i.e., gaze angles) [single integer]
+  array[N_obs] real level;  // self referential signal strength for each trial (9 levels in .1 increments from .2 to 1; zscored)
+  int N_choice;             // number of choice alternatives [single integer]
+  int N_groups;             // number of diagnostic groups [single integer]
   array[N_obs] real RT;     // RT in seconds for each trial [numeric vector; length N_obs]
   array[N_obs] int subj;    // subj id for each trial [integer vector; length N_obs]
   array[N_obs] int choice;  // response for each trial [integer vector; length N_obs]
@@ -39,7 +39,7 @@ parameters {
   vector[N_groups] mu_grp_delta_male_pr;      // drift rate group mean, gender MALE conditions
   vector[N_groups] mu_grp_ndt_pr;             // non-decision time group mean
   
-  vector[N_groups] mu_sig_grp_delta_pr;           // trial level variability in drift rates, group mean
+  vector[N_groups] mu_sig_grp_delta_pr;       // trial level variability in drift rates, group mean
   
   vector<lower=0>[N_groups] sig_grp_alpha_pr; // threshold sep. group SD 
   vector<lower=0>[N_groups] sig_grp_beta_pr;  // start point group SD
