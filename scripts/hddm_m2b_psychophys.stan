@@ -8,13 +8,12 @@
 // which vary in 9 increments of .1 from NOT looking at me (.2) to  looking 
 // at me (1). In this version, the magnitude of drift rates for YES and
 // no responses are assumed to be equal.
-// Note that our signal strength covariate is zscored
 
 data {
   int N_obs;               // number of observations [single integer]                           
   int N_subj;              // number of subjects [single integer]
   int N_levels;            // number of stimuli signal strengths (i.e., gaze angles) [single integer]
-  array[N_obs] real level; // self referential signal strength for each trial (9 levels in .1 increments from .2 to 1; mean centered)
+  array[N_obs] real level; // self referential signal strength for each trial (9 levels in .1 increments from .2 to 1; zscored)
   int N_choice;            // number of choice alternatives [single integer]
   int N_groups;            // number of diagnostic groups [single integer]
   array[N_obs] real RT;     // RT in seconds for each trial [numeric vector; length N_obs]
