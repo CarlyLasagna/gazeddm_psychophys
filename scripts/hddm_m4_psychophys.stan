@@ -9,12 +9,12 @@
 // is allowed to impact the drift rates
 
 data {
-  int N_obs;               // number of observations [single integer]                           
-  int N_subj;              // number of subjects [single integer]
-  int N_levels;            // number of stimuli signal strengths (i.e., gaze angles) [single integer]
+  int N_obs;                // number of observations [single integer]                           
+  int N_subj;               // number of subjects [single integer]
+  int N_levels;             // number of stimuli signal strengths (i.e., gaze angles) [single integer]
   array[N_obs] real level;  // self referential signal strength for each trial (9 levels in .1 increments from .2 to 1; zscored)
-  int N_choice;            // number of choice alternatives [single integer]
-  int N_groups;            // number of diagnostic groups [single integer]
+  int N_choice;             // number of choice alternatives [single integer]
+  int N_groups;             // number of diagnostic groups [single integer]
   array[N_obs] real RT;     // RT in seconds for each trial [numeric vector; length N_obs]
   array[N_obs] int subj;    // subj id for each trial [integer vector; length N_obs]
   array[N_obs] int choice;  // response for each trial [integer vector; length N_obs]
@@ -127,11 +127,11 @@ generated quantities {
   vector[N_obs] log_lik = rep_vector(0, N_obs); // log liklihood for each observation
   
   // GROUP-level transformed parameters
-  vector<lower=0,upper=4>[N_groups] mu_alpha = 0.1 + 3.9*Phi(mu_grp_alpha_pr); // threshold sep group mean
-  vector<lower=0,upper=1>[N_groups] mu_beta = Phi(mu_grp_beta_pr);            // start point group mean
+  vector<lower=0,upper=4>[N_groups] mu_alpha = 0.1 + 3.9*Phi(mu_grp_alpha_pr);                // threshold sep group mean
+  vector<lower=0,upper=1>[N_groups] mu_beta = Phi(mu_grp_beta_pr);                            // start point group mean
   vector<lower=-5,upper=5>[N_groups] mu_delta_female = -5 + 10*Phi(mu_grp_delta_female_pr);   // drift rate group mean, female YES conditions
-  vector<lower=-5,upper=5>[N_groups] mu_delta_male = -5 + 10*Phi(mu_grp_delta_male_pr);   // drift rate group mean, male NO conditions
-  vector<lower=0, upper=0.98>[N_groups] mu_ndt = Phi(mu_grp_ndt_pr); // NDT group, proportion
+  vector<lower=-5,upper=5>[N_groups] mu_delta_male = -5 + 10*Phi(mu_grp_delta_male_pr);       // drift rate group mean, male NO conditions
+  vector<lower=0, upper=0.98>[N_groups] mu_ndt = Phi(mu_grp_ndt_pr);                          // NDT group, proportion
   vector<lower=-10,upper=10>[N_groups] mu_delta_bias;
   
   for (i in 1:N_groups){
@@ -158,6 +158,6 @@ generated quantities {
         log_lik[i] += wiener_lpdf(RT[i]|sub_alpha[subj[i]], sub_ndt[subj[i]], 1-sub_beta[subj[i]], -drift);
       }
     }
-  }
+   }
   }
 }
