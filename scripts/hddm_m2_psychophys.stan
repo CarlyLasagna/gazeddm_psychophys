@@ -37,9 +37,9 @@ parameters {
   vector[N_groups] mu_grp_alpha_pr;           // threshold sep. group mean
   vector[N_groups] mu_grp_beta_pr;            // start point group mean
   vector[N_groups] mu_grp_delta_pr;           // drift rate group mean
-  vector[N_groups] mu_grp_ndt_pr;             // non-decision time group mean in sec
+  vector[N_groups] mu_grp_ndt_pr;             // non-decision time group mean 
   
-  vector<lower=0>[N_groups] sig_grp_alpha_pr; // threshold sep. group SD // if any problems switch to lognormal (longer on the right; naturally bound 0 to inf)
+  vector<lower=0>[N_groups] sig_grp_alpha_pr; // threshold sep. group SD 
   vector<lower=0>[N_groups] sig_grp_beta_pr;  // start point group SD
   vector<lower=0>[N_groups] sig_grp_delta_pr; // drift rate group SD
   vector<lower=0>[N_groups] sig_grp_ndt_pr;   // non-decision time group SD
@@ -102,7 +102,7 @@ model {
     if(choice[i]==1){ //if response is YES 
       drift = Phi(sub_delta[subj[i]]+sub_b1[subj[i]]*level[i])*10-5;
       RT[i] ~ wiener(sub_alpha[subj[i]], sub_ndt[subj[i]], sub_beta[subj[i]], drift);
-    } else { //if response is NO (Note: we don't use b1*-1 here because level is zscored and therefore tends to be negative and align with the direction of the lower bound drift rate already)
+    } else { //if response is NO 
       drift = Phi(sub_delta[subj[i]]+sub_b1[subj[i]]*level[i])*10-5;
       RT[i] ~ wiener(sub_alpha[subj[i]], sub_ndt[subj[i]], 1-sub_beta[subj[i]], -drift);
     }
@@ -123,7 +123,7 @@ generated quantities {
       if(choice[i]==1){ //if response is YES
         drift = Phi(sub_delta[subj[i]]+sub_b1[subj[i]]*level[i])*10-5;
         log_lik[i] += wiener_lpdf(RT[i] | sub_alpha[subj[i]], sub_ndt[subj[i]], sub_beta[subj[i]], drift);
-      } else { //if response is NO (Note: we don't use b1*-1 here because level is mean centered and therefore tends to be negative and align with the direction of the lower bound drift rate already)
+      } else { //if response is NO 
         drift = Phi(sub_delta[subj[i]]+sub_b1[subj[i]]*level[i])*10-5;
         log_lik[i] += wiener_lpdf(RT[i] | sub_alpha[subj[i]], sub_ndt[subj[i]], 1-sub_beta[subj[i]], -drift);
       }
