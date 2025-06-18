@@ -54,10 +54,10 @@ parameters {
 transformed parameters { 
   
   // SUBJECT-level transformed pars for non-centered parameterization
-  vector<lower=0.1,upper=4>[N_subj] sub_alpha;        // threshold sep. TRANSFORMED subject mean
-  vector<lower=0,upper=1>[N_subj] sub_beta;           // start point TRANSFORMED subject mean
-  vector[N_subj] sub_delta_female;                    // drift rate TRANSFORMED subject mean (not yet scaled!)
-  vector[N_subj] sub_delta_male;                      // drift rate TRANSFORMED subject mean (not yet scaled!)
+  vector<lower=0.1,upper=4>[N_subj] sub_alpha;                  // threshold sep. TRANSFORMED subject mean
+  vector<lower=0,upper=1>[N_subj] sub_beta;                     // start point TRANSFORMED subject mean
+  vector[N_subj] sub_delta_female;                              // drift rate TRANSFORMED subject mean (not yet scaled!)
+  vector[N_subj] sub_delta_male;                                // drift rate TRANSFORMED subject mean (not yet scaled!)
   vector<lower=rtBound,upper=max(minRT)*.98>[N_subj] sub_ndt;   // non-decision time in sec TRANSFORMED subject mean
   
   for (i in 1:N_subj) { 
@@ -72,11 +72,11 @@ transformed parameters {
 model {
   
   // GROUP-level hyperpriors
-  mu_grp_alpha_pr ~ normal(0, 1);   // prior on threshold sep group mean
-  mu_grp_beta_pr ~ normal(0, 1);    // prior on start point group mean
-  mu_grp_delta_female_pr ~ normal(0, 1);   // prior on drift rate group mean, female YES conditions
+  mu_grp_alpha_pr ~ normal(0, 1);        // prior on threshold sep group mean
+  mu_grp_beta_pr ~ normal(0, 1);         // prior on start point group mean
+  mu_grp_delta_female_pr ~ normal(0, 1); // prior on drift rate group mean, female YES conditions
   mu_grp_delta_male_pr ~ normal(0, 1);   // prior on drift rate group mean, male NO conditions
-  mu_grp_ndt_pr ~ normal(0, 1);     // prior on NDT group mean
+  mu_grp_ndt_pr ~ normal(0, 1);          // prior on NDT group mean
   
   sig_grp_alpha_pr ~ normal(0, .2); // prior on threshold sep group SD 
   sig_grp_beta_pr ~ normal(0, .2);  // prior on start point group SD
@@ -147,7 +147,7 @@ generated quantities {
         log_lik[i] += wiener_lpdf(RT[i]|sub_alpha[subj[i]], sub_ndt[subj[i]], 1-sub_beta[subj[i]], -drift);
       }
     }
-  }
+   }
   }
 }
 
