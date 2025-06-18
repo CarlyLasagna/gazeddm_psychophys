@@ -10,7 +10,7 @@ data {
   int N_obs;               // number of observations [single integer]                           
   int N_subj;              // number of subjects [single integer]
   int N_levels;            // number of stimuli signal strengths (i.e., gaze angles) [single integer]
-  array[N_obs] real level; // self referential signal strength for each trial (9 levels in .1 increments from .2 to 1; mean centered)
+  array[N_obs] real level; // self referential signal strength for each trial (9 levels in .1 increments from .2 to 1; zscored)
   int N_choice;            // number of choice alternatives [single integer]
   int N_groups;            // number of diagnostic groups [single integer]
   array[N_obs] real RT;     // RT in seconds for each trial [numeric vector; length N_obs]
