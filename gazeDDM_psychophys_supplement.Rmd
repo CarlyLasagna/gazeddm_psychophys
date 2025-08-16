@@ -20,6 +20,14 @@ header-includes:
 
 \newpage
 
+__Note: Throughout the supplement, Model 2 (Gaze) is the primary gaze model described in the main text and Model 3 (Gender) is the primary gender model described in the main text.__
+
+# Citation
+
+Code and outputs in this document are supplemental material for:
+
+Lasagna, C. A., Pleskac, T. J., Weigard, A., & Tso, I. F. (2025, August 16). Modeling Self-Reference in Schizophrenia: The Role of Evidence Accumulation in Social Perception and Paranoia. Preprint:  [(https://doi.org/10.31234/osf.io/9b23k_v1)](https://doi.org/10.31234/osf.io/9b23k_v1)
+
 # Code Availability
 
 **Code used to perform all modeling, simulation, and analysis is available on OSF and GitHub:**
@@ -31,7 +39,7 @@ header-includes:
 
 # Study Sample
 
-Participants were recruited from local clinics and community advertisements. HC were matched to the SZ group on age, sex, and parental education. All met the following inclusion criteria: aged 18 to 60, no history of conditions with neurological sequelae, visual acuity ≥ 20/30, and no recent substance use disorder (SZ had no dependence in the past year or abuse in the last month; HC had no abuse in the last five years). SZ met DSM-IV-TR criteria for schizophrenia, schizoaffective, or schizophreniform disorder based on the Structured Clinical Interview for DSM-IV-TR (First et al., 2002) (SCID-IV). HC had no history of DSM-IV-TR Axis I disorders and no first-degree relatives with bipolar or psychotic disorders. Two additional SZ were excluded for failing to complete or providing invalid responses on the primary behavioral task (i.e., responded “yes” to every trial).
+Participants were recruited from local clinics and community advertisements. All met the following inclusion criteria: aged 18 to 60, no history of conditions with neurological sequelae, visual acuity ≥ 20/30, and no recent substance use disorder (SZ had no dependence in the past year or abuse in the last month; HC had no abuse in the last five years). SZ met DSM-IV-TR criteria for schizophrenia, schizoaffective, or schizophreniform disorder based on the Structured Clinical Interview for DSM-IV-TR (First et al., 2002) (SCID-IV). HC had no history of DSM-IV-TR Axis I disorders and no first-degree relatives with bipolar or psychotic disorders. Two additional SZ were excluded for failing to complete or providing invalid responses on the primary behavioral task (i.e., responded “yes” to every trial).
 
 # Measures
 
@@ -62,7 +70,7 @@ For the psychophysical aspects of the behavioral task (i.e., gaze signal strengt
 ########################################################
 # SETUP ENVIRONMENT
 ########################################################
-
+#
 library(readxl)
 library(dplyr)
 library(ggplot2)
@@ -97,7 +105,7 @@ rename_corr_pars<-function(pars){
   pars <- gsub("delta_bias_gend", "Drift Bias (Gender)", pars)
   pars <- gsub("delta_female_gend", "Drift Rate-F (Gender)", pars)
   pars <- gsub("delta_male_gend", "Drift Rate-M (Gender)", pars)
-  pars <- gsub("delta_gend", "Drift Rate (Gender)", pars)
+  pars <- gsub("delta_gend", "Drift Sensitivity (Gender)", pars)
   pars <- gsub("delta_bias", "Drift Bias (Gaze)", pars)
   pars <- gsub("delta_b1", "Drift Sensitivity (Gaze)", pars)
   pars <- gsub("alpha", "Threshold Sep (Gaze)", pars)
@@ -667,7 +675,7 @@ plot_parrecover_group_bysim<-function(data,par,parname,sim_id,genMean_suffix,sim
 }
 plot_parrecover_subj<-function(data,par,parname,sim_id,genMean_suffix,simMean_suffix, simHDI_suffix,recover_suffix){
   
-  cor_coef<-cor(data[[paste0(par,simMean_suffix)]],data[[paste0(par,genMean_suffix)]])
+  cor_coef<-cor(data[[paste0(par,simMean_suffix)]],data[[paste0(par,genMean_suffix)]],method = c("pearson"))
   text<-paste0(round(mean(data[[paste0(par,recover_suffix)]]),2)*100,"% Recovery; r = ",
               round(cor_coef,2))
   
@@ -946,7 +954,7 @@ plot_posterior_diffs<-function(data,ci,par_prefix,rawpar_prefix,sig_prefix,par_n
   coord_cartesian(ylim = c(yaxis_min,yaxis_max))+
   ggtitle(par_name) + xlab("") +
   scale_x_discrete(limits=group_names)+
-  scale_color_manual(values=c('#318799','#6a4894'))+
+  scale_color_manual(values=c('#57b6c9','#966acc'))+
   ylab(par_name)+
   theme(axis.text.x = element_text(angle = 0,vjust=1,hjust=0.5,size=10),
         axis.text.y = element_text(size=10))+
@@ -1376,7 +1384,6 @@ if(file.exists(outfile)==FALSE){
   #remove non response trials
   alldata<-subset(alldata,!is.na(alldata$Resp))
   
-  #remove erroneously fast responses or slow responses 
   alldata<-subset(alldata,alldata$RT>=200&alldata$RT<=4000)
   
   #code response boundary (for ddm; yes and female = upper (1) / no and male = lower (2) )
@@ -1490,7 +1497,7 @@ if(file.exists(outfile)==FALSE){
   sg2_correlates$schizophreniform<-ifelse(sg2_correlates$psychosis_dx=="Schizophreniform",1,0)
   sg2_correlates$schizophreniform<-ifelse(is.na(sg2_correlates$psychosis_dx),NA,sg2_correlates$schizophreniform)
 
-  # extract social cognition principal component from er40/rme/msceit data with missing values (winsorize 2x extreme er40 values)
+  # extract social cognition principal component from er40/rme/msceit data with missing values 
   
   #remove and impute er40 and rme for 2057 and 2072 for rme only who performed at chance levels
   sg2_correlates$rme_accuracy[which(sg2_correlates$subj=="2057")]<-NA
@@ -1503,18 +1510,10 @@ if(file.exists(outfile)==FALSE){
   sg2_correlates$rme_rt_word_correct[which(sg2_correlates$subj=="2072")]<-NA
   sg2_correlates$rme_rt_average_word[which(sg2_correlates$subj=="2072")]<-NA
 
-
     tmp_data<-data.frame(msceit=as.numeric(sg2_correlates$msceit),
                          er40=as.numeric(sg2_correlates$er40_correctresp),
                          rme=as.numeric(sg2_correlates$rme_accuracy))
   
-  
-  # tmp_data<-data.frame(msceit=as.numeric(sg2_correlates$msceit),
-  #                      er40=Winsorize(as.numeric(sg2_correlates$er40_correctresp), 
-  #                                     probs = c(0.02, 1),na.rm=TRUE),
-  #                      rme=Winsorize(as.numeric(sg2_correlates$rme_accuracy), 
-  #                                    probs = c(0.02, 1),na.rm=TRUE))
-
   sg2_correlates$soc_cog_pc<-pcamethods_bpca(data=tmp_data,npcs=1,scale="uv",center=TRUE,method="pcamethods")$PC1
   
   tmp_data<-data.frame(msceit=as.numeric(sg2_correlates$msceit),
@@ -1523,12 +1522,6 @@ if(file.exists(outfile)==FALSE){
                        er40rt=scale(as.numeric(sg2_correlates$er40_correctrt))*-1)
 
   sg2_correlates$soc_cog_pc_wrt<-pcamethods_bpca(data=tmp_data,npcs=1,scale="uv",center=T,method="pcamethods")$PC1
-  
-  ## calculate functioning principal component
-  tmp_data<-data.frame(sspa=as.numeric(sg2_correlates$sspa),
-                       er40=as.numeric(sg2_correlates$gf_social))
-  
-  sg2_correlates$func_pc<-pcamethods_bpca(data=tmp_data,npcs=1,scale="uv",center=TRUE,method="pcamethods")$PC1
   
   write.csv(sg2_correlates,outfile,row.names = F)
   
@@ -1540,8 +1533,17 @@ if(file.exists(outfile)==FALSE){
 
 # Model Specifications
 
-```{r id12433333422222, echo=FALSE, fig.height=5, fig.show="hold", fig.width=5, message=FALSE, warning=FALSE, cache=TRUE, dpi=500, out.width='1500px'}
+__Naming conventions:__ Model 2 (Gaze) is the primary gaze model described in the main text and Model 3 (Gender) is the primary gender model described in the main text.
 
+__Note on gender model parameterization:__ For the gender models in which gender was allowed to categorically modulate drift rates (Gender Model 3 [winning model from main text] and 4), we originally estimated separate drift rates for male and female faces. To recast those parameters to match the parameterization of the winning gaze model (Gaze Model 2), which is equivalent to the effects-coding approach described in the main text, we calculated drift sensitivity and drift biases in the gender condition as follows:
+
+Drift Sensitivity (Gender)* = (Drift Rate<sup>Male</sup> - Drift Rate<sup>Female</sup>)/2
+Drift Bias (Gender) = (Drift Rate<sup>Male</sup> + Drift Rate<sup>Female</sup>)/2
+
+As such, the model evaluation steps are performed on the gender models with separate male/female drift rate parameters. It is for the analyses that we recast those parameters in the gender condition to drift sensitivity and drift bias (as shown above).
+
+```{r id12433333422222, echo=FALSE, fig.height=5, fig.show="hold", fig.width=5, message=FALSE, warning=FALSE, cache=TRUE, dpi=500, out.width='1500px'}
+#
 model_table<-read.csv("/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/manuscript/figures and tables/all_models.csv")
   
 model_table$Condition<-""
@@ -1564,6 +1566,8 @@ All models were run on a high performance computing cluster using 1500 warmup sa
 We assessed convergence for all models by ensuring trace plots showed well-mixed chains, Rhat values were < 1.1 for all parameters, autocorrelation was ~0 by a lag of 30, and there were no divergences. This was true of all parameters for all models tested. For brevity, we only show the convergence check outputs below for the 2 winning models.
 
 ## Model 2 (Gaze) {.tabset}
+
+Convergence tests for gaze model described in the main text.
 
 ### ESS/Rhat
 
@@ -1652,6 +1656,8 @@ invisible(gc())
 ```
 
 ## Model 3 (Gender) {.tabset}
+
+Convergence tests for gender model described in the main text.
 
 ### ESS/Rhat
 
@@ -1743,7 +1749,7 @@ invisible(gc())
 
 ## Gaze Models
 
-For the self-referential gaze perception condition, the winning model was one in which evidence accumulation was modulated by the eye contact signal strength of the stimuli. It captured two distinct aspects of the evidence accumulation process. First, the drift sensitivity<sup>gaze</sup> indexed how evidence accumulation varied in response to physical changes in self-referential gaze signals. Those with higher values are more data-driven and attuned to environmental signals, as they better translate stronger social signals into more efficient self-referential perception. Second, the drift bias<sup>gaze</sup> captured perceptual bias for direct/indirect gaze regardless of physical changes in the signal, where a drift bias<sup>gaze</sup> > 0 indicates a perceptual bias for direct gaze, and a drift bias<sup>gaze</sup> < 0 indicates a perceptual bias for indirect gaze. Other cognitive processes of the DDM—-threshold separation<sup>gaze</sup> (response caution), start point<sup>gaze</sup> (expectancy bias), and NDT<sup>gaze</sup> (motor/sensory processes)—-were assumed to be trait-level processes that did not vary in response to changes in the gaze signal. 
+For the self-referential gaze perception condition, the winning model ("Model 2: Gaze") assumed that gaze cues continuously modulated evidence accumulation. This allowed the model to capture two aspects of the evidence accumulation process. Drift sensitivity indexed how evidence accumulation was continuously modulated by physical changes in gaze signals. Those with higher values are more attuned to gaze signals, as they better translate stronger gaze cues into more efficient decision-making. Drift bias captured perceptual bias for direct/indirect gaze, regardless of physical changes in gaze cues. As “looking at me” and “not looking at me” responses were coded as the top and bottom boundaries, respectively, drift bias > 0 indicates a perceptual bias for direct gaze, and drift bias < 0 indicates a perceptual bias for indirect gaze. The DDM assumes that the remaining processes—threshold separation (response caution), start point (expectancy bias), and NDT (motor/sensory processes)—are set before the stimulus appears. This means that they can only vary based on stimulus features that can be anticipated before the stimulus onset. As such, threshold separation, start point, and NDT operated as trait-level processes that did not vary based on changes in gaze, which varied trial-by-trial. 
  
 ```{r id3924321387324, echo=FALSE, cache=TRUE}
 
@@ -1810,9 +1816,14 @@ all_loo_combined %>%
  
 ## Gender Models
 
-For the non-self-referential gender perception condition, the winning model (“Model 3: Gender”) was one in which evidence accumulation (drift rate) was influenced by the gender of stimuli, but not other task-irrelevant social cues (i.e., gaze). The effect of gender on evidence accumulation was captured via separate drift rates for male and female stimuli (drift rate<sup>gend-M</sup> and drift rate<sup>gend-F</sup>). As “male” responses were coded as the top boundary and “female” responses were coded as the bottom boundary, higher values for drift rate<sup>gend-M</sup> and lower values for drift rate<sup>gend-F</sup> reflected more efficient evidence accumulation. This model also captured perceptual biases (drift bias<sup>gend</sup>) for male/female stimuli, regardless of physical changes in the gender of the stimulus, where drift bias<sup>gend</sup> > 0 indicates a perceptual bias for males, while drift bias<sup>gend</sup> < 0 indicates a perceptual bias for females. Finally, other cognitive processes of the DDM—threshold separation (response caution), start point (expectancy bias), and NDT (motor/sensory processes)—were assumed to be trait-level processes that did not vary in response to changes in the gender of stimuli. 
+For the non-self-referential gender perception condition, the winning model (“Model 3: Gender”) was one in which evidence accumulation (drift rate) was influenced by the gender of stimuli, but not other task-irrelevant social cues (i.e., gaze). The effect of gender on evidence accumulation was captured in the original models via separate drift rates for male and female stimuli (drift rate<sup>gend-M</sup> and drift rate<sup>gend-F</sup>). As “male” responses were coded as the top boundary and “female” responses were coded as the bottom boundary, higher values for drift rate<sup>gend-M</sup> and lower values for drift rate<sup>gend-F</sup> reflected more efficient evidence accumulation. 
 
-The parameters of this model are largely comparable to the winning gaze model, with one exception: the self-referential gaze perception model estimates drift sensitivity<sup>gaze</sup>, while the non-self-referential gender perception model estimates. Drift sensitivity can only be estimated when target stimulus features, like eye gaze, are manipulated continuously, whereas separate drift rates can only be estimated when stimulus features, like gender, are manipulated categorically. Both classes of parameters are highly correlated (r > |0.6|; see intercorrelations below) and capture similar processes. The primary distinction is that drift rate<sup>gend-M</sup> and drift rate<sup>gend-F</sup> capture overall rates of evidence accumulation and sensitivity to changes in the gender signal concurrently, while drift sensitivity<sup>gaze</sup> represents a purer measure of sensitivity to changes in the gaze signal.
+We then recast these parameters into the same parameterization as the gaze perception model described in the main text, even though gender was manipulated categorically. To achieve this, when calculating trial-level drift rates in the gender condition using the equation in Figure 1 (main text), we replaced the gaze signal on each trial i with the effects-coded gender of the stimulus on each trial (1=male, -1=female). As a result, during gender perception, drift sensitivity captured the categorical modulation of drift rates by gender, where larger values indicated greater discriminability between male and female faces and, therefore, more sensitivity. Although drift sensitivity parameters were highly correlated across gaze and gender conditions (r=0.68; Supplement 8.3), they capture slightly different processes: in the gender condition, they capture evidence accumulation rates and sensitivity to changes in gender cues; in the gaze condition, they are a purer measure of sensitivity to changes in gaze cues. Additionally, during gender perception, the drift bias reflected a perceptual bias for male/female. As “male” and “female” responses were coded as the top and bottom boundaries, respectively, drift bias > 0 indicates a perceptual bias for male, and drift bias < 0 indicates a perceptual bias for female. All other parameters were the same as in the gaze model. 
+
+This 'effects coding approach' is equivalent to the following calculations of drift sensitivity and drift bias for the gender condition, which is how we calculated these parameters in our case:
+
+Drift Sensitivity (Gender)* = (Drift Rate<sup>Male</sup> - Drift Rate<sup>Female</sup>)/2
+Drift Bias (Gender) = (Drift Rate<sup>Male</sup> + Drift Rate<sup>Female</sup>)/2
  
 ```{r id392422321387324, echo=FALSE, cache=TRUE}
 
@@ -1894,7 +1905,7 @@ all_loo_combined %>%
 all_sub_data<-read.csv("/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/ddm/data/schizgaze2_all_sub_params_w_correlates.csv")
 
 tmp_pars<-c('delta_bias','delta_bias_gend',
-            'delta_b1','delta_gend','delta_female_gend','delta_male_gend',
+            'delta_b1','delta_gend',
             'beta','beta_gend',
             'alpha','alpha_gend')
 
@@ -1911,7 +1922,7 @@ p[["plot"]]
 
 temp<-subset(all_sub_data,all_sub_data$group=="SZ")
 tmp_pars<-c('delta_bias','delta_bias_gend',
-            'delta_b1','delta_gend','delta_female_gend','delta_male_gend',
+            'delta_b1','delta_gend',
             'beta','beta_gend',
             'alpha','alpha_gend')
 
@@ -1928,7 +1939,7 @@ p[["plot"]]
 
 temp<-subset(all_sub_data,all_sub_data$group=="HC")
 tmp_pars<-c('delta_bias','delta_bias_gend',
-            'delta_b1','delta_gend','delta_female_gend','delta_male_gend',
+            'delta_b1','delta_gend',
             'beta','beta_gend',
             'alpha','alpha_gend')
 
@@ -1941,9 +1952,11 @@ p[["plot"]]
 
 # Parameter Recovery
 
-For each model, for each group, for each of N = 50 simulations, data of n = 35 subjects were simulated by sampling parameters from distributions matching the means and standard deviations (SD) of the group-level posteriors for each model parameter. This was done using 35 subjects per group because it was slightly less than the number of subjects we had per group, operating under the assumption that if we could recover the parameters in fewer subjects, then we definitely could in more. Sampled parameters were then used to simulate n = 108 trials of choice and RT data for each subject (the number of trials the task had per condition; with 12 trials per signal strength), using ‘rwiener’ in RWiener R package. These data were then fitted to the winning model to extract simulated parameter values. Correspondence between the generating parameter values and the simulated parameter values was compared by determining the percentage of group-level and subject-level simulated parameters whose 95% highest density interval (HDI) contained the original generating value. Note: NDT was fixed at 0.2 for parameter recovery analyses and scaled the SD of the sampled distribution down slightly to avoid getting extreme, implausible values in our simulated data.
+Parameter recovery was performed for both winning models to determine if parameter values used to simulate choice and RT data could be accurately recovered.
 
-Results showed that both models showed good recovery of parameters across SZ and HC at the group- (88-100% recovery) and subject-level (93-95% recovery). 
+__Procedure:__ For each model, for each group, for each of N = 50 simulations, data of n = 35 subjects were simulated by sampling parameters from distributions matching the means and standard deviations (SD) of the group-level posteriors for each model parameter. This was done using 35 subjects per group because it was slightly less than the number of subjects we had per group, operating under the assumption that if we could recover the parameters in fewer subjects, then we definitely could in more. Sampled parameters were then used to simulate n = 108 trials of choice and RT data for each subject (the number of trials the task had per condition; with 12 trials per signal strength), using ‘rwiener’ in RWiener R package. These data were then fitted to the winning model to extract simulated parameter values. Correspondence between the generating parameter values and the simulated parameter values was compared by determining the percentage of group-level and subject-level simulated parameters whose 95% highest density interval (HDI) contained the original generating value. Note: NDT was fixed at 0.2 for parameter recovery analyses and scaled the SD of the sampled distribution down slightly to avoid getting extreme, implausible values in our simulated data.
+
+__Results:__ Both models showed good posterior coverage for parameters across SZ and HC at the group- (88-100% recovery) and subject-level (93-95% recovery). Recovery of individual differences in parameters at the subject-level (i.e., Pearson R between generating and recovered values) was slightly lower for drift sensitivity<sup>gaze</sup> (r’s =0.62-0.73) than drift rate(s)<sup>gend-M/F</sup> (r’s =0.68-0.79) and other parameters (r’s=0.77-0.92), but was still considered acceptable.
 
 ## Model 2 (Gaze)
 
@@ -2802,14 +2815,14 @@ Note on coding of response boundaries: For modeling, testing, and evaluation -- 
 
 # Post-Hoc Power Analysis
 
+__Cohen (1988) guidelines of effect sizes:__
+Pearson’s r: small = 0.10, medium = 0.30, large = 0.50
+Cohen’s d: small = 0.20, medium = 0.50, large = 0.80 
+Incremental f²: small = 0.02, medium = 0.15, large = 0.35	
+
 ```{r id92439, echo=FALSE, fig.height=6, fig.width=6, message=FALSE, warning=FALSE, cache=TRUE}
 
 library(pwr)
-
-#Cohen’s 1988 guidelines of effect sizes:
-#              small   medium   large
-#Cohen’s   d = 0.20    0.50     0.80 
-#Increment.f²  0.02	   0.15	    0.35	
 
 ################################################################
 # power analysis for group differences
@@ -2850,8 +2863,6 @@ regression_power %>%
 ```
 
 ```{r id9933219, echo=FALSE, cache=TRUE,fig.width=4,fig.height=3.75}
-
-#Load data
 
 n_subj<-81
 
@@ -2905,10 +2916,10 @@ for(i in 1:n_subj){
   gaze3_all_samples[[temp_col2]]<-(pnorm(gaze3_all_samples[[temp_col2]])*10-5)*-1
   
   temp_col3<-paste0("sub_delta_bias.",i,".")
-  gaze3_all_samples[[temp_col3]]<-gaze3_all_samples[[temp_col1]]-(gaze3_all_samples[[temp_col2]]*-1)
+  gaze3_all_samples[[temp_col3]]<-(gaze3_all_samples[[temp_col1]]+(gaze3_all_samples[[temp_col2]]))/2
   
   temp_col4<-paste0("sub_delta.",i,".")
-  gaze3_all_samples[[temp_col4]]<-rowMeans(cbind(gaze3_all_samples[[temp_col1]],(gaze3_all_samples[[temp_col2]]*-1)))
+  gaze3_all_samples[[temp_col4]]<-(gaze3_all_samples[[temp_col1]]-(gaze3_all_samples[[temp_col2]]))/2
 }
 
 sub_alpha<-colMeans(gaze3_all_samples[,grep("sub_alpha.",fixed=T,colnames(gaze3_all_samples))])
@@ -2935,15 +2946,33 @@ write.csv(all_sub_data,"/Users/carlylasagna/University of Michigan Dropbox/Carly
 
 all_sub_data<-read.csv("/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/ddm/data/schizgaze2_all_sub_params_w_correlates.csv")
 
+#Delta_sensitivity = (delta_m – delta_f)/2 and
+#delta_bias = (delta_m + delta_f)/2
+
 # the raw parameters still have male as bottom boundary
-gaze3_all_samples$mu_grp_delta_bias_pr.1.<-gaze3_all_samples$mu_grp_delta_male_pr.1.*-1-gaze3_all_samples$mu_grp_delta_female_pr.1.
-gaze3_all_samples$mu_grp_delta_bias_pr.2.<-gaze3_all_samples$mu_grp_delta_male_pr.2.*-1-gaze3_all_samples$mu_grp_delta_female_pr.2.
+gaze3_all_samples$mu_grp_delta_male_pr.1.<-gaze3_all_samples$mu_grp_delta_male_pr.1.*-1
+gaze3_all_samples$mu_grp_delta_female_pr.1.<-gaze3_all_samples$mu_grp_delta_female_pr.1.*-1
+
+gaze3_all_samples$mu_grp_delta_male_pr.2.<-gaze3_all_samples$mu_grp_delta_male_pr.2.*-1
+gaze3_all_samples$mu_grp_delta_female_pr.2.<-gaze3_all_samples$mu_grp_delta_female_pr.2.*-1
+
+gaze3_all_samples$mu_grp_delta_bias_pr.1.<-(gaze3_all_samples$mu_grp_delta_male_pr.1.+gaze3_all_samples$mu_grp_delta_female_pr.1.)/2
+gaze3_all_samples$mu_grp_delta_bias_pr.2.<-(gaze3_all_samples$mu_grp_delta_male_pr.2.+gaze3_all_samples$mu_grp_delta_female_pr.2.)/2
+
+gaze3_all_samples$mu_grp_delta_pr.1.<-(gaze3_all_samples$mu_grp_delta_male_pr.1.-gaze3_all_samples$mu_grp_delta_female_pr.1.)/2
+gaze3_all_samples$mu_grp_delta_pr.2.<-(gaze3_all_samples$mu_grp_delta_male_pr.2.-gaze3_all_samples$mu_grp_delta_female_pr.2.)/2
+
+gaze3_all_samples$mu_delta.1.<-pnorm(gaze3_all_samples$mu_grp_delta_pr.1.)*10-5
+gaze3_all_samples$mu_delta.2.<-pnorm(gaze3_all_samples$mu_grp_delta_pr.2.)*10-5
+
+gaze3_all_samples$mu_delta_bias.1.<-pnorm(gaze3_all_samples$mu_grp_delta_bias_pr.1.)*10-5
+gaze3_all_samples$mu_delta_bias.2.<-pnorm(gaze3_all_samples$mu_grp_delta_bias_pr.2.)*10-5
 
 ```
 
 # Demographics
 
-Tests below are Bayesian t-tests, ANOVA, and proportion analyses run using ttestBF, anovaBF, and proportion BF in the 'BayesFactor' R package (Morey, 2022). 
+Tests below are Bayesian t-tests, ANOVA, and proportion analyses run using ttestBF, anovaBF, and proportion BF in the 'BayesFactor' R package (Morey, 2015). 
 
 ```{r id1243333322222, echo=FALSE, fig.height=5, fig.show="hold", fig.width=5, message=FALSE, warning=FALSE, cache=TRUE, dpi=500, out.width='1500px'}
 ###
@@ -2956,7 +2985,7 @@ demo_table<-dplyr::select(all_sub_data,c('subj','group','age','female_dummy','ed
                                          'antidepressant_user','moodstab_user',
                                          'stimulant_user','anticholinergic_user',
                                          'cpzeq',
-                                         'matrics','soc_cog_pc'))
+                                         'matrics','soc_cog_pc_wrt'))
 
 colnames(demo_table)<-c('Subj','Group','Age','Sex (% Female)','Education (Years)','Parent Education (Years)',
                                          'White (%)','African American (%)','Asian (%)',
@@ -3077,15 +3106,10 @@ for(i in 1:length(params)){
 
 ```{r id99322, echo=FALSE, cache=TRUE,fig.width=4,fig.height=3.75}
 
-# # the raw parameters still have male as bottom boundary
-# gaze3_all_samples$mu_grp_delta_bias_pr.1.<-gaze3_all_samples$mu_grp_delta_male_pr.1.*-1-gaze3_all_samples$mu_grp_delta_female_pr.1.
-# gaze3_all_samples$mu_grp_delta_bias_pr.2.<-gaze3_all_samples$mu_grp_delta_male_pr.2.*-1-gaze3_all_samples$mu_grp_delta_female_pr.2.
-#   
-
-params<-c('mu_alpha.','mu_beta.','mu_ndt.','mu_delta_female.','mu_delta_male.','mu_delta_bias.')
-raw_params<-c('mu_grp_alpha_pr.','mu_grp_beta_pr.','mu_grp_ndt_pr.','mu_grp_delta_female_pr.','mu_grp_delta_male_pr.','mu_grp_delta_bias_pr.')
-sig_params<-c('sig_grp_alpha_pr.','sig_grp_beta_pr.','sig_grp_ndt_pr.','sig_grp_delta_pr.','sig_grp_delta_pr.','sig_grp_delta_pr.')
-param_names<-c('Threshold Separation','Start Point','NDT','Drift: Female Faces','Drift: Male Faces','Drift Bias')
+params<-c('mu_alpha.','mu_beta.','mu_ndt.','mu_delta.','mu_delta_bias.')
+raw_params<-c('mu_grp_alpha_pr.','mu_grp_beta_pr.','mu_grp_ndt_pr.','mu_grp_delta_pr.','mu_grp_delta_bias_pr.')
+sig_params<-c('sig_grp_alpha_pr.','sig_grp_beta_pr.','sig_grp_ndt_pr.','sig_grp_delta_pr.','sig_grp_delta_pr.')
+param_names<-c('Threshold Separation','Start Point','NDT','Drift Sensitivity','Drift Bias')
 
 #loop through and plot/compare group differences
 for(i in 1:length(params)){
@@ -3106,10 +3130,11 @@ for(i in 1:length(params)){
 
 ```
 
-```{r id99332122322999, fig.height=3.75, fig.width=2.5, cache=TRUE, dpi=500,include=FALSE}
+## Plots for Figure 2
+
+```{r id99332122322999, fig.height=3, fig.width=2, cache=TRUE, dpi=500,include=FALSE}
 
 #(Plots for the manuscript main text)
-
 params<-c('mu_alpha.','mu_beta.','mu_ndt.','mu_grp_b1_pr.','mu_delta.')
 raw_params<-c('mu_grp_alpha_pr.','mu_grp_beta_pr.','mu_grp_ndt_pr.','mu_grp_b1_pr.','mu_grp_delta_pr.')
 sig_params<-c('sig_grp_alpha_pr.','sig_grp_beta_pr.','sig_grp_ndt_pr.','sig_grp_b1_pr.','sig_grp_delta_pr.')
@@ -3118,7 +3143,7 @@ param_names<-c('Threshold Separation','Start Point','NDT','Drift Sensitivity','D
 ylims<-list(c(1.6,2.4),
             c(.45,.58),
             c(.85,.95),
-            c(.3,.65),
+            c(.3,.6),
             c(-2,.5))
 
 for(i in 1:length(params)){
@@ -3137,17 +3162,15 @@ for(i in 1:length(params)){
   print(p + coord_cartesian(ylim = ylims[[i]]))
 }
 
-params<-c('mu_alpha.','mu_beta.','mu_ndt.','mu_delta_bias.')
-raw_params<-c('mu_grp_alpha_pr.','mu_grp_beta_pr.','mu_grp_ndt_pr.','mu_grp_delta_bias_pr.')
-sig_params<-c('sig_grp_alpha_pr.','sig_grp_beta_pr.','sig_grp_ndt_pr.','sig_grp_delta_pr.')
-param_names<-c('Threshold Separation','Start Point','NDT','Drift Bias')
+params<-c('mu_alpha.','mu_beta.','mu_ndt.','mu_delta_bias.','mu_delta.')
+raw_params<-c('mu_grp_alpha_pr.','mu_grp_beta_pr.','mu_grp_ndt_pr.','mu_grp_delta_bias_pr.','mu_grp_delta_pr.')
+sig_params<-c('sig_grp_alpha_pr.','sig_grp_beta_pr.','sig_grp_ndt_pr.','sig_grp_delta_pr.','sig_grp_delta_pr.')
+param_names<-c('Threshold Separation','Start Point','NDT','Drift Bias','Drift Sensitivity')
 
 ylims<-list(c(1.6,2.4),
             c(.45,.58),
             c(.85,.95),
-            #c(-3.5,3.5),
-            #c(-3.5,3.5),
-            c(-2.1,.5))
+            c(-2.1,.5),c(2,3.1))
 
 #loop through and plot/compare group differences
 for(i in 1:length(params)){
@@ -3163,60 +3186,25 @@ for(i in 1:length(params)){
     sample_sizes=c(39,42),
     round_digits=3,
     showtext=F)
-  print(p + coord_cartesian(ylim = ylims[[i]]))
+  print(p + coord_cartesian(ylim = ylims[[i]])+theme(legend.position = "none"))
 }
-
-ylims<-list(c(-3.5,3.5),c(-3.5,3.5))
-params<-c('mu_delta_female.','mu_delta_male.')
-raw_params<-c('mu_grp_delta_female_pr.','mu_grp_delta_male_pr.')
-sig_params<-c('sig_grp_delta_pr.','sig_grp_delta_pr.')
-param_names<-c('Drift Rate: Male & Female Faces','Drift Rate: Male & Female Faces')
-
-  p1<-plot_posterior_diffs(
-    data=gaze3_all_samples, 
-    ci=.95, #credible interval
-    par_prefix=params[1],
-    rawpar_prefix=raw_params[1],
-    sig_prefix=sig_params[1],
-    par_name = param_names[1],
-    group_nums = c(1,2),
-    group_names=c('HC','SZ'),
-    sample_sizes=c(39,42),
-    round_digits=3,
-    showtext=F)
-  
-  p2<-plot_posterior_diffs(
-    data=gaze3_all_samples, 
-    ci=.95, #credible interval
-    par_prefix=params[2],
-    rawpar_prefix=raw_params[2],
-    sig_prefix=sig_params[2],
-    par_name = param_names[2],
-    group_nums = c(1,2),
-    group_names=c('HC','SZ'),
-    sample_sizes=c(39,42),
-    round_digits=3, 
-    showtext=F)
-  
-p_combined <- p1 + p2$layers
-print(p_combined + coord_cartesian(ylim = ylims[[1]]))
 
 ```
 
 ## Observed Power (Post-Hoc)
 
+__Cohen (1988) guidelines of effect sizes:__
+Pearson’s r: small = 0.10, medium = 0.30, large = 0.50
+Cohen’s d: small = 0.20, medium = 0.50, large = 0.80 
+Incremental f²: small = 0.02, medium = 0.15, large = 0.35	
+
 ```{r id993322, echo=FALSE, fig.height=3.75, fig.width=4, cache=TRUE}
 
-#Cohen’s 1988 guidelines of effect sizes:
-#              small   medium   large
-#Pearson’s r = 0.10    0.30     0.50
-#Cohen’s   d = 0.20    0.50     0.80 
-#Increment.f²  0.02	   0.15	    0.35	
-
 library(pwr)
+
 effect_names<-c("Threshold Separation (Gaze)", "Start Point (Gaze)", "NDT (Gaze)","Drift Sensitivity (Gaze)", "Drift Bias (Gaze)",
-                'Threshold Separation (Gender)','Start Point (Gender)','NDT (Gender)','Drift: Female Faces (Gender)','Drift: Male Faces','Drift Bias (Gender)')
-effect_sizes<-c(-1.07,.472,.011, .881,-1.062,.349,-.876,-.961,.974,-.69,-.284)
+                'Threshold Separation (Gender)','Start Point (Gender)','NDT (Gender)','Drift Sensitivity (Gender)','Drift Bias (Gender)')
+effect_sizes<-c(-.107,.472,.011, .881,-1.062,.349,-.876,-.961,.832,-.142)
 
 post_hoc_power<-data.frame(Effect=effect_names,
                            Cohen_d=effect_sizes)
@@ -3249,7 +3237,7 @@ Bayesian regression models run in brms examined the effects of social cue proces
 ### GPTS-Referential Thinking
  
 ```{r id9932991112121331, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE}
-###
+
 tmp_pred<-c('delta_bias','delta_bias_gend','delta_b1','delta_gend',
             'beta','beta_gend','sz_dummy','female_dummy','age')
 
@@ -3291,7 +3279,7 @@ result_glm_ddm %>%
 ### GPTS-Persecution
 
 ```{r id99329911121331121, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE}
-##
+
 tmp_pred<-c('delta_bias','delta_bias_gend','delta_b1','delta_gend',
             'beta','beta_gend','sz_dummy','female_dummy','age')
 
@@ -3336,7 +3324,6 @@ result_glm_ddm %>%
 
 tmp_pred<-c('delta_bias','delta_b1','delta_gend',
             'beta','beta_gend','sz_dummy','female_dummy','age')
-
 tmp_outcome<-c('soc_cog_pc_wrt')
 
 tmp_data<-subset(all_sub_data,all_sub_data$group=="SZ"|all_sub_data$group=="HC")
@@ -3374,18 +3361,26 @@ result_glm_ddm %>%
 
 ### Observed Power (Post-Hoc)
 
+__Cohen (1988) guidelines of effect sizes:__
+Pearson’s r: small = 0.10, medium = 0.30, large = 0.50
+Cohen’s d: small = 0.20, medium = 0.50, large = 0.80 
+Incremental f²: small = 0.02, medium = 0.15, large = 0.35	
+
 ```{r id993332332, echo=FALSE, cache=TRUE,fig.width=4,fig.height=3.75}
 
-#Cohen’s 1988 guidelines of effect sizes:
-#              small   medium   large
-#Pearson’s r = 0.10    0.30     0.50
-#Cohen’s   d = 0.20    0.50     0.80 
-#Increment.f²  0.02	   0.15	    0.35	
-
-effect_names<-c("GPTS: Referential Thinking - Drift Sensitivity (Gaze)", "GPTS: Referential Thinking - Drift Bias (Gaze)", "GPTS: Referential Thinking - Start Point (Gaze)","GPTS: Referential Thinking - Drift Rate (Gender)",
-                "GPTS: Persecution - Drift Sensitivity (Gaze)", "GPTS: Persecution - Drift Bias (Gaze)", "GPTS: Persecution - Start Point (Gaze)","GPTS: Persecution - Drift Rate (Gender)",
-                "Social Cognition - Drift Sensitivity (Gaze)", "Social Cognition - Drift Bias (Gaze)", "Social Cognition - Start Point (Gaze)","Social Cognitionn - Drift Rate (Gender)")
-effect_sizes<-c(.13,.03,.01,.21,.07,.03,.02,.19,.03,.02,.02,.01)
+effect_names<-c("GPTS: Referential Thinking - Drift Sensitivity (Gaze)", 
+                "GPTS: Referential Thinking - Drift Bias (Gaze)", 
+                "GPTS: Referential Thinking - Start Point (Gaze)",
+                "GPTS: Referential Thinking - Drift Sensitivity (Gender)",
+                "GPTS: Persecution - Drift Sensitivity (Gaze)", 
+                "GPTS: Persecution - Drift Bias (Gaze)", 
+                "GPTS: Persecution - Start Point (Gaze)",
+                "GPTS: Persecution - Drift Sensitivity (Gender)",
+                "Social Cognition - Drift Sensitivity (Gaze)", 
+                "Social Cognition - Drift Bias (Gaze)", 
+                "Social Cognition - Start Point (Gaze)",
+                "Social Cognition - Drift Sensitivity (Gender)")
+effect_sizes<-c(.13,.03,.01,.21,.07,.03,.02,.19,.03,.03,.02,.01)
 
 post_hoc_power<-data.frame(Effect=effect_names,
                            Cohen_f2=effect_sizes)
@@ -3415,7 +3410,7 @@ post_hoc_power %>%
 ### GPTS-Referential Thinking
  
 ```{r id99329911121921331, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE}
-#
+
 tmp_pred<-c('delta_b1','delta_gend','sz_dummy','female_dummy','age','matrics')
 tmp_outcome<-c('gpts_socref')
 
@@ -3453,7 +3448,7 @@ result_glm_ddm %>%
 ### GPTS-Persecution
 
 ```{r id993299111213931121, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE}
-##
+
 tmp_pred<-c('delta_b1','delta_gend','matrics','sz_dummy','female_dummy','age')
 tmp_outcome<-c('gpts_persec')
 
@@ -3559,7 +3554,7 @@ print(all_result_glm_ddm %>%
   kable_styling(full_width=T))
 
 ```
- 
+
 ### GPTS-Persecution
 
 ```{r id993299111218, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE,fig.show='asis',results='asis'}
@@ -3832,7 +3827,7 @@ __For primary regressions in which DDM parameters showed interactions with SZ di
 ### GPTS-Referential Thinking
 
 ```{r id99329911121, echo=FALSE, fig.height=4, fig.show='asis', fig.width=5, message=FALSE, warning=FALSE, cache=TRUE, results='asis'}
-
+#
 show_modelchange<-TRUE
 tmp_pred<-c('delta_b1','delta_gend','age','female_dummy')
 tmp_outcome<-c('gpts_socref')
@@ -3897,7 +3892,7 @@ print(all_result_glm_ddm %>%
 ### GPTS-Persecution
 
 ```{r id9932991112181, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE,fig.show='asis',results='asis'}
-
+#
 show_modelchange<-TRUE
 tmp_pred<-c('delta_b1','delta_gend','age','female_dummy')
 tmp_outcome<-c('gpts_persec')
@@ -3961,7 +3956,7 @@ print(all_result_glm_ddm %>%
 ### Social Cognition
 
 ```{r id99329911121181, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE,fig.show='asis',results='asis'}
-
+#
 show_modelchange<-TRUE
 tmp_pred<-c('delta_b1','delta_bias','delta_gend','age','female_dummy')
 tmp_outcome<-c('soc_cog_pc_wrt')
@@ -4029,7 +4024,7 @@ __Re-run those follow-up within group regressions to see if effects remain after
 ### GPTS-Referential Thinking
 
 ```{r id993299131121, echo=FALSE, fig.height=4, fig.show='asis', fig.width=5, message=FALSE, warning=FALSE, cache=TRUE, results='asis'}
-
+#
 show_modelchange<-TRUE
 tmp_pred<-c('delta_b1','delta_gend','age','female_dummy','matrics')
 tmp_outcome<-c('gpts_socref')
@@ -4093,7 +4088,7 @@ print(all_result_glm_ddm %>%
 ### GPTS-Persecution
 
 ```{r id998329911121891, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE,fig.show='asis',results='asis'}
-
+#
 show_modelchange<-TRUE
 tmp_pred<-c('delta_b1','delta_gend','age','female_dummy','matrics')
 tmp_outcome<-c('gpts_persec')
@@ -4164,6 +4159,9 @@ Baron-Cohen, S., Wheelwright, S., Hill, J., Raste, Y., & Plumb, I. (2001). The R
 
 Burton, C. Z., Vella, L., Harvey, P. D., Patterson, T. L., Heaton, R. K., & Twamley, E. W. (2013). Factor structure of the MATRICS Consensus Cognitive Battery (MCCB) in schizophrenia. Schizophrenia Research, 146(0), 244–248. https://doi.org/10.1016/j.schres.2013.02.026
 
+Cohen. (1988). Dedekind completion of positive concatenation structures: Necessary and sufficient conditions. Journal of Mathematical Psychology, 32(1), 64–71. psyh. https://doi.org/10.1016/0022-2496(88)90038-7
+Morey, R., & Rouder, J. (2015). BayesFactor: Computation of Bayes Factors for common designs. R package version 0.9.12–12.
+
 First, M. B., Spitzer, R. L., Gibbon, M., & Williams, J. B. W. (2002). Structured Clinical Interview for DSM-IV-TR Axis I Disorders, Research Version, Patient Edition (SCID-I/P). Biometrics Research.
 
 Freeman, D., Loe, B. S., Kingdon, D., Startup, H., Molodynski, A., Rosebrock, L., Brown, P., Sheaves, B., Waite, F., & Bird, J. C. (2019). The revised Green et al., Paranoid Thoughts Scale (R-GPTS): Psychometric properties, severity ranges, and clinical cut-offs. Psychological Medicine, 51(2), 244–253. https://doi.org/10.1017/S0033291719003155
@@ -4178,6 +4176,11 @@ Lasagna, C., McLaughlin, M., Deng, W., Whiting, E., & Tso, I. (2020). Deconstruc
 
 Mayer, Salovey, & Caruso. (2002). Mayer-Salovey-Caruso Emotional Intelligence Test (MSCEIT) User’s Manual. MHS Publishers.
 
+Morey, R., & Rouder, J. (2015). BayesFactor: Computation of Bayes Factors for common  designs. R package version 0.9.12–12.
+
 Pinkham, A. E., Penn, D. L., Green, M. F., & Harvey, P. D. (2016). Social Cognition Psychometric Evaluation: Results of the Initial Psychometric Study. Schizophrenia Bulletin, 42(2), 494–504. https://doi.org/10.1093/schbul/sbv056
 
 Stacklies, W., Redestig, H., Scholz, M., Walther, D., & Selbig, J. (2007). pcaMethods—A bioconductor package providing PCA methods for incomplete data. Bioinformatics, 23(9), 1164–1167. https://doi.org/10.1093/bioinformatics/btm069
+
+
+
