@@ -6,7 +6,7 @@ type<-c('ppc')#par_recovery or #init_fit, ppc, par_recover, or final_fit.
 task<-c('gender')
 groups<-c('all')
 run<-c(1) #1=run batch scripts after generating; 0=1 dont run batch scripts
-fitpath<-'/N/slate/clasagn/gazeddm_psychophys'
+fitpath<-'[PATH TO FIT DIRECTORY]'
 
 for (i in input_models) {
   for (j in runs) {
@@ -40,7 +40,7 @@ for (i in input_models) {
                                    "\nmodelname='hddm_m", i, "_psychophys'",
                                    "\ntask=",m,
                                    "\n\n#Commands to run",
-                                   "\nRscript /N/slate/clasagn/gazeddm_psychophys/output/run2_ppc_gendMod.R $run $group $modelname $task")
+                                   "\nRscript [PATH TO FIT DIRECTORY]/output/run2_ppc_gendMod.R $run $group $modelname $task")
           
           # Write to file
           writeLines(script_content, script_name)

@@ -7,7 +7,7 @@ task<-c('gender')
 groups<-c('all')
 gend_groups<-c('female_only','male_only')
 run<-c(1) #1=run batch scripts after generating; 0=1 dont run batch scripts
-fitpath<-'/N/slate/clasagn/gazeddm_psychophys'
+fitpath<-'[PATH TO FIT DIRECTORY]'
 
 for (i in input_models) {
   for (j in runs) {
@@ -43,7 +43,7 @@ for (i in input_models) {
                                      "\ntask=",m,
                                      "\ngend_group=",n,
                                      "\n\n#Commands to run",
-                                     "\nRscript /N/slate/clasagn/gazeddm_psychophys/output/run4_supplement_bygend.R $run $group $modelname $task $gend_group")
+                                     "\nRscript [PATH TO FIT DIRECTORY]/output/run4_supplement_bygend.R $run $group $modelname $task $gend_group")
             
             # Write to file
             writeLines(script_content, script_name)

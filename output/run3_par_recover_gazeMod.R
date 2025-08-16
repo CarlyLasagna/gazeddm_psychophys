@@ -24,7 +24,7 @@ set.seed(seed)
 # SET DIRECTORIES
 #############################################################################
 
-dirname<-'/N/slate/clasagn/gazeddm_psychophys' 
+dirname<-'[PATH TO FIT DIRECTORY]' 
 datadir<-paste0(dirname,'/data')
 scriptsdir<-paste0(dirname,'/scripts')
 behfile<-paste0(datadir,"/schizgaze12_gaze_beh.csv")
