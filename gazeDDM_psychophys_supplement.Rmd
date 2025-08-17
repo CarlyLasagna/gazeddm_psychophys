@@ -26,7 +26,7 @@ __Note: Throughout the supplement, Model 2 (Gaze) is the primary gaze model desc
 
 Code and outputs in this document are supplemental material for:
 
-Lasagna, C. A., Pleskac, T. J., Weigard, A., & Tso, I. F. (2025, August 16). Modeling Self-Reference in Schizophrenia: The Role of Evidence Accumulation in Social Perception and Paranoia. Preprint:  [(https://doi.org/10.31234/osf.io/9b23k_v1)](https://doi.org/10.31234/osf.io/9b23k_v1)
+Lasagna, C. A., Pleskac, T. J., Weigard, A., & Tso, I. F. (2025). Modeling Self-Reference in Schizophrenia: The Role of Evidence Accumulation in Social Perception and Paranoia. Preprint:  [(https://doi.org/10.31234/osf.io/9b23k_v1)](https://doi.org/10.31234/osf.io/9b23k_v1)
 
 # Code Availability
 
@@ -49,13 +49,51 @@ Below are more detailed descriptions as well as reliability and validity informa
 
 Performance in the self-referential gaze perception task shows good convergent validity with social cognitive measures and moderate-to-acceptable test-retest reliability (intra-class-correlation [ICC]: 0.68-0.92) (Lasagna et al., 2020).
 
-## Green et al. Paranoid Thought Scales (GPTS)
+## Paranoia (GPTS)
 
 The Green Paranoid Thought Scales (GPTS) (Green et al., 2007) is a self-report measure of paranoia comprising two 16-item subscales: social reference (i.e., experiencing environmental social signals as self-related or self-directed) and persecution (i.e., believing that others intend to cause the individual harm). The original subscales showed good test-retest reliability (ICCs 0.81-0.88) and internal consistency (α > 0.90), but the original two-factor model showed inadequate fit. Thus, subscales were summed using the revised factor structure with enhanced psychometric properties (Freeman et al., 2019).
 
 ## General & Social Cognition (RME, ER40, MSCEIT, MCCB)
 
 Social cognition was assessed using the Reading the Mind in the Eyes test (RME) (Baron-Cohen et al., 2001), the Penn Emotion Recognition task (ER40) (Kohler et al., 2004), and the Mayer-Caruso Emotional Intelligence Test (MSCEIT) (Mayer et al., 2002). RME tests the ability to infer mental states of actors from the eye region across 36 images. ER40 tests the ability to process the facial emotions of actors in 40 images. MSCEIT tests the ability to perceive, understand, use, and manage emotions across 141 test items. All show acceptable test-retest reliability (M=0.75-0.86), and questionable-to-good internal consistency (α=0.65-0.91) (Mayer et al., 2002; Pinkham, Penn, et al., 2016). General cognition was assessed using the MATRICS Consensus Cognitive Battery (MCCB), ten tests assessing nine domains of neurocognitive dysfunction in SZ (August et al., 2012). Composite scores show good construct validity, good test-retest reliability (ICC=0.88) (Keefe et al., 2011), and acceptable internal consistency (α=0.76) (Burton et al., 2013). RME and ER40 data of two SZ were removed for performing at chance levels. For dimensionality reduction, we extracted a social cognition principal component from ER40-accuracy, ER40-RT, RME-accuracy, and age- and gender-corrected MSCEIT total, using pcaMethods with Bayesian imputation for missing data (Stacklies et al., 2007). ER40 RT was included to capture similar information as captured by DDM parameters, which incorporate choice and RT information concurrently. This was also done to extract a general cognition principal component from age- and gender-corrected T-scores of the MCCB subscales (excluding the social cognition subscale to avoid overlapping constructs with other measures).
+
+## Other Data Collected 
+
+Additional measures were collected in the present study that were not analyzed because they fell outside of the scope of the current study. Those included:
+
+__Additional behavioral tasks__
+
+* Jitter Orientation Visual Integration Task (JOVI; Silverstein, 2011)
+
+__Clinician-rated symptom measures__
+
+* Brief Psychiatric Rating Scale (BPRS; Overall, 1962).
+* Scale for the Assessment of Negative Symptoms (SANS; Andreasen, 1989)
+* Scale for the assessment of positive symptoms (SAPS; Andreasen, 1984)
+
+__Intelligence__
+
+* Wide range achievement test (WRAT-Reading; Wilkinson & Robertson, 1993)
+
+__Functional assessments__
+
+* Global Functioning Social/Role Scales (Cornblatt et al., 2007)
+* UCSD Performance-based Skills Assessment (UPSA; Patterson et al., 2001a)
+* Social Skills Performance Assessment (SSPA; Patterson et al. 2001b)
+
+__Self-reports__
+
+* Questionnaire of Cognitive and Affective Empathy (QCAE; Reniers et al. 2011)
+* State-Trait Anxiety Inventory (STAI; Spielberger et al. 1983)
+* Psychological Stress Index (PSI; Tso et al. 2012)
+* Success and Resource Appraisals Questionnaire (SARA-Q; Couture et al. 2007)
+* Beck Depression Inventory (BDI; Beck et al. 1961)
+
+__Neuroimaging__
+
+* Functional magnetic resonance imaging (fMRI): task-based fMRI during the gaze perception and JOVI tasks; and resting-state fMRI.
+* Structural magnetic resonance imaging (MRI)
+* Diffusion Tensor Imaging (DTI) 
 
 # [MODELING SUPPLEMENT] {.unnumbered}
 
@@ -4153,13 +4191,35 @@ print(all_result_glm_ddm %>%
 
 # References
 
+
+
+
+
+
+
+
+
+
+
+
+Andreasen, N. C. (1984). Scale for the assessment of positive symptoms. Group, 17(2), 173-180.
+
+Andreasen NC (1989). The Scale for the Assessment of Negative Symptoms (SANS): Conceptual and Theoretical Foundations. British Journal of Psychiatry. 155(S7):49-52. doi:10.1192/S0007125000291496
+
 August, S. M., Kiwanuka, J. N., McMahon, R. P., & Gold, J. M. (2012). The MATRICS Consensus Cognitive Battery (MCCB): Clinical and cognitive correlates. Schizophrenia Research, 134(1), 76–82.
 
 Baron-Cohen, S., Wheelwright, S., Hill, J., Raste, Y., & Plumb, I. (2001). The Reading the Mind in the Eyes Test Revised Version: A Study with Normal Adults, and Adults with Asperger Syndrome or High-functioning Autism. Journal of Child Psychology and Psychiatry, 42(2), 241–251. https://doi.org/10.1111/1469-7610.00715
 
+Beck, A.T., Ward, C. H., Mendelson, M., Mock, J., & Erbaugh, J. (1961) An inventory for measuring depression. Archives of General Psychiatry, 4, 561-571.
+
 Burton, C. Z., Vella, L., Harvey, P. D., Patterson, T. L., Heaton, R. K., & Twamley, E. W. (2013). Factor structure of the MATRICS Consensus Cognitive Battery (MCCB) in schizophrenia. Schizophrenia Research, 146(0), 244–248. https://doi.org/10.1016/j.schres.2013.02.026
 
-Cohen. (1988). Dedekind completion of positive concatenation structures: Necessary and sufficient conditions. Journal of Mathematical Psychology, 32(1), 64–71. psyh. https://doi.org/10.1016/0022-2496(88)90038-7
+Cohen. (1988). Dedekind completion of positive concatenation structures: Necessary and sufficient conditions. Journal of Mathematical Psychology, 32(1), 64–71. https://doi.org/10.1016/0022-2496(88)90038-7
+
+Cornblatt BA, Auther AM, Niendam T, et al. (2007). Preliminary findings for two new measures of social and role functioning in the prodromal phase of schizophrenia. Schizophrenia Bulletin. 33:688–702
+
+Couture SM, Grant PM, Beck AT, Morrison AP (2007, unpublished). Success and resource appraisals questionnaire (SARA-Q).
+
 Morey, R., & Rouder, J. (2015). BayesFactor: Computation of Bayes Factors for common designs. R package version 0.9.12–12.
 
 First, M. B., Spitzer, R. L., Gibbon, M., & Williams, J. B. W. (2002). Structured Clinical Interview for DSM-IV-TR Axis I Disorders, Research Version, Patient Edition (SCID-I/P). Biometrics Research.
@@ -4178,9 +4238,26 @@ Mayer, Salovey, & Caruso. (2002). Mayer-Salovey-Caruso Emotional Intelligence Te
 
 Morey, R., & Rouder, J. (2015). BayesFactor: Computation of Bayes Factors for common  designs. R package version 0.9.12–12.
 
+Overall, J. E., & Gorham, D. R. (1962). The brief psychiatric rating scale. Psychological reports, 10(3), 799-812.
+
+Patterson T.L., Goldman S., McKibbin C.L., Hughs T., Jeste D.V. (2011). UCSD Performance- Based Skills Assessment: development of a new measure of everyday functioning for severely mentally ill adults. Schizophrenia. Bulletin. doi: 10.1093/oxfordjournals.schbul.a006870
+
+Patterson TL, Moscona S, McKibbin CL, Davidson K, Jeste DV. (2001). Social skills performance assessment among older patients with schizophrenia. Schizophrenia Research. 48(2–3), 351–360. 10.1016/s0920-9964(00)00109-2
+
 Pinkham, A. E., Penn, D. L., Green, M. F., & Harvey, P. D. (2016). Social Cognition Psychometric Evaluation: Results of the Initial Psychometric Study. Schizophrenia Bulletin, 42(2), 494–504. https://doi.org/10.1093/schbul/sbv056
 
+Reniers RL, Corcoran R, Drake R, Shryane NM, Völlm BA. (2011). The QCAE: a Questionnaire of Cognitive and Affective Empathy. Journal of Personality Assessment. doi: 10.1080/00223891.2010.528484.
+
+Silverstein SM, Keane BP, Barch DM, Carter CS, Gold JM, Kovács I, MacDonald A 3rd, Ragland JD, Strauss ME. (2012). Optimization and validation of a visual integration test for schizophrenia research. Schizophrenia Bulletin. doi: 10.1093/schbul/sbr141. 
+
+Spielberger, C. D., Gorsuch, R. L., Lushene, R., Vagg, P. R., & Jacobs, G. A. (1983). Manual for the State-Trait Anxiety Inventory. Palo Alto, CA: Consulting Psychologists Press.
+
 Stacklies, W., Redestig, H., Scholz, M., Walther, D., & Selbig, J. (2007). pcaMethods—A bioconductor package providing PCA methods for incomplete data. Bioinformatics, 23(9), 1164–1167. https://doi.org/10.1093/bioinformatics/btm069
+
+Tso IF, Grove TB, Taylor SF. (2012). Self-assessment of psychological stress in schizophrenia: Preliminary evidence of reliability and validity. Psychiatry Research. doi: 10.1016/j.psychres.2011.07.009. 
+
+Wilkinson, G. S., & Robertson, G. J. (1993). Wide range achievement test 4. Journal of Clinical and Experimental Neuropsychology.
+
 
 
 
