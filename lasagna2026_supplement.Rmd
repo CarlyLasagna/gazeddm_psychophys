@@ -60,7 +60,6 @@ For modeling, "Left" responses were recoded as 1 (upper boundary responses), "Ri
 
 ![](/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/manuscript/figures and tables/jovi_stimuli.png)
 
-
 # [MODELING SUPPLEMENT] {.unnumbered}
 
 ```{r id1, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE, out.width='1500px'}
@@ -5264,23 +5263,10 @@ print(all_result_glm_ddm %>%
 
 {-}
 
+
 # References
 
-Andreasen, N. C. (1984). Scale for the assessment of positive symptoms. Group, 17(2), 173-180.
-
-Andreasen NC (1989). The Scale for the Assessment of Negative Symptoms (SANS): Conceptual and Theoretical Foundations. British Journal of Psychiatry. 155(S7):49-52. doi:10.1192/S0007125000291496
-
-August, S. M., Kiwanuka, J. N., McMahon, R. P., & Gold, J. M. (2012). The MATRICS Consensus Cognitive Battery (MCCB): Clinical and cognitive correlates. Schizophrenia Research, 134(1), 76–82.
-
-Baron-Cohen, S., Wheelwright, S., Hill, J., Raste, Y., & Plumb, I. (2001). The Reading the Mind in the Eyes Test Revised Version: A Study with Normal Adults, and Adults with Asperger Syndrome or High-functioning Autism. Journal of Child Psychology and Psychiatry, 42(2), 241–251. https://doi.org/10.1111/1469-7610.00715
-
-Beck, A.T., Ward, C. H., Mendelson, M., Mock, J., & Erbaugh, J. (1961) An inventory for measuring depression. Archives of General Psychiatry, 4, 561-571.
-
 Cohen. (1988). Dedekind completion of positive concatenation structures: Necessary and sufficient conditions. Journal of Mathematical Psychology, 32(1), 64–71. https://doi.org/10.1016/0022-2496(88)90038-7
-
-Morey, R., & Rouder, J. (2015). BayesFactor: Computation of Bayes Factors for common designs. R package version 0.9.12–12.
-
-First, M. B., Spitzer, R. L., Gibbon, M., & Williams, J. B. W. (2002). Structured Clinical Interview for DSM-IV-TR Axis I Disorders, Research Version, Patient Edition (SCID-I/P). Biometrics Research.
 
 Freeman, D., Loe, B. S., Kingdon, D., Startup, H., Molodynski, A., Rosebrock, L., Brown, P., Sheaves, B., Waite, F., & Bird, J. C. (2019). The revised Green et al., Paranoid Thoughts Scale (R-GPTS): Psychometric properties, severity ranges, and clinical cut-offs. Psychological Medicine, 51(2), 244–253. https://doi.org/10.1017/S0033291719003155
 
