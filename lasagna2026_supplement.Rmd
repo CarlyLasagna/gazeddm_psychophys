@@ -1,36 +1,33 @@
 ---
-title: 'Supplement for Lasagna et al. (2026)'
-subtitle: 'Modeling Self-Reference in Schizophrenia: General and Specific Mechanisms Underlying Decision-Making are Differentially Associated with Paranoia'
+title: "Supplement for Lasagna et al. (2026)"
 author: "Carly A. Lasagna, Timothy J. Pleskac, Alexander S. Weigard, Ivy F. Tso"
+subtitle: "Modeling Self-Reference in Schizophrenia: General and Specific Mechanisms
+  Underlying Decision-Making are Differentially Associated with Paranoia"
 output:
   html_document:
     toc: yes
-    toc_float: true
-    toc_collapsed: true
+    toc_float: yes
+    toc_collapsed: yes
     number_sections: yes
     fig_width: 4
     fig_height: 3
     df_print: paged
     toc_depth: 4
+  pdf_document:
+    toc: yes
+    toc_depth: '4'
+    number_sections: yes
+    latex_engine: xelatex
 geometry: margin=2cm
 classoption: 6pt
-header-includes:
-  - \usepackage{amsmath}
+header-includes: \usepackage{amsmath}
 ---
 
 \newpage
 
-*__Note:__ Throughout the supplement, Model 2 (Eye Contact) is the primary model for the eye contact detection task described in the main text, Model 3 (Gender) is the primary model for the gender identification task described in the main text, and Model 5 (Visual Integration) is the model for the visual integration task described in the main text.*
-
-# Citation
-
-Code and outputs in this document are supplemental material for:
-
-Lasagna, C. A., Pleskac, T. J., Weigard, A., & Tso, I. F. (2025). Modeling Self-Reference in Schizophrenia: General and Specific Mechanisms Underlying Decision-Making are Differentially Associated with Paranoia. Preprint:  [(https://doi.org/10.31234/osf.io/9b23k_v3)](https://doi.org/10.31234/osf.io/9b23k_v3)
-
 # Code Availability
 
-**Code used to perform all modeling, simulation, and analysis is available on OSF and GitHub:**
+Code used to perform all modeling, simulation, and analysis is available on OSF and GitHub:
 
 -   OSF [(https://osf.io/e3sxu/?view_only=eaf31c32ae7f48a2ab21305ee2bcfe2a)](https://osf.io/e3sxu/?view_only=eaf31c32ae7f48a2ab21305ee2bcfe2a)
 -   GitHub [(https://github.com/CarlyLasagna/gazeddm_psychophys)](https://github.com/CarlyLasagna/gazeddm_psychophys).
@@ -48,7 +45,7 @@ Below are sample stimuli for the eye contact detection task. For modeling, "Yes"
 
 ## Gender Identification Task
 
-Below are sample stimuli for the gender identification task. For INITIAL model fits (i.e., model comparison, initial covergence tests, parameter recovery, and posterior predictions), "female" responses were recoded as 1 (upper boundary responses), "male" responses were recoded as 2 (lower boundary responses), and the gender of stimuli were effects coded as: 1=Female, -1=Male. However, this orientation was later flipped for "final model fits" and analyses (i.e., such that 1=Male [upper boundary] and -1=Female [lower boundary] for stimuli and responses). This was done to ensure that the buttons used to respond during all 3 behavioral tasks were in agreement. That way, responses made with the subjects' index finger (Yes/Male/Left) corresponded to upper boundary responses and responses made with the subjects'  middle finger (No/Female/Right) corresponded to lower boundary responses. 
+Below are sample stimuli for the gender identification task. During modeling, gender was effects coded such that "female" responses were coded as 2 (lower boundary responses) and "male" responses were coded as 1 (upper boundary responses).  
 
 ![](/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/manuscript/figures and tables/gender_stimuli.png)
 
@@ -61,6 +58,8 @@ For modeling, "Left" responses were recoded as 1 (upper boundary responses), "Ri
 ![](/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/manuscript/figures and tables/jovi_stimuli.png)
 
 # [MODELING SUPPLEMENT] {.unnumbered}
+
+*__Note:__ Throughout this section, "Model 2 (Eye Contact)" refers to the  model for the eye contact detection task described in the main text, "Model 3 (Gender)" refers to the model for the gender identification task described in the main text, and "Model 5 (Visual Integration)" refers to the model for the visual integration task described in the main text.*
 
 ```{r id1, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE, out.width='1500px'}
 
@@ -1089,7 +1088,7 @@ BFanova_summary<-function(group,dv,credMass){
         tmp_operator<-">"
       }
     }else{
-      tmp_operator<-"≈"
+      tmp_operator<-"~"
     }
     
     posthoc_output<-paste(group1,tmp_operator,group2,sep="")
@@ -1251,7 +1250,7 @@ BFchisq_summary<-function(group1,group2,credMass){
         tmp_operator<-">"
       }
     }else{
-      tmp_operator<-"≈"
+      tmp_operator<-"~"
     }
     
     posthoc_output<-paste(group1,tmp_operator,group2,sep="")
@@ -1611,27 +1610,21 @@ write.csv(sg2_correlates,outfile,row.names = F)
 
 # Model Implementation
 
-Initial fits of all models were run on a high performance computing cluster using 1500 warmup samples, 1000 postwarmup draws per chain, 10 chains, resulting in 10000 postwarmup draws in cmdstanr. These "initial fits" were used as the basis for all model evaluation steps described below. 
-
-For analyses, each winning model was run using a larger number of samples (1500 warmup samples, 5000 postwarmup draws per chain, 10 chains, resulting in 50000 postwarmup draws). This ensured that our inferences were based on stable posteriors for all parameters.
+Initial fits of all models were run on a high performance computing cluster using 1500 warmup samples, 1000 postwarmup draws per chain, 10 chains, resulting in 10000 postwarmup draws in cmdstanr. These "initial fits" were used as the basis for all model evaluation steps described below. For analyses, each winning model was run using a larger number of samples (1500 warmup samples, 5000 postwarmup draws per chain, 10 chains, resulting in 50000 postwarmup draws). This ensured that our inferences were based on stable posteriors for all parameters.
 
 # Model Specification
 
-__Naming conventions:__ Model 2 (Eye Contact) is the primary model for the eye contact detection task described in the main text, Model 3 (Gender) is the primary model for the gender identification task described in the main text, and Model 5 (Visual Integration) is the model Visual Integration task described in the main text. Note that Model 2 (Eye Contact) and Model 5 (Visual Integration) share the same structure.
+Model 2 (Eye Contact) is the model for the eye contact detection task described in the main text, Model 3 (Gender) is the model for the gender identification task described in the main text, and Model 5 (Visual Integration) is the model Visual Integration task described in the main text. Note that Model 2 (Eye Contact) and Model 5 (Visual Integration) share the same structure.
 
 __Note on gender model parameterization:__ For the gender models in which gender was allowed to categorically modulate drift rates (Gender Model 3 [winning model from main text] and 4), we originally estimated separate drift rates for male and female faces. To recast those parameters to match the parameterization of the winning Eye Contact Model (Eye Contact: Model 2), which is equivalent to the effects-coding approach described in the main text, we calculated drift sensitivity and drift biases in the gender identification task as follows:
 
 Drift Sensitivity (Gender)* = (Drift Rate<sup>Male</sup> - Drift Rate<sup>Female</sup>)/2
 Drift Bias (Gender) = (Drift Rate<sup>Male</sup> + Drift Rate<sup>Female</sup>)/2
 
-As such, the model evaluation steps are performed on the gender models with separate male/female drift rate parameters. It is for the analyses that we recast those parameters in the gender identification task to drift sensitivity (discriminability) and drift bias (as shown above).
-
-## Overview
-
-More complete details of the specification of the winning models is presented in the next section (under "Model Comparisons"). 
+As such, the model evaluation steps are performed on the gender models with separate male/female drift rate parameters. For  analyses  we recast those parameters in the gender identification task to drift sensitivity (discriminability) and drift bias (as shown above).
 
 ```{r id12433333422222, echo=FALSE, fig.height=5, fig.show="hold", fig.width=5, message=FALSE, warning=FALSE, cache=TRUE, dpi=500, out.width='1500px'}
-#
+
 model_table<-read.csv("/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/manuscript/figures and tables/all_models.csv")
   
 model_table$Condition<-""
@@ -1711,7 +1704,7 @@ all_loo_combined %>%
   kbl(caption = "Eye Contact Model Comparison",valign = "t") %>%
   kable_classic(full_width = F, html_font = "Cambria") %>%
   kable_styling(full_width=T) %>%
-  footnote("Models are presented in order from best- to worst-fitting based on the expected log pointwise predictive density within each group ('elpd_loo'). Higher ELPD indicates better model fit. Differences in out-of-sample predictive accuracy were assessed relative to the best fitting model based on changes in the ELPD ('delta_elpd'). Uncertainty around ∆ELPD-LOO is captured through the standard error ('delta_elpd_se') of the estimated pointwise ELPD differences. An absolute change in ELPD < 1 SE is weak evidence for improved predictive accuracy.")
+  footnote("Models are presented in order from best- to worst-fitting based on the expected log pointwise predictive density within each group ('elpd_loo'). Higher ELPD indicates better model fit. Differences in out-of-sample predictive accuracy were assessed relative to the best fitting model based on changes in the ELPD ('delta_elpd'). Uncertainty around ΔELPD-LOO is captured through the standard error ('delta_elpd_se') of the estimated pointwise ELPD differences. An absolute change in ELPD < 1 SE is weak evidence for improved predictive accuracy.")
 
 ```
  
@@ -1721,7 +1714,7 @@ For the gender identification task, the winning model (“Model 3: Gender”) wa
 
 We then recast these parameters into the same parameterization as the eye contact detection model described in the main text, even though gender was manipulated categorically. To achieve this, when calculating trial-level drift sensitivity in the gender identification task using the equation in Figure 1 (main text), we replaced the Eye Contact signal on each trial i with the effects-coded gender of the stimulus on each trial (1=male, -1=female). As a result, during gender identification, drift sensitivity captured the categorical modulation of drift rates by gender, where larger values indicated greater discriminability between male and female faces. Although drift sensitivity parameters were highly similar, they capture slightly different processes: in the gender identification task, they capture evidence accumulation rates and sensitivity to changes in gender cues; in the Eye Contact and Visual Integration tasks, they are a purer measure of sensitivity to changes in signal strength. Additionally, during gender identification, the drift bias reflected a information processing bias for male/female. As “male” and “female” responses were coded as the top and bottom boundaries, respectively, drift bias > 0 indicates a information processing bias for male, and drift bias < 0 indicates a information processing bias for female. All other parameters were the same as in the Eye Contact Model. 
 
-This 'effects coding approach' is equivalent to the following calculations of drift sensitivity and drift bias for the gender identification task, which is how we calculated these parameters in our case:
+This 'effects coding approach' is equivalent to the following calculations of drift sensitivity and drift bias for the gender identification task, which is how we calculated these parameters:
 
 Drift Sensitivity (Gender)* = (Drift Rate<sup>Male</sup> - Drift Rate<sup>Female</sup>)/2
 Drift Bias (Gender) = (Drift Rate<sup>Male</sup> + Drift Rate<sup>Female</sup>)/2
@@ -1793,14 +1786,13 @@ all_loo_combined %>%
   kbl(caption = "Gender Model Comparison",valign = "t") %>%
   kable_classic(full_width = F, html_font = "Cambria") %>%
   kable_styling(full_width=T) %>%
-  footnote("Models are presented in order from best- to worst-fitting based on the expected log pointwise predictive density within each group ('elpd_loo'). Higher ELPD indicates better model fit. Differences in out-of-sample predictive accuracy were assessed relative to the best fitting model based on changes in the ELPD ('delta_elpd'). Uncertainty around ∆ELPD-LOO is captured through the standard error ('delta_elpd_se') of the estimated pointwise ELPD differences. An absolute change in ELPD < 1 SE is weak evidence for improved predictive accuracy.")
+  footnote("Models are presented in order from best- to worst-fitting based on the expected log pointwise predictive density within each group ('elpd_loo'). Higher ELPD indicates better model fit. Differences in out-of-sample predictive accuracy were assessed relative to the best fitting model based on changes in the ELPD ('delta_elpd'). Uncertainty around ΔELPD-LOO is captured through the standard error ('delta_elpd_se') of the estimated pointwise ELPD differences. An absolute change in ELPD < 1 SE is weak evidence for improved predictive accuracy.")
 
 ```
 
 ## Visual Integration Models
 
-For the Visual Integration task, since the task structure was similar to the Eye Contact Models, we did not perform model comparisons for data from the Visual Integration task. Instead, we made the reasonable assumption that the efficiency of evidence accumulation on the Visual Integration task would be influenced by the jitter level of the stimuli.
-As such, for the Visual Integration, we used a model (Model 5) with the same structure as Model 2 of the Eye Contact Detection Task.
+For the Visual Integration task, since the task structure was similar to the Eye Contact Models, we did not perform model comparisons for data from the Visual Integration task. Instead, we made the reasonable assumption that the efficiency of evidence accumulation on the Visual Integration task would be influenced by the jitter level of the stimuli. As such, for the Visual Integration, we used a model (Model 5) with the same structure as Model 2 of the Eye Contact Detection Task.
 
 ## Correlations Between Model Parameters {.tabset}
 
@@ -1857,30 +1849,26 @@ p[["plot"]]
 
 ```
 
-
-
-
-
-
-
 # Convergence
 
-We assessed convergence for all models by ensuring trace plots showed well-mixed chains, Rhat values were < 1.1 for all parameters, autocorrelation was ~0 by a lag of 30, and there were no divergences. This was true of all parameters for all models tested. For brevity, we only show the convergence check outputs below for the 2 winning models.
+We assessed convergence for all models by ensuring trace plots showed well-mixed chains, Rhat values were < 1.01 for all parameters, autocorrelation was ~0 by a lag of 30, and there were no divergences. This was true of all parameters for all models tested. For brevity, we only show the convergence check outputs below for the winning models.
 
 ## Model 2 (Eye Contact) {.tabset}
 
 Convergence tests for Eye Contact Model described in the main text.
 
-### ESS/Rhat
+### Rhat
 
-```{r id342809374873412, echo=FALSE, cache=TRUE}
+Rhat values for all parameters were <= 1.01.
+
+```{r id342809374873412, cache=TRUE, include=FALSE}
 ##
 gaze2_all_samples<-read.csv('/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/ddm/output/hddm_m2_psychophys/gaze/init_fit/allgroups_init_fit_samples.csv')
 chain_id<-gaze2_all_samples$.chain
 n_chains<-length(unique(chain_id))
 n_iter<-nrow(gaze2_all_samples)/n_chains
 
-gaze_samples<-gaze2_all_samples[,-grep("beta_pr|delta_pr|alpha_pr|ndt_pr|absent_pr|present_pr|draw|iteration|lp|chain",colnames(gaze2_all_samples))]
+gaze_samples<-gaze2_all_samples[,-grep("beta_pr|delta_pr|alpha_pr|ndt_pr|absent_pr|present_pr|draw|iteration|lp|chain|sig_",colnames(gaze2_all_samples))]
 params<-colnames(gaze_samples)
 
 for(i in 1:length(params)){
@@ -1961,17 +1949,27 @@ invisible(gc())
 
 Convergence tests for gender model described in the main text.
 
-### ESS/Rhat
+### Rhat
 
-```{r id342, echo=FALSE, cache=TRUE}
-##
+Rhat values for all parameters were <= 1.01.
+
+```{r id342, cache=TRUE, include=FALSE}
+
 gender3_all_samples<-read.csv('/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/ddm/output/hddm_m3_psychophys/gender/init_fit/allgroups_init_fit_samples.csv')
 chain_id<-gender3_all_samples$.chain
 n_chains<-length(unique(chain_id))
 n_iter<-nrow(gender3_all_samples)/n_chains
 
-gender_samples<-gender3_all_samples[,-grep("beta_pr|delta_pr|alpha_pr|ndt_pr|absent_pr|present_pr|draw|iteration|lp|chain",colnames(gender3_all_samples))]
+gender_samples<-gender3_all_samples[,-grep("beta_pr|delta_pr|alpha_pr|ndt_pr|male_pr|female_pr|draw|iteration|lp|chain|sig_",colnames(gender3_all_samples))]
 params<-colnames(gender_samples)
+
+#flip orientation because male was originally coded as bottom boundary for intial fits.
+gender_samples$mu_delta_male.1.<-gender_samples$mu_delta_male.1.*-1
+gender_samples$mu_delta_male.2.<-gender_samples$mu_delta_male.2.*-1
+gender_samples$mu_delta_female.1.<-gender_samples$mu_delta_female.1.*-1
+gender_samples$mu_delta_female.2.<-gender_samples$mu_delta_female.2.*-1
+gender_samples$mu_beta.1.<-(1-gender_samples$mu_beta.1.)
+gender_samples$mu_beta.2.<-(1-gender_samples$mu_beta.2.)
 
 for(i in 1:length(params)){
   tmp_data<-gender_samples[,i]
@@ -2051,16 +2049,18 @@ invisible(gc())
 
 Convergence tests for Visual Integration model described in the main text.
 
-### ESS/Rhat
+### Rhat
 
-```{r id32242, echo=FALSE, cache=TRUE}
+Rhat values for all parameters were <= 1.01.
+
+```{r id32242, cache=TRUE, include=FALSE}
 
 jovi_all_samples<-read.csv('/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/ddm/output/hddm_m5_psychophys/init_fit/allgroups_init_fit_samples.csv')
 chain_id<-jovi_all_samples$.chain
 n_chains<-length(unique(chain_id))
 n_iter<-nrow(jovi_all_samples)/n_chains
 
-jovi_samples<-jovi_all_samples[,-grep("beta_pr|delta_pr|alpha_pr|ndt_pr|_L_pr|_R_pr|draw|iteration|lp|chain",colnames(jovi_all_samples))]
+jovi_samples<-jovi_all_samples[,-grep("beta_pr|delta_pr|alpha_pr|ndt_pr|_L_pr|_R_pr|draw|iteration|lp|chain|sig_",colnames(jovi_all_samples))]
 params<-colnames(jovi_samples)
 
 for(i in 1:length(params)){
@@ -2089,7 +2089,7 @@ fit_summary
 ### Trace Plots
 
 ```{r id22231, echo=FALSE, fig.height=1.75, fig.width=3.5, message=FALSE, warning=FALSE, cache=TRUE, tidy=TRUE}
-
+#
 tmp_jovi_samples<-jovi_samples[,-grep("^sub_", colnames(jovi_samples)) ]
 params<-rename_jovi_pars(colnames(tmp_jovi_samples))
 
@@ -2113,7 +2113,7 @@ for (i in 1:ncol(tmp_jovi_samples)){
 Note: We originally examined all 10 chains for autocorrelation. But here we randomly select 6 and display those (for brevity)
 
 ```{r id22311212, echo=FALSE, fig.height=2.5, fig.width=3, message=FALSE, warning=FALSE, cache=TRUE, tidy=TRUE}
-
+#
 chain_nums<-seq(from=1,to=n_chains,by=1)
 subsample_chains<-6 #of of chains to subsample and display autocorr for
 bayesplot_theme_set(theme_default(base_size = 8, base_family = "sans"))
@@ -2137,10 +2137,6 @@ invisible(gc())
 
 ```
  
-
-
-
-
 # Parameter Recovery
 
 Parameter recovery was performed for all winning models to determine if parameter values used to simulate choice and RT data could be accurately recovered.
@@ -2152,7 +2148,7 @@ __Results:__ All models showed good posterior coverage for parameters across SZ 
 
 ## Model 2 (Eye Contact)
 
-### Group-Level Parameters (Averaged over simulations)
+### Group Parameters (Averaged over simulations)
 
 First, we examined how well the group-level generating values were recovered by simulated models fits *on average*. We averaged over the posterior means and 95% HDIs for group-level parameters for all 50 simulations; plotted generating group-level values (red X's in plots below) superimposed over the averaged mean and 95% HDI (points and error bars in figure below); and assessed how well, on average, the group-level generating values were captured by simulated model fits. 
 
@@ -2179,7 +2175,7 @@ p <- ggplot(data = plot_data2, aes(x = group, y = sim_mean, color = group)) +
   geom_errorbar(data = plot_data2, aes(ymin = sim_hdi_lo, ymax = sim_hdi_hi), 
                 linewidth = .5, width = 0, alpha = 1, position = position_dodge(width = .5)) +
   coord_cartesian(ylim = c(1.55, 1.8)) +
-  ggtitle("Eye Contact: Threshold Separation\n(Averaged over 50 sims)") + 
+  ggtitle("Eye Contact: Threshold Sep\n(Averaged over 50 sims)") + 
   ylab("Parameter Estimate") +
   theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust = 1)) +
   geom_point(data = data.frame(category = plot_data2$group, value = plot_data2$gen_mean), 
@@ -2259,7 +2255,7 @@ print(p)
 
 ```
 
-### Group-Level Parameters (Separate for each simulation)
+### Group Parameters (Separate for each simulation)
 
 Second, we examined group-level parameters for the individual simulations to determine what % of the 50 simulations successfully recovered the group-level generating parameter values (vertical black line in plots below). Recovery was "successful" if the 95% HDI of the fitted group-level posterior (error bars in plots below) for a given simulation contained the original subject-level generating value. Data in green in the plots below indicate the group-level parameters were recovered and data in red indicates they were not. This was done separately for each task.
 
@@ -2301,7 +2297,7 @@ for (i in 1:length(groups)){
 
 ```
 
-### Subject-Level Parameters
+### Subject Parameters
 
 Third, we examined how well subject-level generating values were captured by simulated model fits. We determined what % of subject-level generating parameter values were successfully recovered across the 50 simulations. Recovery was "successful" if the 95% HDI of the fitted subject-level posterior contained the original subject-level generating value. Data in green in the plots below indicate the subject-level generating values were recovered and data in red indicates they were not. This was done separately for each  task.
 
@@ -2321,7 +2317,7 @@ subj_summary<-read.csv("/Users/carlylasagna/University of Michigan Dropbox/Carly
 ## recover_suffix =  suffix in data df that indexing column of data indicating whether par was recovered or not
 
 params<-c('alpha','beta','delta','b1')
-parnames<-c('Eye Contact: Threshold Separation','Eye Contact: Start Point','Eye Contact: Drift Bias','Eye Contact: Drift Sensitivity')
+parnames<-c('Eye Contact: Threshold Sep','Eye Contact: Start Point','Eye Contact: Drift Bias','Eye Contact: Drift Sensitivity')
 groups<-c('HC','SZ')
 subj_summary$sim_id<-subj_summary$sim
 
@@ -2343,12 +2339,9 @@ for (i in 1:length(groups)){
 
 ```
 
-
-
-
 ## Model 3 (Gender)
 
-### Group-Level Parameters (Averaged over simulations)
+### Group Parameters (Averaged over simulations)
 
 Now we do the same for the gender models. First, we examined how well the group-level generating values were recovered by simulated models fits *on average*. We averaged over the posterior means and 95% HDIs for group-level parameters for all 50 simulations; plotted generating group-level values (red X's in plots below) superimposed over the averaged mean and 95% HDI (points and error bars in figure below); and assessed how well, on average, the group-level generating values were captured by simulated model fits. 
 
@@ -2384,12 +2377,12 @@ p <- ggplot(data = plot_data3, aes(x = group, y = sim_mean, color = group)) +
 
 print(p)
 
-#BETA
+#BETA (flip orientation because male was originally coded as bottom boundary for initial fits)
 plot_data3<-data.frame(group=c('HC','SZ'),
-                       sim_mean=c(plot_data$beta_grp_sim_mean1,plot_data$beta_grp_sim_mean2),
-                       gen_mean=c(plot_data$beta_grp_gen1,plot_data$beta_grp_gen2),
-                       sim_hdi_lo=c(plot_data$beta_grp_sim_hdi_lo1,plot_data$beta_grp_sim_hdi_lo2),
-                       sim_hdi_hi=c(plot_data$beta_grp_sim_hdi_hi1,plot_data$beta_grp_sim_hdi_hi2))
+                       sim_mean=1-c(plot_data$beta_grp_sim_mean1,plot_data$beta_grp_sim_mean2),
+                       gen_mean=1-c(plot_data$beta_grp_gen1,plot_data$beta_grp_gen2),
+                       sim_hdi_lo=1-c(plot_data$beta_grp_sim_hdi_lo1,plot_data$beta_grp_sim_hdi_lo2),
+                       sim_hdi_hi=1-c(plot_data$beta_grp_sim_hdi_hi1,plot_data$beta_grp_sim_hdi_hi2))
 
 
 p <- ggplot(data = plot_data3, aes(x = group, y = sim_mean, color = group)) +
@@ -2407,12 +2400,12 @@ p <- ggplot(data = plot_data3, aes(x = group, y = sim_mean, color = group)) +
 
 print(p)
 
-#DELTA female
+#DELTA female (flip orientation because male was originally coded as bottom boundary for initial fits)
 plot_data3<-data.frame(group=c('HC','SZ'),
-                       sim_mean=c(plot_data$delta_female_grp_sim_mean1,plot_data$delta_female_grp_sim_mean2),
-                       gen_mean=c(plot_data$delta_female_grp_gen1,plot_data$delta_female_grp_gen2),
-                       sim_hdi_lo=c(plot_data$delta_female_grp_sim_hdi_lo1,plot_data$delta_female_grp_sim_hdi_lo2),
-                       sim_hdi_hi=c(plot_data$delta_female_grp_sim_hdi_hi1,plot_data$delta_female_grp_sim_hdi_hi2))
+                       sim_mean=-1*c(plot_data$delta_female_grp_sim_mean1,plot_data$delta_female_grp_sim_mean2),
+                       gen_mean=-1*c(plot_data$delta_female_grp_gen1,plot_data$delta_female_grp_gen2),
+                       sim_hdi_lo=-1*c(plot_data$delta_female_grp_sim_hdi_lo1,plot_data$delta_female_grp_sim_hdi_lo2),
+                       sim_hdi_hi=-1*c(plot_data$delta_female_grp_sim_hdi_hi1,plot_data$delta_female_grp_sim_hdi_hi2))
 
 
 p <- ggplot(data = plot_data3, aes(x = group, y = sim_mean, color = group)) +
@@ -2421,7 +2414,7 @@ p <- ggplot(data = plot_data3, aes(x = group, y = sim_mean, color = group)) +
   geom_errorbar(data = plot_data3, aes(ymin = sim_hdi_lo, ymax = sim_hdi_hi), 
                 linewidth = .5, width = 0, alpha = 1, position = position_dodge(width = .5)) +
   coord_cartesian(ylim = c(1.55, 1.8)) +
-  ggtitle("Gender: Drift Sensitivity (Female)\n(Averaged over 50 sims)") + 
+  ggtitle("Gender: Drift (Female)\n(Averaged over 50 sims)") + 
   ylab("Parameter Estimate") +
   theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust = 1)) +
   geom_point(data = data.frame(category = plot_data3$group, value = plot_data3$gen_mean), 
@@ -2430,12 +2423,12 @@ p <- ggplot(data = plot_data3, aes(x = group, y = sim_mean, color = group)) +
 
 print(p)
 
-#DELTA male
+#DELTA male (flip orientation because male was originally coded as bottom boundary for initial fits)
 plot_data3<-data.frame(group=c('HC','SZ'),
-                       sim_mean=c(plot_data$delta_male_grp_sim_mean1,plot_data$delta_male_grp_sim_mean2),
-                       gen_mean=c(plot_data$delta_male_grp_gen1,plot_data$delta_male_grp_gen2),
-                       sim_hdi_lo=c(plot_data$delta_male_grp_sim_hdi_lo1,plot_data$delta_male_grp_sim_hdi_lo2),
-                       sim_hdi_hi=c(plot_data$delta_male_grp_sim_hdi_hi1,plot_data$delta_male_grp_sim_hdi_hi2))
+                       sim_mean=-1*c(plot_data$delta_male_grp_sim_mean1,plot_data$delta_male_grp_sim_mean2),
+                       gen_mean=-1*c(plot_data$delta_male_grp_gen1,plot_data$delta_male_grp_gen2),
+                       sim_hdi_lo=-1*c(plot_data$delta_male_grp_sim_hdi_lo1,plot_data$delta_male_grp_sim_hdi_lo2),
+                       sim_hdi_hi=-1*c(plot_data$delta_male_grp_sim_hdi_hi1,plot_data$delta_male_grp_sim_hdi_hi2))
 
 
 p <- ggplot(data = plot_data3, aes(x = group, y = sim_mean, color = group)) +
@@ -2444,7 +2437,7 @@ p <- ggplot(data = plot_data3, aes(x = group, y = sim_mean, color = group)) +
   geom_errorbar(data = plot_data3, aes(ymin = sim_hdi_lo, ymax = sim_hdi_hi), 
                 linewidth = .5, width = 0, alpha = 1, position = position_dodge(width = .5)) +
   coord_cartesian(ylim = c(1.55, 1.8)) +
-  ggtitle("Gender: Drift Sensitivity (Male)\n(Averaged over 50 sims)") + 
+  ggtitle("Gender: Drift (Male)\n(Averaged over 50 sims)") + 
   ylab("Parameter Estimate") +
   theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust = 1)) +
   geom_point(data = data.frame(category = plot_data3$group, value = plot_data3$gen_mean), 
@@ -2455,7 +2448,7 @@ print(p)
 
 ```
 
-### Group-Level Parameters (Separate for each simulation)
+### Group Parameters (Separate for each simulation)
 
 Second, we examined group-level parameters for the individual simulations to determine what % of the 50 simulations successfully recovered the group-level generating parameter values (vertical black line in plots below). Recovery was "successful" if the 95% HDI of the fitted group-level posterior (error bars in plots below) for a given simulation contained the original subject-level generating value. Data in green in the plots below indicate the group-level parameters were recovered and data in red indicates they were not. This was done separately for each task.
 
@@ -2468,6 +2461,34 @@ parnames<-c('Gender: Threshold Sep','Gender: Start Point','Gender: Drift Female'
 groups<-c('HC','SZ')
 
 group_summary$sim_id<-group_summary$sim
+
+#flip orientation as male was originally coded as the lower boundary for intial fits
+group_summary$beta_grp_gen1<-(1-group_summary$beta_grp_gen1)
+group_summary$beta_grp_gen2<-(1-group_summary$beta_grp_gen2)
+group_summary$beta_grp_sim_hdi_hi1<-(1-group_summary$beta_grp_sim_hdi_hi1)
+group_summary$beta_grp_sim_hdi_hi2<-(1-group_summary$beta_grp_sim_hdi_hi2)
+group_summary$beta_grp_sim_hdi_lo1<-(1-group_summary$beta_grp_sim_hdi_lo1)
+group_summary$beta_grp_sim_hdi_lo2<-(1-group_summary$beta_grp_sim_hdi_lo2)
+group_summary$beta_grp_sim_mean1<-(1-group_summary$beta_grp_sim_mean1)
+group_summary$beta_grp_sim_mean2<-(1-group_summary$beta_grp_sim_mean2)
+
+group_summary$delta_female_grp_gen1<-(-1*group_summary$delta_female_grp_gen1)
+group_summary$delta_female_grp_gen2<-(-1*group_summary$delta_female_grp_gen2)
+group_summary$delta_female_grp_sim_hdi_hi1<-(-1*group_summary$delta_female_grp_sim_hdi_hi1)
+group_summary$delta_female_grp_sim_hdi_hi2<-(-1*group_summary$delta_female_grp_sim_hdi_hi2)
+group_summary$delta_female_grp_sim_hdi_lo1<-(-1*group_summary$delta_female_grp_sim_hdi_lo1)
+group_summary$delta_female_grp_sim_hdi_lo2<-(-1*group_summary$delta_female_grp_sim_hdi_lo2)
+group_summary$delta_female_grp_sim_mean1<-(-1*group_summary$delta_female_grp_sim_mean1)
+group_summary$delta_female_grp_sim_mean2<-(-1*group_summary$delta_female_grp_sim_mean2)
+
+group_summary$delta_male_grp_gen1<-(-1*group_summary$delta_male_grp_gen1)
+group_summary$delta_male_grp_gen2<-(-1*group_summary$delta_male_grp_gen2)
+group_summary$delta_male_grp_sim_hdi_hi1<-(-1*group_summary$delta_male_grp_sim_hdi_hi1)
+group_summary$delta_male_grp_sim_hdi_hi2<-(-1*group_summary$delta_male_grp_sim_hdi_hi2)
+group_summary$delta_male_grp_sim_hdi_lo1<-(-1*group_summary$delta_male_grp_sim_hdi_lo1)
+group_summary$delta_male_grp_sim_hdi_lo2<-(-1*group_summary$delta_male_grp_sim_hdi_lo2)
+group_summary$delta_male_grp_sim_mean1<-(-1*group_summary$delta_male_grp_sim_mean1)
+group_summary$delta_male_grp_sim_mean2<-(-1*group_summary$delta_male_grp_sim_mean2)
 
 for (i in 1:length(groups)){
   for (j in 1:length(params)){
@@ -2488,7 +2509,7 @@ for (i in 1:length(groups)){
 
 ```
 
-### Subject-Level Parameters
+### Subject Parameters
 
 Third, we examined how well subject-level generating values were captured by simulated model fits. We determined what % of subject-level generating parameter values were successfully recovered across the 50 simulations. Recovery was "successful" if the 95% HDI of the fitted subject-level posterior contained the original subject-level generating value. Data in green in the plots below indicate the subject-level generating values were recovered and data in red indicates they were not. This was done separately for each  task.
 
@@ -2501,6 +2522,28 @@ params<-c('alpha','beta','delta_female','delta_male')
 parnames<-c('Gender: Threshold Sep','Gender: Start Point','Gender: Drift Female','Gender: Drift Male')
 groups<-c('HC','SZ')
 subj_summary$sim_id<-subj_summary$sim
+
+#flip orientation as male was originally coded as the lower boundary for intial fits
+subj_summary$beta_sub_gen<-(1-subj_summary$beta_sub_gen)
+tmp_hi<-(1-subj_summary$beta_sub_sim_hdi_hi)
+tmp_lo<-(1-subj_summary$beta_sub_sim_hdi_lo)
+subj_summary$beta_sub_sim_hdi_hi<-tmp_lo
+subj_summary$beta_sub_sim_hdi_lo<-tmp_hi
+subj_summary$beta_sub_sim_mean<-(1-subj_summary$beta_sub_sim_mean)
+
+subj_summary$delta_male_sub_gen<-(-1*subj_summary$delta_male_sub_gen)
+tmp_hi<-(-1*subj_summary$delta_male_sub_sim_hdi_hi)
+tmp_lo<-(-1*subj_summary$delta_male_sub_sim_hdi_lo)
+subj_summary$delta_male_sub_sim_hdi_hi<-tmp_lo
+subj_summary$delta_male_sub_sim_hdi_lo<-tmp_hi
+subj_summary$delta_male_sub_sim_mean<-(-1*subj_summary$delta_male_sub_sim_mean)
+
+subj_summary$delta_female_sub_gen<-(-1*subj_summary$delta_female_sub_gen)
+tmp_hi<-(-1*subj_summary$delta_female_sub_sim_hdi_hi)
+tmp_lo<-(-1*subj_summary$delta_female_sub_sim_hdi_lo)
+subj_summary$delta_female_sub_sim_hdi_hi<-tmp_lo
+subj_summary$delta_female_sub_sim_hdi_lo<-tmp_hi
+subj_summary$delta_female_sub_sim_mean<-(-1*subj_summary$delta_female_sub_sim_mean)
 
 for (i in 1:length(groups)){
   for (j in 1:length(params)){
@@ -2522,7 +2565,7 @@ for (i in 1:length(groups)){
 
 ## Model 5 (Visual Integration)
 
-### Group-Level Parameters (Averaged over simulations)
+### Group Parameters (Averaged over simulations)
 
 First, we examined how well the group-level generating values were recovered by simulated models fits *on average*. We averaged over the posterior means and 95% HDIs for group-level parameters for all 50 simulations; plotted generating group-level values (red X's in plots below) superimposed over the averaged mean and 95% HDI (points and error bars in figure below); and assessed how well, on average, the group-level generating values were captured by simulated model fits. 
 
@@ -2549,7 +2592,7 @@ p <- ggplot(data = plot_data2, aes(x = group, y = sim_mean, color = group)) +
   geom_errorbar(data = plot_data2, aes(ymin = sim_hdi_lo, ymax = sim_hdi_hi), 
                 linewidth = .5, width = 0, alpha = 1, position = position_dodge(width = .5)) +
   coord_cartesian(ylim = c(1.55, 1.8)) +
-  ggtitle("Visual Integration: Threshold Separation\n(Averaged over 50 sims)") + 
+  ggtitle("Visual Integration: Threshold Sep\n(Averaged over 50 sims)") + 
   ylab("Parameter Estimate") +
   theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust = 1)) +
   geom_point(data = data.frame(category = plot_data2$group, value = plot_data2$gen_mean), 
@@ -2629,7 +2672,7 @@ print(p)
 
 ```
 
-### Group-Level Parameters (Separate for each simulation)
+### Group Parameters (Separate for each simulation)
 
 Second, we examined group-level parameters for the individual simulations to determine what % of the 50 simulations successfully recovered the group-level generating parameter values (vertical black line in plots below). Recovery was "successful" if the 95% HDI of the fitted group-level posterior (error bars in plots below) for a given simulation contained the original subject-level generating value. Data in green in the plots below indicate the group-level parameters were recovered and data in red indicates they were not. This was done separately for each task.
 
@@ -2638,7 +2681,7 @@ Results below suggest that group level generating parameters were well recovered
 ```{r id1221893718329311, echo=FALSE, fig.height=5.5, fig.width=2.5, message=FALSE, warning=FALSE,fig.show="hold",cache=TRUE}
 #
 params<-c('alpha','beta','delta','b1')
-parnames<-c('Visual Integration: Threshold Sep','Visual Integration: Start Point','Visual Integration: Drift Bias','Visual Integration: Drift Sensitivity')
+parnames<-c('Visual Integration:\nThreshold Sep','Visual Integration:\nStart Point','Visual Integration:\nDrift Bias','Visual Integration:\nDrift Sensitivity')
 groups<-c('HC','SZ')
 
 group_summary$sim_id<-group_summary$sim
@@ -2662,7 +2705,7 @@ for (i in 1:length(groups)){
 
 ```
 
-### Subject-Level Parameters
+### Subject Parameters
 
 Third, we examined how well subject-level generating values were captured by simulated model fits. We determined what % of subject-level generating parameter values were successfully recovered across the 50 simulations. Recovery was "successful" if the 95% HDI of the fitted subject-level posterior contained the original subject-level generating value. Data in green in the plots below indicate the subject-level generating values were recovered and data in red indicates they were not. This was done separately for each  task.
 
@@ -2707,7 +2750,7 @@ Results are specified below and generally suggested that all three models were c
 
 ### Quantile Predictions
 
-For the winning Eye Contact Model, the predicted RT distributions for both groups generally mapped well onto observed RT distributions. The exception was that the model slightly UNDER predicted the tails of the RT distribution at lower signal strengths, and it OVER predicted those at higher signal strengths. This is likely due to relatively few trials in the task (i.e., 12 per signal strength) and suggests that model predictions could be improved by adding more trials. Importantly, the extent of the over and under-prediction of the tails of the RT distribution at higher/lower signal strengths was generally comparable between groups. This means that -- while 
+For the winning Eye Contact Model, the predicted RT distributions for both groups generally mapped well onto observed RT distributions. The exception was that the model slightly UNDER predicted the tails of the RT distribution at lower signal strengths, and it OVER predicted those at higher signal strengths. This is likely due to relatively few trials in the task (i.e., 12 per signal strength) and suggests that model predictions could be improved by adding more trials. Importantly, the extent of the over and under-prediction of the tails of the RT distribution at higher/lower signal strengths was generally comparable between groups. 
 
 ```{r id9924, echo=FALSE, fig.height=3.5, fig.width=4, message=FALSE, warning=FALSE, cache=TRUE}
 
@@ -3066,7 +3109,6 @@ for (l in 1:length(gends)){
 
 ```{r ra, echo=FALSE, fig.height=3.5, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE}
 
-
 for (i in 1:nrow(beh_data)){# for i in n_observations
   tmp_choice<-beh_data$Resp[i] #get current choice
   if(tmp_choice==2){ #if current choice is lower bound,flip predicted choice prob
@@ -3406,10 +3448,6 @@ print(plot)
  
 # [ANALYSIS SUPPLEMENT] {.unnumbered}
 
-Note on coding of response boundaries: For modeling, testing, and evaluation -- in the Gender Identification task -- female stimuli were modeled as upper bound responses and male as lower boundary. In the Eye Contact Detection Task, "looking at me" was modeled as upper boundary and "not looking at me" as lower boundary. However, in the task design, participants pressed their INDEX finger for "Yes-looking at me responses" (in the Eye Contact Detection task) and for "male" (in the Gender Identification task). They pressed their MIDDLE finger for "No-not looking at me responses" (in the Eye Contact Detection task) and for "female" (in the Gender Identification task). So, in order to be able to rule out response biases across the two tasks (in the start points, drift biases, etc), we recoded the samples from the gender identification task so that upper boundary responses corresponded to choices made with the index finger (Yes, Looking at me and Male) and lower boundary responses corresponded to choices made with the index finger (No, not looking at me and female). This was done simply by multiplying subject and group-level drift rates in the gender identification task by -1. For this reason, the directionality of drift rate estimates in the gender identification task for the analyses below will be opposite to the directionality of those estimates shown above for model testing.
-
-For the "final fits" this issue was already fixed at the fitting stage
-
 ```{r id9933221912, echo=FALSE, cache=T,fig.width=4,fig.height=3.75}
 
 # Preprocess Data
@@ -3526,7 +3564,7 @@ Tests below are Bayesian t-tests, ANOVA, and proportion analyses run using ttest
 
 ```{r id1243333322222, echo=FALSE, fig.height=5, fig.show="hold", fig.width=5, message=FALSE, warning=FALSE, cache=TRUE, dpi=500, out.width='1500px'}
 
-#Demographics
+# Demographics
 demo_table<-dplyr::select(all_sub_data,c('subj','group','age','female_dummy','edu','parent_edu',
                                          'white','africanamer','asian','nativeamer','multi','other','hispanic',
                                          'schizophrenia','schizoaffective','schizophreniform',
@@ -4029,14 +4067,14 @@ for(i in 1:length(params)){
 
 __Do model parameters predict clinical correlates dimensionally (after controlling for age and sex) or do these relationships differ credibly between between HC and SZ?__
 
-Bayesian regression models run in brms examined the effects of social cue processing efficiency for DDM parameters, schizophrenia diagnosis (sz_dummy; SZ=1, HC=0), and their interaction on key clinical outcomes (GPTS referential thinking and persecution; social cognition). All measures were z-scored, and evidence was assessed using Bayes factors (BF) via the Savage-Dickey ratio and 95% Highest Density Intervals (HDIs). We used weakly informative priors for predictors (Normal(0,1)) and between-subject variance parameters (student_t(3,0,2.5)).
+Bayesian regression models run in brms examined the effects of social cue processing efficiency for DDM parameters, schizophrenia diagnosis (sz_dummy; SZ=1, HC=0), and their interaction on key clinical outcomes (GPTS referential thinking and persecution; social cognition). All measures were z-scored, and evidence was assessed using Bayes factors (BF) via the Savage-Dickey ratio and 95% Highest Density Intervals (HDIs). We used weakly informative priors for predictors (Normal(0,1)) and between-subject variance parameters (student_t(3,0,2.5)). To account for the influence of possible age-related slowing in processing speed and sex differences in social processing that could contribute to performance, all models also controlled for age and sex.
 
 ## Primary {.tabset}
 
-### GPTS-Referential Thinking
+### Referential Thinking
  
 ```{r id9932991112121331, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE}
-
+#
 tmp_pred<-c('delta_bias','delta_bias_gend','delta_bias_jovi',
             'delta_b1','delta_gend','delta_b1_jovi',
             'beta','beta_gend','beta_jovi','sz_dummy',
@@ -4077,8 +4115,8 @@ result_glm_ddm %>%
   kable_styling(full_width=T) 
 
 ```
- 
-### GPTS-Persecution
+
+### Persecution
 
 ```{r id99329911121331121, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE}
 
@@ -4086,7 +4124,6 @@ tmp_pred<-c('delta_bias','delta_bias_gend','delta_bias_jovi',
             'delta_b1','delta_gend','delta_b1_jovi',
             'beta','beta_gend','beta_jovi','sz_dummy',
             'female_dummy','age')
-
 
 tmp_outcome<-c('gpts_persec')
 
@@ -4120,7 +4157,7 @@ result_glm_ddm$Pred<-rename_corr_pars(result_glm_ddm$Pred)
 result_glm_ddm %>%
   kbl(caption = "Bayesian Regression: Predicting GPTS Persecution (Full Sample, Controlling for Age, Sex)",valign = "t") %>%
   kable_classic(full_width=F, html_font = "Cambria") %>%
-  kable_styling(full_width=T) 
+  kable_styling(full_width=T)
 
 ```
 
@@ -4169,11 +4206,11 @@ result_glm_ddm %>%
 
 ```
 
-## Sensitivity - Controlling for General Cognition (MCCB) {.tabset}
+## Sensitivity - Controlling for General Cognition {.tabset}
 
 __Re-run those models with credible diagnosis*drift sensitivity interactions while also controlling for general cognitive ability (i.e., a composite of performance on MCCB)__
 
-### GPTS-Referential Thinking
+### Referential Thinking
 
 ```{r id99329911121921331, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE}
 
@@ -4211,7 +4248,7 @@ result_glm_ddm %>%
 
 ```
 
-### GPTS-Persecution
+### Persecution
 
 ```{r id993299111213931121, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE}
 #
@@ -4230,7 +4267,7 @@ test_models<-list(c("age","female_dummy","sz_dummy","matrics"),
                   c("age","female_dummy","sz_dummy","matrics","delta_b1","sz_dummy:delta_b1"),
                   c("age","female_dummy","sz_dummy","matrics","delta_gend","sz_dummy:delta_gend"))
 
-outcome<-"gpts_persec" #outcome
+outcome<-"gpts_persec" 
 outfile<-paste0(dirname,"/analysis/full/saved_brms_models_2a2.rds")
 
 result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
@@ -4238,7 +4275,7 @@ result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
                          outcome=outcome,
                          outfile=outfile,
                          credMass=.95,
-                         nu=4) #student t df
+                         nu=4) 
 
 result_glm_ddm$Pred<-rename_corr_pars(result_glm_ddm$Pred)
 
@@ -4249,11 +4286,11 @@ result_glm_ddm %>%
 
 ```
 
-## Sensitivity - Controlling for General Perceptual Processing (Visual Integration) {.tabset}
+## Sensitivity - Controlling for General Perceptual Processing {.tabset}
 
 __Re-run those models with credible diagnosis*drift sensitivity interactions while also controlling for general perceptual processing ability (i.e., drift sensitivity parameter from Visual Integration task).__
 
-### GPTS-Referential Thinking
+### Referential Thinking
 
 ```{r id99329911121ss921331, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE}
 
@@ -4280,7 +4317,7 @@ result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
                          outcome=outcome,
                          outfile=outfile,
                          credMass=.95,
-                         nu=4) #student t degrees of freedom
+                         nu=4) 
 
 result_glm_ddm$Pred<-rename_corr_pars(result_glm_ddm$Pred)
 
@@ -4291,7 +4328,7 @@ result_glm_ddm %>%
 
 ```
 
-### GPTS-Persecution
+### Persecution
 
 ```{r id9932991112139312121, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE}
 #
@@ -4318,7 +4355,7 @@ result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
                          outcome=outcome,
                          outfile=outfile,
                          credMass=.95,
-                         nu=4) #student t df
+                         nu=4) 
 
 result_glm_ddm$Pred<-rename_corr_pars(result_glm_ddm$Pred)
 
@@ -4337,17 +4374,17 @@ result_glm_ddm %>%
 
 __For primary regressions in which DDM parameters showed interactions with SZ diagnosis to predict any of our clinical outcomes of interest, re-run within group__
 
-### GPTS-Referential Thinking
+### Referential Thinking
 
 ```{r id9932991112, echo=FALSE, fig.height=4, fig.show='asis', fig.width=5, message=FALSE, warning=FALSE, cache=TRUE, results='asis'}
-
+#
 show_modelchange<-TRUE
 options(mc.cores = parallel::detectCores())
 tmp_pred<-c('delta_b1','delta_gend','delta_b1_jovi','age','female_dummy')
 tmp_outcome<-c('gpts_socref')
 tmp_data<-subset(all_sub_data,all_sub_data$group=="SZ")
 tmp_corr_data<-dplyr::select(tmp_data,c(tmp_pred,tmp_outcome))
-clean_data<-na.omit(tmp_corr_data) 
+clean_data<-na.omit(tmp_corr_data)
 cols_to_zscore <- c(tmp_pred,tmp_outcome)
 cols_to_zscore<-cols_to_zscore[-grep("dummy",cols_to_zscore)]
 clean_data[cols_to_zscore] <- scale(clean_data[cols_to_zscore])
@@ -4358,11 +4395,11 @@ outcome_name<-"GPTS Referential Thinking (SZ Only)"
 outcome_prefix<-1
 
 for(i in 1:length(pars)){
-  
+
   #define models to test (list predictors in order they should be entered)
   test_models<-list(c("age","female_dummy"),
                     c("age","female_dummy",pars[i]))
-  
+
   result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
                          test_models = test_models,
                          outcome=outcome,
@@ -4372,20 +4409,20 @@ for(i in 1:length(pars)){
                                                        mod_suffix[i],".rds")),
                          credMass=.95,
                          nu=4)
-  
+
   if(i!=1){
     startrow<-which(result_glm_ddm$Model==2)
     endrow<-nrow(result_glm_ddm)
     result_glm_ddm<-result_glm_ddm[c(startrow:endrow),]
   }
-  
+
   if(show_modelchange==FALSE){
     startcol<-which(colnames(result_glm_ddm)=="Ref Model")
     endcol<-which(colnames(result_glm_ddm)=="Pred")-1
     result_glm_ddm<-result_glm_ddm[,-c(startcol:endcol)]
     result_glm_ddm$Model[1]<-i
   }
-  
+
   if(i==1){
     all_result_glm_ddm<-result_glm_ddm
   }else{
@@ -4403,10 +4440,10 @@ print(all_result_glm_ddm %>%
 
 ```
 
-### GPTS-Persecution
+### Persecution
 
 ```{r id993299111218, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE,fig.show='asis',results='asis'}
-#####
+
 show_modelchange<-TRUE
 tmp_pred<-c('delta_b1','delta_gend','delta_b1_jovi','age','female_dummy')
 tmp_outcome<-c('gpts_persec')
@@ -4423,11 +4460,11 @@ outcome_name<-"GPTS Persecution (SZ Only)"
 outcome_prefix<-2
 
 for(i in 1:length(pars)){
-  
+
   #define models to test (list predictors in order they should be entered)
   test_models<-list(c("age","female_dummy"),
                     c("age","female_dummy",pars[i]))
-  
+
   result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
                          test_models = test_models,
                          outcome=outcome,
@@ -4436,20 +4473,20 @@ for(i in 1:length(pars)){
                                                        mod_suffix[i],".rds")),
                          credMass=.95,
                          nu=4)
-  
+
   if(i!=1){
     startrow<-which(result_glm_ddm$Model==2)
     endrow<-nrow(result_glm_ddm)
     result_glm_ddm<-result_glm_ddm[c(startrow:endrow),]
   }
-  
+
   if(show_modelchange==FALSE){
     startcol<-which(colnames(result_glm_ddm)=="Ref Model")
     endcol<-which(colnames(result_glm_ddm)=="Pred")-1
     result_glm_ddm<-result_glm_ddm[,-c(startcol:endcol)]
     result_glm_ddm$Model[1]<-i
   }
-  
+
   if(i==1){
     all_result_glm_ddm<-result_glm_ddm
   }else{
@@ -4469,7 +4506,7 @@ print(all_result_glm_ddm %>%
 ### Social Cognition
 
 ```{r id9932991112118, echo=FALSE, fig.height=4, fig.show='asis', fig.width=5, message=FALSE, warning=FALSE, cache=TRUE, results='asis'}
-######
+
 show_modelchange<-TRUE
 tmp_pred<-c('delta_b1','delta_bias','delta_gend','delta_b1_jovi','age','female_dummy')
 tmp_outcome<-c('soc_cog_pc_wrt')
@@ -4486,11 +4523,11 @@ outcome_name<-"Social Cognition (SZ Only)"
 outcome_prefix<-3
 
 for(i in 1:length(pars)){
-  
+
   #define models to test (list predictors in order they should be entered)
   test_models<-list(c("age","female_dummy"),
                     c("age","female_dummy",pars[i]))
-  
+
   result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
                          test_models = test_models,
                          outcome=outcome,
@@ -4499,20 +4536,20 @@ for(i in 1:length(pars)){
                                                        mod_suffix[i],".rds")),
                          credMass=.95,
                          nu=4)
-  
+
   if(i!=1){
     startrow<-which(result_glm_ddm$Model==2)
     endrow<-nrow(result_glm_ddm)
     result_glm_ddm<-result_glm_ddm[c(startrow:endrow),]
   }
-  
+
   if(show_modelchange==FALSE){
     startcol<-which(colnames(result_glm_ddm)=="Ref Model")
     endcol<-which(colnames(result_glm_ddm)=="Pred")-1
     result_glm_ddm<-result_glm_ddm[,-c(startcol:endcol)]
     result_glm_ddm$Model[1]<-i
   }
-  
+
   if(i==1){
     all_result_glm_ddm<-result_glm_ddm
   }else{
@@ -4530,15 +4567,15 @@ print(all_result_glm_ddm %>%
 ```
 
 {-}
- 
-## Sensitivity - Controlling for General Cognition (MCCB) {.tabset}
+
+## Sensitivity - Controlling for General Cognition {.tabset}
 
 __Re-run those within group regressions to see if effects remain after controlling for general cognitive ability (i.e., composite from MCCB).__
 
-### GPTS-Referential Thinking
+### Referential Thinking
 
 ```{r id99329911129, echo=FALSE, fig.height=4, fig.show='asis', fig.width=5, message=FALSE, warning=FALSE, cache=TRUE, results='asis'}
-#####
+
 show_modelchange<-TRUE
 options(mc.cores = parallel::detectCores())
 tmp_pred<-c('delta_b1','delta_gend','age','female_dummy','matrics','delta_b1_jovi')
@@ -4556,11 +4593,11 @@ outcome_name<-"GPTS Referential Thinking (SZ Only)"
 outcome_prefix<-"1.1"
 
 for(i in 1:length(pars)){
-  
+
   #define models to test (list predictors in order they should be entered)
   test_models<-list(c("age","female_dummy","matrics"),
                     c("age","female_dummy","matrics",pars[i]))
-  
+
   result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
                          test_models = test_models,
                          outcome=outcome,
@@ -4570,20 +4607,20 @@ for(i in 1:length(pars)){
                                                        mod_suffix[i],".rds")),
                          credMass=.95,
                          nu=4)
-  
+
     if(i!=1){
     startrow<-which(result_glm_ddm$Model==2)
     endrow<-nrow(result_glm_ddm)
     result_glm_ddm<-result_glm_ddm[c(startrow:endrow),]
   }
-  
+
   if(show_modelchange==FALSE){
     startcol<-which(colnames(result_glm_ddm)=="Ref Model")
     endcol<-which(colnames(result_glm_ddm)=="Pred")-1
     result_glm_ddm<-result_glm_ddm[,-c(startcol:endcol)]
     result_glm_ddm$Model[1]<-i
   }
-  
+
   if(i==1){
     all_result_glm_ddm<-result_glm_ddm
   }else{
@@ -4600,11 +4637,11 @@ print(all_result_glm_ddm %>%
   kable_styling(full_width=T))
 
 ```
- 
-### GPTS-Persecution
+
+### Persecution
 
 ```{r id9932991112218, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE,fig.show='asis',results='asis'}
-#
+
 show_modelchange<-TRUE
 tmp_pred<-c('delta_b1','delta_gend','age','female_dummy','matrics','delta_b1_jovi')
 tmp_outcome<-c('gpts_persec')
@@ -4621,11 +4658,11 @@ outcome_name<-"GPTS Persecution (SZ Only)"
 outcome_prefix<-"2.1"
 
 for(i in 1:length(pars)){
-  
+
   #define models to test (list predictors in order they should be entered)
   test_models<-list(c("age","female_dummy","matrics"),
                     c("age","female_dummy","matrics",pars[i]))
-  
+
   result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
                          test_models = test_models,
                          outcome=outcome,
@@ -4634,20 +4671,20 @@ for(i in 1:length(pars)){
                                                        mod_suffix[i],".rds")),
                          credMass=.95,
                          nu=4)
-  
+
     if(i!=1){
     startrow<-which(result_glm_ddm$Model==2)
     endrow<-nrow(result_glm_ddm)
     result_glm_ddm<-result_glm_ddm[c(startrow:endrow),]
   }
-  
+
   if(show_modelchange==FALSE){
     startcol<-which(colnames(result_glm_ddm)=="Ref Model")
     endcol<-which(colnames(result_glm_ddm)=="Pred")-1
     result_glm_ddm<-result_glm_ddm[,-c(startcol:endcol)]
     result_glm_ddm$Model[1]<-i
   }
-  
+
   if(i==1){
     all_result_glm_ddm<-result_glm_ddm
   }else{
@@ -4663,15 +4700,15 @@ print(all_result_glm_ddm %>%
   kable_classic(full_width=F, html_font = "Cambria") %>%
   kable_styling(full_width=T))
 ```
- 
-## Sensitivity - Controlling for General Perceptual Processing (Visual Integration) {.tabset}
+
+## Sensitivity - Controlling for General Perceptual Processing {.tabset}
 
 __Re-run those follow-up within group regressions to see if effects remain after controlling for general perceptual processing ability (i.e., DDM parameters from the Visual Integration task).__
 
 ### GPTS-Referential Thinking
 
 ```{r id993292222911129, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE,fig.show='asis',results='asis'}
-#
+
 show_modelchange<-TRUE
 options(mc.cores = parallel::detectCores())
 tmp_pred<-c('delta_b1','delta_gend','age','female_dummy','delta_b1_jovi')
@@ -4689,11 +4726,11 @@ outcome_name<-"GPTS Referential Thinking (SZ Only)"
 outcome_prefix<-"1.1.1"
 
 for(i in 1:length(pars)){
-  
+
   #define models to test (list predictors in order they should be entered)
   test_models<-list(c("age","female_dummy","delta_b1_jovi"),
                     c("age","female_dummy","delta_b1_jovi",pars[i]))
-  
+
   result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
                          test_models = test_models,
                          outcome=outcome,
@@ -4703,20 +4740,20 @@ for(i in 1:length(pars)){
                                                        mod_suffix[i],".rds")),
                          credMass=.95,
                          nu=4)
-  
+
     if(i!=1){
     startrow<-which(result_glm_ddm$Model==2)
     endrow<-nrow(result_glm_ddm)
     result_glm_ddm<-result_glm_ddm[c(startrow:endrow),]
   }
-  
+
   if(show_modelchange==FALSE){
     startcol<-which(colnames(result_glm_ddm)=="Ref Model")
     endcol<-which(colnames(result_glm_ddm)=="Pred")-1
     result_glm_ddm<-result_glm_ddm[,-c(startcol:endcol)]
     result_glm_ddm$Model[1]<-i
   }
-  
+
   if(i==1){
     all_result_glm_ddm<-result_glm_ddm
   }else{
@@ -4733,11 +4770,11 @@ print(all_result_glm_ddm %>%
   kable_styling(full_width=T))
 
 ```
- 
+
 ### GPTS-Persecution
 
 ```{r id9932991112222218, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE,fig.show='asis',results='asis'}
-#
+
 show_modelchange<-TRUE
 tmp_pred<-c('delta_b1','delta_gend','age','female_dummy','delta_b1_jovi')
 tmp_outcome<-c('gpts_persec')
@@ -4754,11 +4791,11 @@ outcome_name<-"GPTS Persecution (SZ Only)"
 outcome_prefix<-"2.1.1"
 
 for(i in 1:length(pars)){
-  
+
   #define models to test (list predictors in order they should be entered)
   test_models<-list(c("age","female_dummy","delta_b1_jovi"),
                     c("age","female_dummy","delta_b1_jovi",pars[i]))
-  
+
   result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
                          test_models = test_models,
                          outcome=outcome,
@@ -4767,20 +4804,20 @@ for(i in 1:length(pars)){
                                                        mod_suffix[i],".rds")),
                          credMass=.95,
                          nu=4)
-  
+
     if(i!=1){
     startrow<-which(result_glm_ddm$Model==2)
     endrow<-nrow(result_glm_ddm)
     result_glm_ddm<-result_glm_ddm[c(startrow:endrow),]
   }
-  
+
   if(show_modelchange==FALSE){
     startcol<-which(colnames(result_glm_ddm)=="Ref Model")
     endcol<-which(colnames(result_glm_ddm)=="Pred")-1
     result_glm_ddm<-result_glm_ddm[,-c(startcol:endcol)]
     result_glm_ddm$Model[1]<-i
   }
-  
+
   if(i==1){
     all_result_glm_ddm<-result_glm_ddm
   }else{
@@ -4806,7 +4843,7 @@ __For primary regressions in which DDM parameters showed interactions with SZ di
 ### GPTS-Referential Thinking
 
 ```{r id99329911121, echo=FALSE, fig.height=4, fig.show='asis', fig.width=5, message=FALSE, warning=FALSE, cache=TRUE, results='asis'}
-
+#
 show_modelchange<-TRUE
 tmp_pred<-c('delta_b1','delta_gend','delta_b1_jovi','age','female_dummy')
 tmp_outcome<-c('gpts_socref')
@@ -4823,11 +4860,11 @@ outcome_name<-"GPTS Referential Thinking (HC Only)"
 outcome_prefix<-1
 
 for(i in 1:length(pars)){
-  
+
   #define models to test (list predictors in order they should be entered)
   test_models<-list(c("age","female_dummy"),
                     c("age","female_dummy",pars[i]))
-  
+
   result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
                          test_models = test_models,
                          outcome=outcome,
@@ -4836,21 +4873,21 @@ for(i in 1:length(pars)){
                                                        mod_suffix[i],".rds")),
                          credMass=.95,
                          nu=4)
-  
-  
+
+
   if(i!=1){
     startrow<-which(result_glm_ddm$Model==2)
     endrow<-nrow(result_glm_ddm)
     result_glm_ddm<-result_glm_ddm[c(startrow:endrow),]
   }
-  
+
   if(show_modelchange==FALSE){
     startcol<-which(colnames(result_glm_ddm)=="Ref Model")
     endcol<-which(colnames(result_glm_ddm)=="Pred")-1
     result_glm_ddm<-result_glm_ddm[,-c(startcol:endcol)]
     result_glm_ddm$Model[1]<-i
   }
-  
+
   if(i==1){
     all_result_glm_ddm<-result_glm_ddm
   }else{
@@ -4867,11 +4904,11 @@ print(all_result_glm_ddm %>%
   kable_styling(full_width=T))
 
 ```
- 
+
 ### GPTS-Persecution
 
 ```{r id9932991112181, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE,fig.show='asis',results='asis'}
-
+#
 show_modelchange<-TRUE
 tmp_pred<-c('delta_b1','delta_gend','delta_b1_jovi','age','female_dummy')
 tmp_outcome<-c('gpts_persec')
@@ -4888,11 +4925,11 @@ outcome_name<-"GPTS Persecution (HC Only)"
 outcome_prefix<-2
 
 for(i in 1:length(pars)){
-  
+
   #define models to test (list predictors in order they should be entered)
   test_models<-list(c("age","female_dummy"),
                     c("age","female_dummy",pars[i]))
-  
+
   result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
                          test_models = test_models,
                          outcome=outcome,
@@ -4901,20 +4938,20 @@ for(i in 1:length(pars)){
                                                        mod_suffix[i],".rds")),
                          credMass=.95,
                          nu=4)
-  
+
   if(i!=1){
     startrow<-which(result_glm_ddm$Model==2)
     endrow<-nrow(result_glm_ddm)
     result_glm_ddm<-result_glm_ddm[c(startrow:endrow),]
   }
-  
+
   if(show_modelchange==FALSE){
     startcol<-which(colnames(result_glm_ddm)=="Ref Model")
     endcol<-which(colnames(result_glm_ddm)=="Pred")-1
     result_glm_ddm<-result_glm_ddm[,-c(startcol:endcol)]
     result_glm_ddm$Model[1]<-i
   }
-  
+
   if(i==1){
     all_result_glm_ddm<-result_glm_ddm
   }else{
@@ -4931,17 +4968,17 @@ print(all_result_glm_ddm %>%
   kable_styling(full_width=T))
 
 ```
- 
+
 ### Social Cognition
 
 ```{r id99329911121181, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE,fig.show='asis',results='asis'}
-########
+
 show_modelchange<-TRUE
 tmp_pred<-c('delta_b1','delta_bias','delta_gend','delta_b1_jovi','age','female_dummy')
 tmp_outcome<-c('soc_cog_pc_wrt')
 tmp_data<-subset(all_sub_data,all_sub_data$group=="HC")
 tmp_corr_data<-dplyr::select(tmp_data,c(tmp_pred,tmp_outcome))
-clean_data<-na.omit(tmp_corr_data) 
+clean_data<-na.omit(tmp_corr_data)
 cols_to_zscore <- c(tmp_pred,tmp_outcome)
 cols_to_zscore<-cols_to_zscore[-grep("dummy",cols_to_zscore)]
 clean_data[cols_to_zscore] <- scale(clean_data[cols_to_zscore])
@@ -4952,11 +4989,11 @@ outcome_name<-"Social Cognition (HC Only)"
 outcome_prefix<-3
 
 for(i in 1:length(pars)){
-  
+
   #define models to test (list predictors in order they should be entered)
   test_models<-list(c("age","female_dummy"),
                     c("age","female_dummy",pars[i]))
-  
+
   result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
                          test_models = test_models,
                          outcome=outcome,
@@ -4965,20 +5002,20 @@ for(i in 1:length(pars)){
                                                        mod_suffix[i],".rds")),
                          credMass=.95,
                          nu=4)
-  
+
   if(i!=1){
     startrow<-which(result_glm_ddm$Model==2)
     endrow<-nrow(result_glm_ddm)
     result_glm_ddm<-result_glm_ddm[c(startrow:endrow),]
   }
-  
+
   if(show_modelchange==FALSE){
     startcol<-which(colnames(result_glm_ddm)=="Ref Model")
     endcol<-which(colnames(result_glm_ddm)=="Pred")-1
     result_glm_ddm<-result_glm_ddm[,-c(startcol:endcol)]
     result_glm_ddm$Model[1]<-i
   }
-  
+
   if(i==1){
     all_result_glm_ddm<-result_glm_ddm
   }else{
@@ -4996,14 +5033,14 @@ print(all_result_glm_ddm %>%
 
 ```
 
-## Sensitivity - Controlling for General Cognition (MCCB) {.tabset}
+## Sensitivity - Controlling for General Cognition {.tabset}
 
 __Re-run those follow-up within group regressions to see if effects remain after controlling for general cognitive ability (i.e., composite from MCCB).__
 
 ### GPTS-Referential Thinking
 
 ```{r id993299122231121, echo=FALSE, fig.height=4, fig.show='asis', fig.width=5, message=FALSE, warning=FALSE, cache=TRUE, results='asis'}
-
+#
 show_modelchange<-TRUE
 tmp_pred<-c('delta_b1','delta_gend','age','female_dummy','matrics')
 tmp_outcome<-c('gpts_socref')
@@ -5020,11 +5057,11 @@ outcome_name<-"GPTS Referential Thinking (HC Only)"
 outcome_prefix<-"1.1"
 
 for(i in 1:length(pars)){
-  
+
   #define models to test (list predictors in order they should be entered)
   test_models<-list(c("age","female_dummy","matrics"),
                     c("age","female_dummy","matrics",pars[i]))
-  
+
   result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
                          test_models = test_models,
                          outcome=outcome,
@@ -5033,20 +5070,20 @@ for(i in 1:length(pars)){
                                                        mod_suffix[i],".rds")),
                          credMass=.95,
                          nu=4)
-  
+
   if(i!=1){
     startrow<-which(result_glm_ddm$Model==2)
     endrow<-nrow(result_glm_ddm)
     result_glm_ddm<-result_glm_ddm[c(startrow:endrow),]
   }
-  
+
   if(show_modelchange==FALSE){
     startcol<-which(colnames(result_glm_ddm)=="Ref Model")
     endcol<-which(colnames(result_glm_ddm)=="Pred")-1
     result_glm_ddm<-result_glm_ddm[,-c(startcol:endcol)]
     result_glm_ddm$Model[1]<-i
   }
-  
+
   if(i==1){
     all_result_glm_ddm<-result_glm_ddm
   }else{
@@ -5063,11 +5100,11 @@ print(all_result_glm_ddm %>%
   kable_styling(full_width=T))
 
 ```
- 
+
 ### GPTS-Persecution
 
 ```{r id998329911121891, echo=FALSE, fig.height=4, fig.show='asis', fig.width=5, message=FALSE, warning=FALSE, cache=TRUE, results='asis'}
-
+#
 show_modelchange<-TRUE
 tmp_pred<-c('delta_b1','delta_gend','age','female_dummy','matrics')
 tmp_outcome<-c('gpts_persec')
@@ -5084,11 +5121,11 @@ outcome_name<-"GPTS Persecution (HC Only)"
 outcome_prefix<-"2.1"
 
 for(i in 1:length(pars)){
-  
+
   #define models to test (list predictors in order they should be entered)
   test_models<-list(c("age","female_dummy","matrics"),
                     c("age","female_dummy","matrics",pars[i]))
-  
+
   result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
                          test_models = test_models,
                          outcome=outcome,
@@ -5097,20 +5134,20 @@ for(i in 1:length(pars)){
                                                        mod_suffix[i],".rds")),
                          credMass=.95,
                          nu=4)
-  
+
   if(i!=1){
     startrow<-which(result_glm_ddm$Model==2)
     endrow<-nrow(result_glm_ddm)
     result_glm_ddm<-result_glm_ddm[c(startrow:endrow),]
   }
-  
+
   if(show_modelchange==FALSE){
     startcol<-which(colnames(result_glm_ddm)=="Ref Model")
     endcol<-which(colnames(result_glm_ddm)=="Pred")-1
     result_glm_ddm<-result_glm_ddm[,-c(startcol:endcol)]
     result_glm_ddm$Model[1]<-i
   }
-  
+
   if(i==1){
     all_result_glm_ddm<-result_glm_ddm
   }else{
@@ -5127,16 +5164,15 @@ print(all_result_glm_ddm %>%
   kable_styling(full_width=T))
 
 ```
- 
- 
-## Sensitivity - Controlling for General Perceptual Processing  (Visual Integration) {.tabset}
 
-__Re-run those follow-up within group regressions to see if effects remain after controlling for general perceptual processing ability (i.e., DDM parameters from Visual Integration task).__
+## Sensitivity - Controlling for General Perceptual Processing {.tabset}
+
+__Re-run those follow-up within group regressions to see if effects remain after controlling for general perceptual processing ability (i.e., drift sensitivity from Visual Integration task)__
 
 ### GPTS-Referential Thinking
 
 ```{r id993299131121, echo=FALSE, fig.height=4, fig.show='asis', fig.width=5, message=FALSE, warning=FALSE, cache=TRUE, results='asis'}
-
+#
 show_modelchange<-TRUE
 tmp_pred<-c('delta_b1','delta_gend','age','female_dummy','delta_b1_jovi')
 tmp_outcome<-c('gpts_socref')
@@ -5153,11 +5189,11 @@ outcome_name<-"GPTS Referential Thinking (HC Only)"
 outcome_prefix<-"1.1.1"
 
 for(i in 1:length(pars)){
-  
+
   #define models to test (list predictors in order they should be entered)
   test_models<-list(c("age","female_dummy","delta_b1_jovi"),
                     c("age","female_dummy","delta_b1_jovi",pars[i]))
-  
+
   result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
                          test_models = test_models,
                          outcome=outcome,
@@ -5166,20 +5202,20 @@ for(i in 1:length(pars)){
                                                        mod_suffix[i],".rds")),
                          credMass=.95,
                          nu=4)
-  
+
   if(i!=1){
     startrow<-which(result_glm_ddm$Model==2)
     endrow<-nrow(result_glm_ddm)
     result_glm_ddm<-result_glm_ddm[c(startrow:endrow),]
   }
-  
+
   if(show_modelchange==FALSE){
     startcol<-which(colnames(result_glm_ddm)=="Ref Model")
     endcol<-which(colnames(result_glm_ddm)=="Pred")-1
     result_glm_ddm<-result_glm_ddm[,-c(startcol:endcol)]
     result_glm_ddm$Model[1]<-i
   }
-  
+
   if(i==1){
     all_result_glm_ddm<-result_glm_ddm
   }else{
@@ -5196,11 +5232,11 @@ print(all_result_glm_ddm %>%
   kable_styling(full_width=T))
 
 ```
- 
+
 ### GPTS-Persecution
 
 ```{r id9983299111212222891, echo=FALSE, fig.height=4, fig.show='asis', fig.width=5, message=FALSE, warning=FALSE, cache=TRUE, results='asis'}
-
+#
 show_modelchange<-TRUE
 tmp_pred<-c('delta_b1','delta_gend','age','female_dummy','delta_b1_jovi')
 tmp_outcome<-c('gpts_persec')
@@ -5217,11 +5253,11 @@ outcome_name<-"GPTS Persecution (HC Only)"
 outcome_prefix<-"2.1.1"
 
 for(i in 1:length(pars)){
-  
+
   #define models to test (list predictors in order they should be entered)
   test_models<-list(c("age","female_dummy","delta_b1_jovi"),
                     c("age","female_dummy","delta_b1_jovi",pars[i]))
-  
+
   result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
                          test_models = test_models,
                          outcome=outcome,
@@ -5230,20 +5266,20 @@ for(i in 1:length(pars)){
                                                        mod_suffix[i],".rds")),
                          credMass=.95,
                          nu=4)
-  
+
   if(i!=1){
     startrow<-which(result_glm_ddm$Model==2)
     endrow<-nrow(result_glm_ddm)
     result_glm_ddm<-result_glm_ddm[c(startrow:endrow),]
   }
-  
+
   if(show_modelchange==FALSE){
     startcol<-which(colnames(result_glm_ddm)=="Ref Model")
     endcol<-which(colnames(result_glm_ddm)=="Pred")-1
     result_glm_ddm<-result_glm_ddm[,-c(startcol:endcol)]
     result_glm_ddm$Model[1]<-i
   }
-  
+
   if(i==1){
     all_result_glm_ddm<-result_glm_ddm
   }else{
@@ -5263,26 +5299,13 @@ print(all_result_glm_ddm %>%
 
 {-}
 
-
 # References
 
 Cohen. (1988). Dedekind completion of positive concatenation structures: Necessary and sufficient conditions. Journal of Mathematical Psychology, 32(1), 64–71. https://doi.org/10.1016/0022-2496(88)90038-7
 
-Freeman, D., Loe, B. S., Kingdon, D., Startup, H., Molodynski, A., Rosebrock, L., Brown, P., Sheaves, B., Waite, F., & Bird, J. C. (2019). The revised Green et al., Paranoid Thoughts Scale (R-GPTS): Psychometric properties, severity ranges, and clinical cut-offs. Psychological Medicine, 51(2), 244–253. https://doi.org/10.1017/S0033291719003155
-
-Green, C. E. L., Freeman, D., Kuipers, E., Bebbington, P., Fowler, D., Dunn, G., & Garety, P. A. (2007). Measuring ideas of persecution and social reference: The Green et al Paranoid Thought Scales (GPTS). Psychological Medicine, 38(1), 101–111. https://doi.org/10.1017/s0033291707001638
-
-Keefe, R. S. E., Fox, K. H., Harvey, P. D., Cucchiaro, J., Siu, C., & Loebel, A. (2011). Characteristics of the MATRICS Consensus Cognitive Battery in a 29-site antipsychotic schizophrenia clinical trial. Schizophrenia Research, 125(2–3), 161–168. https://doi.org/10.1016/j.schres.2010.09.015
-
-Kohler, C. G., Turner, T. H., Gur, R. E., & Gur, R. C. (2004). Recognition of Facial Emotions in Neuropsychiatric Disorders. CNS Spectrums, 9(4), 267–274. https://doi.org/10.1017/S1092852900009202
-
-Lasagna, C., McLaughlin, M., Deng, W., Whiting, E., & Tso, I. (2020). Deconstructing eye contact perception: Measuring perceptual precision and self-referential tendency using an online psychophysical eye contact detection task. PLoS ONE, 15(3), 1–20. https://doi.org/10.1371/journal.pone.0230258
-
-Mayer, Salovey, & Caruso. (2002). Mayer-Salovey-Caruso Emotional Intelligence Test (MSCEIT) User’s Manual. MHS Publishers.
-
 Morey, R., & Rouder, J. (2015). BayesFactor: Computation of Bayes Factors for common  designs. R package version 0.9.12–12.
 
-Silverstein SM, Keane BP, Barch DM, Carter CS, Gold JM, Kovács I, MacDonald A 3rd, Ragland JD, Strauss ME. (2012). Optimization and validation of a visual integration test for schizophrenia research. Schizophrenia Bulletin. doi: 10.1093/schbul/sbr141. 
+Silverstein SM, Keane BP, Barch DM, Carter CS, Gold JM, Kovács I, MacDonald A 3rd, Ragland JD, Strauss ME. (2012). Optimization and validation of a visual integration test for schizophrenia research. Schizophrenia Bulletin. doi: 10.1093/schbul/sbr141.
 
 Stacklies, W., Redestig, H., Scholz, M., Walther, D., & Selbig, J. (2007). pcaMethods—A bioconductor package providing PCA methods for incomplete data. Bioinformatics, 23(9), 1164–1167. https://doi.org/10.1093/bioinformatics/btm069
 
