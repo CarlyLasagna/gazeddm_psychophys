@@ -257,14 +257,14 @@ for (i in simstart:simend){
   
   # prep data for stan 
   data_stan<-list(
-    N_obs=nrow(all_simdata), # number of observations [integer]
-    N_subj=length(unique(all_simdata$subj)),# Number of subjects [integer]
-    N_groups=length(unique(all_simdata$group)),# Number of groups [integer]
+    N_obs=nrow(all_simdata), # number of observations 
+    N_subj=length(unique(all_simdata$subj)),# Number of subjects 
+    N_groups=length(unique(all_simdata$group)),# Number of groups 
     N_levels=length(unique(all_simdata$level)), #number of stimulus strength levels
-    N_choice=length(unique(all_simdata$choice)), #number of choices [integer]
-    RT=all_simdata$rt, # RT in seconds for each observation [vector of doubles of  length 'N_obs']
-    choice=all_simdata$choice, # choice for each observation [integer vector of length 'N_obs']
-    subj=match(all_simdata$subj, unique(all_simdata$subj)), # subject id for each observation [integer vector length 'N_obs']
+    N_choice=length(unique(all_simdata$choice)), #number of choices 
+    RT=all_simdata$rt, # RT in seconds for each observation 
+    choice=all_simdata$choice, # choice for each observation 
+    subj=match(all_simdata$subj, unique(all_simdata$subj)), # subject id for each observation 
     group=all_simdata$group, # group id for each observation
     level=all_simdata$level, # zscored signal strength (already zscored) for each observation 
     minRT=minRT$minRT, #min rt in seconds for each subject

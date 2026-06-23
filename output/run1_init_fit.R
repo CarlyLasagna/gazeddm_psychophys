@@ -39,10 +39,10 @@ finaldir<-paste0(modeldir,'/final_fit')
 # SET MCMC SAMPLER SPECS FOR STAN
 #############################################################################
 
-warmup <- 1500        # number of warmup samples (1500)
-cores <- 10           # number of cores to use (default=1) (10)
-iter <- 1000          # number of samples per chain (total postwarmup draws = (iter-warmup)*chains) (1000)
-chains <- 10          # number of chains  (10)
+warmup <- 1500        # number of warmup samples 
+cores <- 10           # number of cores to use (default=1) 
+iter <- 1000          # number of samples per chain (total postwarmup draws = (iter-warmup)*chains)
+chains <- 10          # number of chains  
 adapt_delta <- 0.95   # default=.95 (target mean proposal acceptance probability during adaptation period)
 max_treedepth <- 10   # default=10 (when max_treedepth reached, sampler terminates prematurely)
 stepsize <- 1         # default=1 (discretization interval)
@@ -86,19 +86,19 @@ minRT<-alldata %>%
 
 # prep data for stan 
 data_stan<-list(
-  N_obs=nrow(alldata), # Number of observations [integer]
-  N_subj=length(unique(alldata$Subj)),# Number of subjects [integer]
-  N_groups=length(unique(alldata$Group)),# Number of groups [integer]
-  N_levels=length(unique(alldata$GazeAngle)), # Number of stimulus strength levels [integer]
-  N_choice=length(unique(alldata$Resp)), # Number of choices [integer]
-  RT=alldata$RT/1000, # RT in seconds for each observation [vector of doubles of  length 'N_obs']
-  choice=alldata$Resp, # Choice for each observation [integer vector of length 'N_obs']
-  gender=alldata$Gender, # Gender for each observation [integer vector of length 'N_obs'] 1=female, 2=male
-  subj=match(alldata$SubjID, unique(alldata$SubjID)), # Subject id for each observation [integer vector length 'N_obs']
-  group=alldata$Group, # Group id for each observation [integer vector length 'N_obs']
-  level=(alldata$GazeAngle-mean(alldata$GazeAngle))/sd(alldata$GazeAngle), # zscored signal strength for each observation [vector of reals; length = N_obs]
-  minRT=minRT$minRT/1000, # Min rt in seconds for each subject [vector of reals; length = N_subj]
-  rtBound=0.0001) # Lower bound on RT in seconds [real]
+  N_obs=nrow(alldata), # Number of observations 
+  N_subj=length(unique(alldata$Subj)),# Number of subjects
+  N_groups=length(unique(alldata$Group)),# Number of groups 
+  N_levels=length(unique(alldata$GazeAngle)), # Number of stimulus strength levels 
+  N_choice=length(unique(alldata$Resp)), # Number of choices
+  RT=alldata$RT/1000, # RT in seconds for each observation 
+  choice=alldata$Resp, # Choice for each observation 
+  gender=alldata$Gender, # Gender for each observation;1=female, 2=male
+  subj=match(alldata$SubjID, unique(alldata$SubjID)), # Subject id for each observation 
+  group=alldata$Group, # Group id for each observation 
+  level=(alldata$GazeAngle-mean(alldata$GazeAngle))/sd(alldata$GazeAngle), # zscored signal strength for each observation 
+  minRT=minRT$minRT/1000, # Min rt in seconds for each subject 
+  rtBound=0.0001) # Lower bound on RT in seconds
 
 stanmodelname=paste(scriptsdir,"/",modelname,".stan",sep="")
 

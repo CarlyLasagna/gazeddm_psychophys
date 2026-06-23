@@ -1,8 +1,5 @@
 #!/usr/bin/env Rscript
 
-# This script runs parameter recovery on the winning model for the gender condition (Model 3)
-
-library(ggplot2)
 library(cmdstanr)
 library(bayesplot)
 library(HDInterval)
@@ -16,7 +13,7 @@ args <- commandArgs(trailingOnly = TRUE) # get arguments from batch script
 run<-as.numeric(args[1]) #break up into different concurrent jobs on hpc
 group<-group_id<-as.numeric(args[2]) #1=hc, 2=sz, all=both
 modelname <-args[3] # "hddm_m[#]_psychophys"
-task<-args[4] # task (gaze or gender)
+task<-args[4] # task (gaze or gender or jovi)
 seed<-42+run # different runs get different rand seeds
 set.seed(seed)
 
@@ -24,10 +21,10 @@ set.seed(seed)
 # SET DIRECTORIES
 #############################################################################
 
-dirname<-'[PATH TO FIT DIRECTORY]'
+dirname<-'[PATH TO FIT DIRECTORY]' 
 datadir<-paste0(dirname,'/data')
 scriptsdir<-paste0(dirname,'/scripts')
-behfile<-paste0(datadir,"/schizgaze12_gaze_beh.csv")
+behfile<-paste0(datadir,"/schizgaze2_jovi_beh.csv")
 modeldir<-paste0(dirname,'/output/',modelname,'/',task)
 initdir<-paste0(modeldir,'/init_fit')
 loglikdir<-paste0(modeldir,'/log_lik')
@@ -41,8 +38,8 @@ finaldir<-paste0(modeldir,'/final_fit')
 
 warmup <- 1000        # number of warmup samples 
 cores <- 8            # number of cores to use (default=1) 
-iter <- 500           # number of samples per chains (total postwarmup draws = (iter-warmup)*chains) 
-chains <- 8           # number of chains 
+iter <- 1500          # number of samples per chains (total postwarmup draws = (iter-warmup)*chains) 
+chains <- 8           # number of chains
 adapt_delta <- 0.95   # default=.95 (target mean proposal acceptance probability during adaptation period)
 max_treedepth <- 12   # default=10 (when max_treedepth reached, sampler terminates prematurely)
 stepsize <- 1         # default=1 (discretization interval)
@@ -57,8 +54,12 @@ setDTthreads(threads=cores)
 alldata<-read.csv(behfile)
 alldata<-subset(alldata,alldata$Study=="schizgaze2")
 
-# note on behavioral data: gaze angles in this data are originally coded as 2,3,4,5,6,7,8,9,10 (where 2 is most deviated gaze and 10 is most direct)
-# sort subj id's in order (hc's [1000s] will come first, then sz [2000s]) so  when we assign sequential index id's, they will be the same for gender and gaze tasks)
+# sort subj id's in order (hc's [1000s] will come first, then sz [2000s]) so  when we assign sequential index id's, they will be the same for gender and gaze and jovi tasks)
+alldata <- alldata[order(alldata$Subj), ]
+
+# remove 2 subjects that didn't have valid data from gaze task
+alldata<-subset(alldata,alldata$Subj!="2032")
+alldata<-subset(alldata,alldata$Subj!="2042")
 
 #subset to get the appropriate task data
 if(task=='gaze'){
@@ -68,11 +69,17 @@ if(task=='gaze'){
   alldata$Gender<-ifelse(alldata$Gender=="F",1,2) #recode female gender of stim as 1 and male as 2
   alldata$Group<-match(alldata$Group, unique(alldata$Group))
   alldata <- alldata[order(alldata$SubjID, alldata$Resp), ]
+  
 }else if(task=='gender'){
   alldata<-subset(alldata,alldata$Task=="GenderID")
   alldata$SubjID<-match(alldata$Subj, unique(alldata$Subj)) #subj IDs to sequential indexes 
-  alldata$Resp<-ifelse(alldata$Resp=="F",1,2) #recode male as 1 and female as 2
+  alldata$Resp<-ifelse(alldata$Resp=="F",1,2) #recode female as 1 and male as 2
   alldata$Gender<-ifelse(alldata$Gender=="F",1,2) #recode female gender of stim as 1 and male as 2
+  alldata$Group<-match(alldata$Group, unique(alldata$Group))
+  alldata <- alldata[order(alldata$SubjID, alldata$Resp), ]
+}else if(task=='jovi'){
+  alldata$SubjID<-match(alldata$Subj, unique(alldata$Subj)) #subj IDs to sequential indexes 
+  alldata$Resp<-ifelse(alldata$Resp=="2",1,2) #recode L (2) as 1 and R (3) as 2
   alldata$Group<-match(alldata$Group, unique(alldata$Group))
   alldata <- alldata[order(alldata$SubjID, alldata$Resp), ]
 }
@@ -82,9 +89,6 @@ minRT<-alldata %>%
   dplyr::summarise(minRT = min(RT)) %>%
   dplyr::ungroup()
 
-# zscore gaze angle
-alldata$z_GazeAngle<-(alldata$GazeAngle-mean(alldata$GazeAngle))/sd(alldata$GazeAngle)
-
 if (max(alldata$RT)>100){alldata$RT<-as.numeric(alldata$RT)/1000} #if rt col is in ms, convert to seconds
 
 #############################################################################
@@ -93,30 +97,19 @@ if (max(alldata$RT)>100){alldata$RT<-as.numeric(alldata$RT)/1000} #if rt col is 
 
 posterior<-as.data.frame(fread(paste0(initdir,'/allgroups_init_fit_samples.csv'),nThread=cores))
 
-# extract the names, means, and sds, of all parameters
-all_pars<-colnames(posterior)
-all_means<-rowMeans(posterior)
-all_sds<-c()
-
-for(i in 1:ncol(posterior)){
-  all_sds[i]<-sd(posterior[,i])
-}
-
 #############################################################################
 # SET DDM SIMULATION SPECS 
 #############################################################################
 
-N_trials<-108 #total trials in task
-N_subj<-35*2 #35 per group
+N_trials<-240 #total trials in task
+N_subj<-35*2 #35 per group 
+N_jitter<-12 #12 jitters * 2 stim directions
 N_choice<-2
-N_gend<-2
-
-N_trials_per_gend<-N_trials/N_gend
-
+N_trials_per_jitter<-N_trials/N_jitter
 subjs<-seq(from=1,to=N_subj,by=1)
 choices<-seq(from=1,to=N_choice,by=1)
-gends <-unique(alldata$Gender)
-gendnames<-c('female','male')
+jitters <-unique(alldata$Jitter)
+jitters<-sort(jitters)
 
 if (file.exists(parrecoverdir) == FALSE){dir.create(parrecoverdir)} #if output directory doesn't exist, create it
 
@@ -134,11 +127,21 @@ simidxdata<-read.csv(simidx_filename,row.names = NULL)
 simstart<-simidxdata$simstart[run]
 simend<-simidxdata$simend[run]
 
+# get average # yes responses at each jitter
+alldata$RespProp<-ifelse(alldata$RespBound==2,0,alldata$RespBound)
+
 subj_vars<-data.frame(Group=c(rep(1,N_subj/2),rep(2,N_subj/2)),
                       SubjID=seq(from=1,to=N_subj,by=1),
                       Trials=rep(N_trials,N_subj))
 
-# simulate using vals from group parameters (m=mean of grp level mu, sd = standard dev of group level mean dist)
+# get the counts of all trials for each subj, jitter, resp
+cond_vars <- alldata %>%
+  dplyr::group_by(Group,SubjID, Jitter,Resp) %>%
+  dplyr::summarize(Trials = n(), .groups = 'drop') %>%   # Ungroup the data automatically
+  tidyr::complete(Group,SubjID,Jitter,Resp, fill = list(n = 0))
+
+cond_vars$Trials[is.na(cond_vars$Trials)] <- 0
+
 for (i in simstart:simend){
   
   msg<-paste("par_recov_mod:",modelname,"group",group, "run",run,"sim",i,sep=" ")
@@ -146,6 +149,7 @@ for (i in simstart:simend){
   
   for (j in 1:N_subj){
     
+    # get this subject's group
     idx<-which(subj_vars$SubjID==j)
     tmp_group<-subj_vars$Group[idx]
     
@@ -153,58 +157,67 @@ for (i in simstart:simend){
     alpha_pr<- mean(posterior[[paste("mu_grp_alpha_pr[",tmp_group,"]",sep="")]]) 
     beta_pr<- mean(posterior[[paste("mu_grp_beta_pr[",tmp_group,"]",sep="")]]) 
     ndt_pr<- 0.2 # (in seconds) we fix it here for parameter recovery
+    b1_pr<- mean(posterior[[paste("mu_grp_b1_pr[",tmp_group,"]",sep="")]])
+    delta_pr<- mean(posterior[[paste("mu_grp_delta_pr[",tmp_group,"]",sep="")]]) # delta bias
     
-    #draw random generating value for this subject from group level posterior (except delta which we do below per gend cond)
-    rand_alpha<-pnorm(rnorm(1,mean=alpha_pr,sd=0.1))*3.9+0.1 
+    #draw random generating value for this subject from group level posterior
+    rand_alpha<-pnorm(rnorm(1,mean=alpha_pr,sd=0.1))*3.9+0.1 #use tighter SD than model prior to better match data
     rand_beta<-pnorm(rnorm(1,mean=beta_pr,sd=0.1))
     rand_ndt<-ndt_pr #fixed at 0.2
+    rand_b1<-rnorm(1,mean=b1_pr,sd=0.05) 
+    rand_delta_bias <- rnorm(1,mean=delta_pr,sd=0.1) 
     
-    for(k in 1:N_gend){
+    for (l in 1:length(jitters)){
       
-      tmp_gend<-gends[k]
-      tmp_subj<-j
-      tmp_gendname<-gendnames[k]
+      tmp_trials<-N_trials_per_jitter
       
-      #define delta posterior for this gender condition and draw rand subject drift rate
-      delta_pr<- mean(posterior[[paste("mu_grp_delta_",tmp_gendname,"_pr[",tmp_group,"]",sep="")]]) # delta 
-      rand_delta<-pnorm(rnorm(1,mean=delta_pr,sd=0.1))*10-5
-      
-      choice<-rt<-c()
-      
-      for (m in 1:N_trials_per_gend){
-        trial_result<-rwiener(1,rand_alpha,rand_ndt,rand_beta,rand_delta)
-        choice[m] <- trial_result$resp[1]
-        rt[m] <- trial_result$q[1]
-      }
-      
-      #trial level simulated choice/RT data
-      tmp_simdata<-data.frame(sim=i,
-                              subj=j,
-                              group=tmp_group,
-                              gend=tmp_gend,
-                              choice=choice,
-                              rt=rt)
-      
-      # group and subject level generating parameters
-      tmp_gendata<-data.frame(sim=i,
-                              subj=j,
-                              group=tmp_group,
-                              gend=tmp_gend,
-                              grp_genAlpha=pnorm(alpha_pr)*3.9+.1,
-                              grp_genBeta=pnorm(beta_pr),
-                              grp_genDelta=pnorm(delta_pr)*10-5, 
-                              grp_genNDT=ndt_pr, #already in secs so no transform needed
-                              sub_genAlpha=rand_alpha,
-                              sub_genBeta=rand_beta,
-                              sub_genDelta=rand_delta,
-                              sub_genNDT=rand_ndt)
-      
-      if(j==1&k==1){
-        all_simdata<-tmp_simdata
-        all_gendata<-tmp_gendata
-      }else{
-        all_simdata<-rbind(all_simdata,tmp_simdata)
-        all_gendata<-rbind(all_gendata,tmp_gendata)
+      if(tmp_trials>0){ #if subject has at least 1 trial for this jitter/choice 
+        
+        tmp_subj<-j
+        tmp_jitter<-jitters[l]
+        rand_delta <- pnorm(rand_delta_bias+rand_b1*tmp_jitter)*10-5 
+        
+        choice<-rt<-c()
+        
+        for (m in 1:tmp_trials){
+          trial_result<-rwiener(1,rand_alpha,rand_ndt,rand_beta,rand_delta)
+          choice[m] <- trial_result$resp[1]
+          rt[m] <- trial_result$q[1]
+        }
+        
+        #trial level simulated choice/RT data
+        tmp_simdata<-data.frame(sim=i,
+                                subj=j,
+                                group=tmp_group,
+                                jitter=tmp_jitter,
+                                choice=choice,
+                                rt=rt)
+        
+        # group and subject level generating parameters
+        tmp_gendata<-data.frame(sim=i,
+                                subj=j,
+                                group=tmp_group,
+                                jitter=tmp_jitter,
+                                grp_genAlpha=pnorm(alpha_pr)*3.9+.1,
+                                grp_genBeta=pnorm(beta_pr),
+                                grp_genDelta_bias=pnorm(delta_pr)*10-5, 
+                                grp_genNDT=ndt_pr, #already in secs so no transform needed
+                                grp_genB1=b1_pr,
+                                sub_genAlpha=rand_alpha,
+                                sub_genBeta=rand_beta,
+                                sub_genDelta_bias=pnorm(rand_delta_bias)*10-5,
+                                sub_genDelta_transform=rand_delta,
+                                sub_genNDT=rand_ndt,
+                                sub_genB1=rand_b1)
+        
+        #if(j==1&k==1&l==1){
+        if(j==1&l==1){
+          all_simdata<-tmp_simdata
+          all_gendata<-tmp_gendata
+        }else{
+          all_simdata<-rbind(all_simdata,tmp_simdata)
+          all_gendata<-rbind(all_gendata,tmp_gendata)
+        }
       }
     }
   }
@@ -228,26 +241,23 @@ for (i in simstart:simend){
     dplyr::summarise(minRT = min(rt)) %>%
     dplyr::ungroup()
   
-  all_simdata$level<-1
-  
   # prep data for stan 
   data_stan<-list(
-    N_obs=nrow(all_simdata), # number of observations 
-    N_subj=length(unique(all_simdata$subj)),# Number of subjects 
-    N_groups=length(unique(all_simdata$group)),# Number of groups 
-    N_levels=length(unique(all_simdata$level)), #number of stimulus strength levels
-    N_choice=length(unique(all_simdata$choice)), #number of choices 
-    RT=all_simdata$rt, # RT in seconds for each observation 
-    choice=all_simdata$choice, # choice for each observation 
-    gender=all_simdata$gend, # gender for each observation; 1=female, 2=male
-    subj=match(all_simdata$subj, unique(all_simdata$subj)), # subject id for each observation 
-    group=all_simdata$group, # group id for each observation 
-    level=all_simdata$level, # zscored signal strength (already zscored) for each observation 
+    N_obs=nrow(all_simdata), # number of observations [integer]
+    N_subj=length(unique(all_simdata$subj)),# Number of subjects [integer]
+    N_groups=length(unique(all_simdata$group)),# Number of groups [integer]
+    N_jitters=length(unique(all_simdata$jitter)), #number of jitters
+    N_choice=length(unique(all_simdata$choice)), #number of choices [integer]
+    RT=all_simdata$rt, # RT in seconds for each observation [vector of doubles of  length 'N_obs']
+    choice=all_simdata$choice, # choice for each observation [integer vector of length 'N_obs']
+    subj=match(all_simdata$subj, unique(all_simdata$subj)), # subject id for each observation [integer vector length 'N_obs']
+    group=all_simdata$group, # group id for each observation
+    jitter=all_simdata$jitter, # zscored jitter (zscored) for each observation 
     minRT=minRT$minRT, #min rt in seconds for each subject
     rtBound=0.0001) #lower bound on RT in seconds
   
   # define name of model you want to run
-  stanmodelname=paste(scriptsdir,"/",modelname,".stan",sep="")
+  stanmodelname=paste(scriptsdir,"/",modelname,"_parRecover.stan",sep="")
   
   # run the model
   print("Running model in Stan") 
@@ -268,6 +278,7 @@ for (i in simstart:simend){
                       output_dir=isimpath,
                       diagnostics = c("divergences", "treedepth", "ebfmi"))
   
+  # extract draws as array and df
   draws<-fit$draws()
   all_simmcmc <- data.frame(as_draws_df(fit$draws()))
   
@@ -286,76 +297,76 @@ for (i in simstart:simend){
                                   alpha_rhat1=fit_summary$rhat[which(fit_summary$variable=="mu_grp_alpha_pr[1]")],
                                   beta_rhat1=fit_summary$rhat[which(fit_summary$variable=="mu_grp_beta_pr[1]")],
                                   ndt_rhat1=NA,
-                                  delta_female_rhat1=fit_summary$rhat[which(fit_summary$variable=="mu_grp_delta_female_pr[1]")],
-                                  delta_male_rhat1=fit_summary$rhat[which(fit_summary$variable=="mu_grp_delta_male_pr[1]")],
+                                  delta_rhat1=fit_summary$rhat[which(fit_summary$variable=="mu_grp_delta_pr[1]")],
+                                  b1_rhat1=fit_summary$rhat[which(fit_summary$variable=="mu_grp_b1_pr[1]")],
                                   alpha_rhat2=fit_summary$rhat[which(fit_summary$variable=="mu_grp_alpha_pr[2]")],
                                   beta_rhat2=fit_summary$rhat[which(fit_summary$variable=="mu_grp_beta_pr[2]")],
                                   ndt_rhat2=NA,
-                                  delta_female_rhat2=fit_summary$rhat[which(fit_summary$variable=="mu_grp_delta_female_pr[2]")],
-                                  delta_male_rhat2=fit_summary$rhat[which(fit_summary$variable=="mu_grp_delta_male_pr[2]")],
+                                  delta_rhat2=fit_summary$rhat[which(fit_summary$variable=="mu_grp_delta_pr[2]")],
+                                  b1_rhat2=fit_summary$rhat[which(fit_summary$variable=="mu_grp_b1_pr[2]")],
                                   alpha_ess1=fit_summary$ess_bulk[which(fit_summary$variable=="mu_grp_alpha_pr[1]")],
                                   beta_ess1=fit_summary$ess_bulk[which(fit_summary$variable=="mu_grp_beta_pr[1]")],
                                   ndt_ess1=NA,
-                                  delta_female_ess1=fit_summary$ess_bulk[which(fit_summary$variable=="mu_grp_delta_female_pr[1]")],
-                                  delta_male_ess1=fit_summary$ess_bulk[which(fit_summary$variable=="mu_grp_delta_male_pr[1]")],
+                                  delta_ess1=fit_summary$ess_bulk[which(fit_summary$variable=="mu_grp_delta_pr[1]")],
+                                  b1_ess1=fit_summary$ess_bulk[which(fit_summary$variable=="mu_grp_b1_pr[1]")],
                                   alpha_ess2=fit_summary$ess_bulk[which(fit_summary$variable=="mu_grp_alpha_pr[2]")],
                                   beta_ess2=fit_summary$ess_bulk[which(fit_summary$variable=="mu_grp_beta_pr[2]")],
                                   ndt_ess2=NA,
-                                  delta_female_ess2=fit_summary$ess_bulk[which(fit_summary$variable=="mu_grp_delta_female_pr[2]")],
-                                  delta_male_ess2=fit_summary$ess_bulk[which(fit_summary$variable=="mu_grp_delta_male_pr[2]")],
+                                  delta_ess2=fit_summary$ess_bulk[which(fit_summary$variable=="mu_grp_delta_pr[2]")],
+                                  b1_ess2=fit_summary$ess_bulk[which(fit_summary$variable=="mu_grp_b1_pr[2]")],
                                   alpha_grp_gen1=unique(this_genData$grp_genAlpha[which(this_genData$group==1)]), # get group-level generating values
                                   beta_grp_gen1=unique(this_genData$grp_genBeta[which(this_genData$group==1)]),
                                   ndt_grp_gen1=0.2,
-                                  delta_female_grp_gen1=unique(this_genData$grp_genDelta[which(this_genData$group==1&this_genData$gend==1)]),
-                                  delta_male_grp_gen1=unique(this_genData$grp_genDelta[which(this_genData$group==1&this_genData$gend==2)]),
+                                  delta_grp_gen1=unique(this_genData$grp_genDelta_bias[which(this_genData$group==1)]),
+                                  b1_grp_gen1=unique(this_genData$grp_genB1[which(this_genData$group==1)]),
                                   alpha_grp_gen2=unique(this_genData$grp_genAlpha[which(this_genData$group==2)]), # get group-level generating values
                                   beta_grp_gen2=unique(this_genData$grp_genBeta[which(this_genData$group==2)]),
                                   ndt_grp_gen2=0.2,
-                                  delta_female_grp_gen2=unique(this_genData$grp_genDelta[which(this_genData$group==2&this_genData$gend==1)]),
-                                  delta_male_grp_gen2=unique(this_genData$grp_genDelta[which(this_genData$group==2&this_genData$gend==2)]),
+                                  delta_grp_gen2=unique(this_genData$grp_genDelta_bias[which(this_genData$group==2)]),
+                                  b1_grp_gen2=unique(this_genData$grp_genB1[which(this_genData$group==2)]),
                                   alpha_grp_sim_mean1=mean(all_simmcmc$mu_alpha.1), # calculate means of posteriors on sim data
                                   beta_grp_sim_mean1=mean(all_simmcmc$mu_beta.1),
                                   ndt_grp_sim_mean1=0.2,
-                                  delta_female_grp_sim_mean1=mean(all_simmcmc$mu_delta_female.1),
-                                  delta_male_grp_sim_mean1=mean(all_simmcmc$mu_delta_male.1),
+                                  delta_grp_sim_mean1=mean(all_simmcmc$mu_delta.1),
+                                  b1_grp_sim_mean1=mean(all_simmcmc$mu_grp_b1_pr.1),
                                   alpha_grp_sim_mean2=mean(all_simmcmc$mu_alpha.2),
                                   beta_grp_sim_mean2=mean(all_simmcmc$mu_beta.2),
                                   ndt_grp_sim_mean2=0.2,
-                                  delta_female_grp_sim_mean2=mean(all_simmcmc$mu_delta_female.2),
-                                  delta_male_grp_sim_mean2=mean(all_simmcmc$mu_delta_male.2),
+                                  delta_grp_sim_mean2=mean(all_simmcmc$mu_delta.2),
+                                  b1_grp_sim_mean2=mean(all_simmcmc$mu_grp_b1_pr.2),
                                   alpha_grp_sim_hdi_lo1=hdi(all_simmcmc$mu_alpha.1)[1], #calculate hdis of posteriors on sim data
                                   alpha_grp_sim_hdi_hi1=hdi(all_simmcmc$mu_alpha.1)[2],
                                   beta_grp_sim_hdi_lo1=hdi(all_simmcmc$mu_beta.1)[1],
                                   beta_grp_sim_hdi_hi1=hdi(all_simmcmc$mu_beta.1)[2],
                                   ndt_grp_sim_hdi_lo1=0.2,
                                   ndt_grp_sim_hdi_hi1=0.2,
-                                  delta_female_grp_sim_hdi_lo1=hdi(all_simmcmc$mu_delta_female.1)[1],
-                                  delta_female_grp_sim_hdi_hi1=hdi(all_simmcmc$mu_delta_female.1)[2],
-                                  delta_male_grp_sim_hdi_lo1=hdi(all_simmcmc$mu_delta_male.1)[1],
-                                  delta_male_grp_sim_hdi_hi1=hdi(all_simmcmc$mu_delta_male.1)[2],
+                                  delta_grp_sim_hdi_lo1=hdi(all_simmcmc$mu_delta.1)[1],
+                                  delta_grp_sim_hdi_hi1=hdi(all_simmcmc$mu_delta.1)[2],
+                                  b1_grp_sim_hdi_lo1=hdi(all_simmcmc$mu_grp_b1_pr.1)[1],
+                                  b1_grp_sim_hdi_hi1=hdi(all_simmcmc$mu_grp_b1_pr.1)[2],
                                   alpha_grp_sim_hdi_lo2=hdi(all_simmcmc$mu_alpha.2)[1], #calculate hdis of posteriors on sim data
                                   alpha_grp_sim_hdi_hi2=hdi(all_simmcmc$mu_alpha.2)[2],
                                   beta_grp_sim_hdi_lo2=hdi(all_simmcmc$mu_beta.2)[1],
                                   beta_grp_sim_hdi_hi2=hdi(all_simmcmc$mu_beta.2)[2],
                                   ndt_grp_sim_hdi_lo2=0.2,
                                   ndt_grp_sim_hdi_hi2=0.2,
-                                  delta_female_grp_sim_hdi_lo2=hdi(all_simmcmc$mu_delta_female.2)[1],
-                                  delta_female_grp_sim_hdi_hi2=hdi(all_simmcmc$mu_delta_female.2)[2],
-                                  delta_male_grp_sim_hdi_lo2=hdi(all_simmcmc$mu_delta_male.2)[1],
-                                  delta_male_grp_sim_hdi_hi2=hdi(all_simmcmc$mu_delta_male.2)[2])
+                                  delta_grp_sim_hdi_lo2=hdi(all_simmcmc$mu_delta.2)[1],
+                                  delta_grp_sim_hdi_hi2=hdi(all_simmcmc$mu_delta.2)[2],
+                                  b1_grp_sim_hdi_lo2=hdi(all_simmcmc$mu_grp_b1_pr.2)[1],
+                                  b1_grp_sim_hdi_hi2=hdi(all_simmcmc$mu_grp_b1_pr.2)[2])
   
   # note whether generating group value was recovered
   tmp_grp_sim_summary$alpha_recover1<-ifelse(between(tmp_grp_sim_summary$alpha_grp_gen1,tmp_grp_sim_summary$alpha_grp_sim_hdi_lo1,tmp_grp_sim_summary$alpha_grp_sim_hdi_hi1)==TRUE,1,0)
   tmp_grp_sim_summary$beta_recover1<-ifelse(between(tmp_grp_sim_summary$beta_grp_gen1,tmp_grp_sim_summary$beta_grp_sim_hdi_lo1,tmp_grp_sim_summary$beta_grp_sim_hdi_hi1)==TRUE,1,0)
   tmp_grp_sim_summary$ndt_recover1<-NA
-  tmp_grp_sim_summary$delta_female_recover1<-ifelse(between(tmp_grp_sim_summary$delta_female_grp_gen1,tmp_grp_sim_summary$delta_female_grp_sim_hdi_lo1,tmp_grp_sim_summary$delta_female_grp_sim_hdi_hi1)==TRUE,1,0) 
-  tmp_grp_sim_summary$delta_male_recover1<-ifelse(between(tmp_grp_sim_summary$delta_male_grp_gen1,tmp_grp_sim_summary$delta_male_grp_sim_hdi_lo1,tmp_grp_sim_summary$delta_male_grp_sim_hdi_hi1)==TRUE,1,0) 
+  tmp_grp_sim_summary$delta_recover1<-ifelse(between(tmp_grp_sim_summary$delta_grp_gen1,tmp_grp_sim_summary$delta_grp_sim_hdi_lo1,tmp_grp_sim_summary$delta_grp_sim_hdi_hi1)==TRUE,1,0) 
+  tmp_grp_sim_summary$b1_recover1<-ifelse(between(tmp_grp_sim_summary$b1_grp_gen1,tmp_grp_sim_summary$b1_grp_sim_hdi_lo1,tmp_grp_sim_summary$b1_grp_sim_hdi_hi1)==TRUE,1,0) 
   
   tmp_grp_sim_summary$alpha_recover2<-ifelse(between(tmp_grp_sim_summary$alpha_grp_gen2,tmp_grp_sim_summary$alpha_grp_sim_hdi_lo2,tmp_grp_sim_summary$alpha_grp_sim_hdi_hi2)==TRUE,1,0)
   tmp_grp_sim_summary$beta_recover2<-ifelse(between(tmp_grp_sim_summary$beta_grp_gen2,tmp_grp_sim_summary$beta_grp_sim_hdi_lo2,tmp_grp_sim_summary$beta_grp_sim_hdi_hi2)==TRUE,1,0)
   tmp_grp_sim_summary$ndt_recover2<-NA
-  tmp_grp_sim_summary$delta_female_recover2<-ifelse(between(tmp_grp_sim_summary$delta_female_grp_gen2,tmp_grp_sim_summary$delta_female_grp_sim_hdi_lo2,tmp_grp_sim_summary$delta_female_grp_sim_hdi_hi2)==TRUE,1,0) 
-  tmp_grp_sim_summary$delta_male_recover2<-ifelse(between(tmp_grp_sim_summary$delta_male_grp_gen2,tmp_grp_sim_summary$delta_male_grp_sim_hdi_lo2,tmp_grp_sim_summary$delta_male_grp_sim_hdi_hi2)==TRUE,1,0) 
+  tmp_grp_sim_summary$delta_recover2<-ifelse(between(tmp_grp_sim_summary$delta_grp_gen2,tmp_grp_sim_summary$delta_grp_sim_hdi_lo2,tmp_grp_sim_summary$delta_grp_sim_hdi_hi2)==TRUE,1,0) 
+  tmp_grp_sim_summary$b1_recover2<-ifelse(between(tmp_grp_sim_summary$b1_grp_gen2,tmp_grp_sim_summary$b1_grp_sim_hdi_lo2,tmp_grp_sim_summary$b1_grp_sim_hdi_hi2)==TRUE,1,0) 
   
   #save a copy of the group level par recovery summary in the parent directory after each iteration
   grpsummaryfile<-paste(parrecoverdir,"/parRecovery_groupLvl_summary",".csv",sep="")
@@ -366,13 +377,13 @@ for (i in simstart:simend){
     all_grp_sim_summary<-read.csv(grpsummaryfile,row.names=NULL)
     all_grp_sim_summary<-rbind(all_grp_sim_summary,tmp_grp_sim_summary)
     write.csv(all_grp_sim_summary,grpsummaryfile,row.names=FALSE)
+    
   }
   
   ############################################################################
   # subj-level summary of subj-level generating/recovered values
   ############################################################################
   for (j in 1:N_subj){
-    
     tmp_genvals<-subset(this_genData,this_genData$subj==j)
     tmp_sub_sim_summary<-data.frame(sim=i,
                                     group=group,
@@ -381,30 +392,30 @@ for (i in simstart:simend){
                                     alpha_sub_gen=unique(tmp_genvals$sub_genAlpha), # group-level generating values
                                     beta_sub_gen=unique(tmp_genvals$sub_genBeta),
                                     ndt_sub_gen=0.2,
-                                    delta_female_sub_gen=unique(tmp_genvals$sub_genDelta[which(tmp_genvals$gend==1)]),
-                                    delta_male_sub_gen=unique(tmp_genvals$sub_genDelta[which(tmp_genvals$gend==2)]),
+                                    delta_sub_gen=unique(tmp_genvals$sub_genDelta_bias),
+                                    b1_sub_gen=unique(tmp_genvals$sub_genB1),
                                     alpha_sub_sim_mean=mean(all_simmcmc[[paste("sub_alpha.",j,".",sep="")]]), # calculate means of posteriors on sim data
                                     beta_sub_sim_mean=mean(all_simmcmc[[paste("sub_beta.",j,".",sep="")]]),
                                     ndt_sub_sim_mean=0.2,
-                                    delta_female_sub_sim_mean=mean(pnorm(all_simmcmc[[paste("sub_delta_female.",j,".",sep="")]])*10-5),
-                                    delta_male_sub_sim_mean=mean(pnorm(all_simmcmc[[paste("sub_delta_male.",j,".",sep="")]])*10-5),
+                                    delta_sub_sim_mean=mean(pnorm(all_simmcmc[[paste("sub_delta.",j,".",sep="")]])*10-5),
+                                    b1_sub_sim_mean=mean(all_simmcmc[[paste("sub_b1.",j,".",sep="")]]),
                                     alpha_sub_sim_hdi_lo=hdi(all_simmcmc[[paste("sub_alpha.",j,".",sep="")]])[1], #calculate hdis of posteriors on sim data
                                     alpha_sub_sim_hdi_hi=hdi(all_simmcmc[[paste("sub_alpha.",j,".",sep="")]])[2],
                                     beta_sub_sim_hdi_lo=hdi(all_simmcmc[[paste("sub_beta.",j,".",sep="")]])[1],
                                     beta_sub_sim_hdi_hi=hdi(all_simmcmc[[paste("sub_beta.",j,".",sep="")]])[2],
                                     ndt_sub_sim_hdi_lo=0.2,
                                     ndt_sub_sim_hdi_hi=0.2,
-                                    delta_female_sub_sim_hdi_lo=hdi(pnorm(all_simmcmc[[paste("sub_delta_female.",j,".",sep="")]])*10-5)[1],
-                                    delta_female_sub_sim_hdi_hi=hdi(pnorm(all_simmcmc[[paste("sub_delta_female.",j,".",sep="")]])*10-5)[2],
-                                    delta_male_sub_sim_hdi_lo=hdi(pnorm(all_simmcmc[[paste("sub_delta_male.",j,".",sep="")]])*10-5)[1],
-                                    delta_male_sub_sim_hdi_hi=hdi(pnorm(all_simmcmc[[paste("sub_delta_male.",j,".",sep="")]])*10-5)[2])
+                                    delta_sub_sim_hdi_lo=hdi(pnorm(all_simmcmc[[paste("sub_delta.",j,".",sep="")]])*10-5)[1],
+                                    delta_sub_sim_hdi_hi=hdi(pnorm(all_simmcmc[[paste("sub_delta.",j,".",sep="")]])*10-5)[2],
+                                    b1_sub_sim_hdi_lo=hdi(all_simmcmc[[paste("sub_b1.",j,".",sep="")]])[1],
+                                    b1_sub_sim_hdi_hi=hdi(all_simmcmc[[paste("sub_b1.",j,".",sep="")]])[2])
     
     # note whether generating subj value was recovered
     tmp_sub_sim_summary$alpha_recover<-ifelse(between(tmp_sub_sim_summary$alpha_sub_gen,tmp_sub_sim_summary$alpha_sub_sim_hdi_lo,tmp_sub_sim_summary$alpha_sub_sim_hdi_hi)==TRUE,1,0)
     tmp_sub_sim_summary$beta_recover<-ifelse(between(tmp_sub_sim_summary$beta_sub_gen,tmp_sub_sim_summary$beta_sub_sim_hdi_lo,tmp_sub_sim_summary$beta_sub_sim_hdi_hi)==TRUE,1,0)
     tmp_sub_sim_summary$ndt_recover<-NA
-    tmp_sub_sim_summary$delta_female_recover<-ifelse(between(tmp_sub_sim_summary$delta_female_sub_gen,tmp_sub_sim_summary$delta_female_sub_sim_hdi_lo,tmp_sub_sim_summary$delta_female_sub_sim_hdi_hi)==TRUE,1,0)
-    tmp_sub_sim_summary$delta_male_recover<-ifelse(between(tmp_sub_sim_summary$delta_male_sub_gen,tmp_sub_sim_summary$delta_male_sub_sim_hdi_lo,tmp_sub_sim_summary$delta_male_sub_sim_hdi_hi)==TRUE,1,0)
+    tmp_sub_sim_summary$delta_recover<-ifelse(between(tmp_sub_sim_summary$delta_sub_gen,tmp_sub_sim_summary$delta_sub_sim_hdi_lo,tmp_sub_sim_summary$delta_sub_sim_hdi_hi)==TRUE,1,0)
+    tmp_sub_sim_summary$b1_recover<-ifelse(between(tmp_sub_sim_summary$b1_sub_gen,tmp_sub_sim_summary$b1_sub_sim_hdi_lo,tmp_sub_sim_summary$b1_sub_sim_hdi_hi)==TRUE,1,0)
     
     if (j==1){
       sub_sim_summary<-tmp_sub_sim_summary
@@ -432,4 +443,5 @@ for (i in simstart:simend){
   rm(list = c("fit", "draws","all_simmcmc"))
   
 }
+
 

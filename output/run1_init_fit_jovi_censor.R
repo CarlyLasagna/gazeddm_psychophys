@@ -1,8 +1,5 @@
 #!/usr/bin/env Rscript
 
-# This supplemental model re-runs the winning gender model (model 3)
-# separately for male and female subjects to ensure that results were not the by-product of participant gender.
-
 library(readxl)
 library(dplyr)
 library(ggplot2)
@@ -12,12 +9,12 @@ library(bayesplot)
 library(data.table)
 library(loo)
 
+# run group modelname task
 args <- commandArgs(trailingOnly = TRUE) # get arguments from batch script
 run<-as.numeric(args[1]) #break up into different concurrent jobs on hpc
 group<-as.numeric(args[2]) #1=hc, 2=sz, all=both
 modelname <-args[3] # "hddm_m[#]_psychophys"
-task<-args[4] # task (gaze or gender)
-gend_group<-args[5] # which gender group to run (female_only or male_only)
+task<-args[4] # task (gaze or gender or jovi)
 seed<-42+run # different runs get different rand seeds
 set.seed(seed)
 
@@ -28,12 +25,10 @@ set.seed(seed)
 dirname<-'[PATH TO FIT DIRECTORY]' 
 datadir<-paste0(dirname,'/data')
 scriptsdir<-paste0(dirname,'/scripts')
-behfile<-paste0(datadir,"/schizgaze12_gaze_beh.csv")
-corrfile<-paste0(datadir,"/schizgaze2_preproc_correlates.csv")
+behfile<-paste0(datadir,"/schizgaze2_jovi_beh_all.csv")
 outdir<-paste0(dirname,'/output')
 modeldir<-paste0(dirname,'/output/',modelname,'/',task)
 initdir<-paste0(modeldir,'/init_fit')
-supp_bygend_dir<-paste0(modeldir,'/supplement_bygend/',gend_group)
 loglikdir<-paste0(modeldir,'/log_lik')
 ppcdir<-paste0(modeldir,'/ppc')
 parrecoverdir<-paste0(modeldir,'/par_recover')
@@ -66,43 +61,30 @@ alldata<-subset(alldata,alldata$Study=="schizgaze2")
 # (do this so that when we assign sequential index id's, they will be the same for gender and gaze tasks)
 alldata <- alldata[order(alldata$Subj), ]
 
-alldata<-subset(alldata,alldata$Task=="GenderID")
-alldata$SubjID<-match(alldata$Subj, unique(alldata$Subj)) #subj IDs to sequential indexes 
-alldata$Resp<-ifelse(alldata$Resp=="F",1,2) #recode female as 1 and male as 2
-alldata$Gender<-ifelse(alldata$Gender=="F",1,2) #recode female gender of stim as 1 and male as 2
-alldata$Group<-match(alldata$Group, unique(alldata$Group))
-alldata <- alldata[order(alldata$SubjID, alldata$Resp), ]
+# remove 2 subjects that didn't have valid data from gaze task
+alldata<-subset(alldata,alldata$Subj!="2032")
+alldata<-subset(alldata,alldata$Subj!="2042")
 
-#########################################################################
-#########################################################################
-# NEW! For supplement byGend analysis. 
-## Add each subject's gender to task data, subset to current participant 
-## gender group ("gend_group") and run model separate by sub gender,
-#########################################################################
-
-## Load schizgaze2 gender data
-demodata<-read.csv(corrfile)
-demodata$gender<-ifelse(demodata$gender=="Female","1",demodata$gender)
-demodata$gender<-ifelse(demodata$gender=="Male","2",demodata$gender)
-
-alldata$Subj_Gender<-NA
-
-## Add each subject's gender to task data file
-for(i in 1:nrow(alldata)){
-  temp_sub<-alldata$Subj[i]
-  temp_sub_row<-which(demodata$subj==temp_sub)
-  if(length(temp_sub_row)>0){
-    alldata$Subj_Gender[i]<-demodata$gender[temp_sub_row]
-  }
-}
-
-# subset to include only current gender group
-if (gend_group=='female_only'){
-  alldata<-subset(alldata,alldata$Subj_Gender==1)
-}else if(gend_group=='male_only'){
-  alldata<-subset(alldata,alldata$Subj_Gender==2)
-}else{
-  alldata<-NA #otherwise make data NA so it throws an error
+#subset to get the appropriate task data
+if(task=='gaze'){
+  alldata<-subset(alldata,alldata$Task=="Eyes")
+  alldata$SubjID<-match(alldata$Subj, unique(alldata$Subj)) #subj IDs to sequential indexes 
+  alldata$Resp<-ifelse(alldata$Resp=="Y",1,2) #recode "yes" as 1 and "no as 2
+  alldata$Gender<-ifelse(alldata$Gender=="F",1,2) #recode female gender of stim as 1 and male as 2
+  alldata$Group<-match(alldata$Group, unique(alldata$Group))
+  alldata <- alldata[order(alldata$SubjID, alldata$Resp), ]
+}else if(task=='gender'){
+  alldata<-subset(alldata,alldata$Task=="GenderID")
+  alldata$SubjID<-match(alldata$Subj, unique(alldata$Subj)) #subj IDs to sequential indexes 
+  alldata$Resp<-ifelse(alldata$Resp=="F",1,2) #recode female as 1 and male as 2
+  alldata$Gender<-ifelse(alldata$Gender=="F",1,2) #recode female gender of stim as 1 and male as 2
+  alldata$Group<-match(alldata$Group, unique(alldata$Group))
+  alldata <- alldata[order(alldata$SubjID, alldata$Resp), ]
+}else if(task=='jovi'){
+  alldata$SubjID<-match(alldata$Subj, unique(alldata$Subj)) #subj IDs to sequential indexes 
+  alldata$Resp<-ifelse(alldata$Resp=="2",1,2) #recode L as 1 and R as 2
+  alldata$Group<-match(alldata$Group, unique(alldata$Group))
+  alldata <- alldata[order(alldata$SubjID, alldata$Resp), ]
 }
 
 minRT<-alldata %>%
@@ -110,24 +92,41 @@ minRT<-alldata %>%
   dplyr::summarise(minRT = min(RT)) %>%
   dplyr::ungroup()
 
-# prep data for stan 
+# prep data for stan
 data_stan<-list(
-  N_obs=nrow(alldata), # number of observations
+  N_obs=nrow(alldata), # number of observations 
   N_subj=length(unique(alldata$Subj)),# Number of subjects 
-  N_groups=length(unique(alldata$Group)),# Number of groups
-  N_levels=length(unique(alldata$GazeAngle)), #number of stimulus strength levels
+  N_groups=length(unique(alldata$Group)),# Number of groups 
+  N_jitters=length(unique(alldata$Jitter)), #number of jitter/stimulus strength levels
   N_choice=length(unique(alldata$Resp)), #number of choices 
-  RT=alldata$RT/1000, # RT in seconds for each observation 
-  choice=alldata$Resp, # choice for each observation
-  gender=alldata$Gender, # gender for each observation,1=female, 2=male
-  subj=match(alldata$SubjID, unique(alldata$SubjID)), # subject id for each observation 
+  RT=alldata$RT, # RT in seconds for each observation 
+  choice=alldata$Resp, # choice for each observation; 1=L,2=R
+  subj=match(alldata$SubjID, unique(alldata$SubjID)), # subject id for each observation
+  group=alldata$Group,   # group id for each observation
+  jitter=alldata$Jitter, # jitter for each trial (already zscored)
+  minRT=minRT$minRT, # min rt in seconds for each subject
+  censored=alldata$censored, #1=trial not censored, 0=trial is censored  (col already exists in data)
+  rtBound=0.0001) #lower bound on RT in seconds
+
+
+data_stan<-list(
+  N_obs=nrow(alldata), # number of observations [integer]
+  N_subj=length(unique(alldata$Subj)),# Number of subjects [integer]
+  N_groups=length(unique(alldata$Group)),# Number of groups [integer]
+  N_jitters=length(unique(alldata$Jitter)), #number of stimulus strength levels
+  N_choice=length(unique(alldata$Resp)), #number of choices [integer]
+  RT=alldata$RT, # RT in seconds for each observation [vector of doubles of  length 'N_obs']
+  choice=alldata$Resp, # choice for each observation [integer vector of length 'N_obs']; 1=L,2=R
+  subj=match(alldata$SubjID, unique(alldata$SubjID)), # subject id for each observation [integer vector length 'N_obs']
   group=alldata$Group, # group id for each observation
-  level=(alldata$GazeAngle-mean(alldata$GazeAngle))/sd(alldata$GazeAngle), # zscored signal strength for each observation 
-  minRT=minRT$minRT/1000, #min rt in seconds for each subject
+  jitter=alldata$Jitter, # jitter is already zscored
+  minRT=minRT$minRT, #min rt in seconds for each subject
+  
   rtBound=0.0001) #lower bound on RT in seconds
 
 stanmodelname=paste(scriptsdir,"/",modelname,".stan",sep="")
 
+# run the model
 print("Running model in Stan") 
 model <- cmdstan_model(stanmodelname)
 
@@ -143,16 +142,17 @@ fit <- model$sample(data=data_stan,
                     init=0,
                     refresh=100,
                     seed=seed,
-                    output_dir=supp_bygend_dir,
+                    output_dir=initdir,
                     diagnostics = c("divergences", "treedepth", "ebfmi"))
 
 #############################################################################
-# EXTRACT/SAVE LOGLIK AND SAMPLE DATA FROM INITIAL FIT
+# EXTRACT/SAVE SAMPLE DATA 
 #############################################################################
 
 posterior_df <- as_draws_df(fit$draws())
 
 # get parameter samples and save
-samples_cols <- posterior_df[, -grep("log_lik", names(posterior_df))]
-sample_file<-paste0(supp_bygend_dir,'/allgroups_init_fit_samples.csv')
+#samples_cols <- posterior_df[, -grep("log_lik", names(posterior_df))]
+samples_cols <- posterior_df
+sample_file<-paste0(initdir,'/allgroups_init_fit_samples.csv')
 write.csv(samples_cols,sample_file,row.names = FALSE)
