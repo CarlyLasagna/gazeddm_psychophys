@@ -1,5 +1,5 @@
 // PSYCHOPHYS STAN MODEL 1
-// This program defines a hierarchical drift diffusion model (Ratcliff 2008), 
+// This program defines a hierarchical drift diffusion model 
 // with a non-centered parameterization. YES responses are 
 // modeled as upper boundary responses and NO responses are modeled as
 // lower boundary responses. In this version, drift rate (delta) is the 
@@ -7,19 +7,19 @@
 // modulated by signal strength of the stimuli.
 
 data {
-  int N_obs;               // number of observations [single integer]                           
-  int N_subj;              // number of subjects [single integer]
-  int N_levels;            // number of stimuli signal strengths (i.e., gaze angles) [single integer]
-  array[N_obs] real level; // self referential signal strength for each trial (9 levels in .1 increments from .2 to 1; zscored)
-  int N_choice;            // number of choice alternatives [single integer]
-  int N_groups;            // number of diagnostic groups [single integer]
-  array[N_obs] real RT;     // RT in seconds for each trial [numeric vector; length N_obs]
-  array[N_obs] int subj;    // subj id for each trial [integer vector; length N_obs]
-  array[N_obs] int choice;  // response for each trial [integer vector; length N_obs]; 1yes/female,2=no/male
-  array[N_obs] int gender;  // gender of stim for each trial [integer vector; length N_obs]; 1=female, 2=male
-  array[N_obs] int group;   // group id for each trial [integer vector; length N_obs]
-  array[N_subj] real minRT; // minimum RT for each subject [vector of reals; length N_subj]
-  real rtBound;             // lowest rt allowed [single number] 
+  int N_obs;                // number of observations                       
+  int N_subj;               // number of subjects 
+  int N_levels;             // number of stimuli signal strengths (i.e., gaze angles) 
+  array[N_obs] real level;  // self referential signal strength for each trial (zscored)
+  int N_choice;             // number of choice alternatives 
+  int N_groups;             // number of diagnostic groups 
+  array[N_obs] real RT;     // RT in seconds for each trial
+  array[N_obs] int subj;    // subj id for each trial 
+  array[N_obs] int choice;  // response for each trial; 1=yes/female,2=no/male
+  array[N_obs] int gender;  // gender of stim for each trial; 1=female, 2=male
+  array[N_obs] int group;   // group id for each trial 
+  array[N_subj] real minRT; // minimum RT for each subject
+  real rtBound;             // lowest rt allowed 
 }
 transformed data {
   array[N_subj] int subj_group;   // gives a vector of group id's at the subject-level (as opposed to the observation level as in 'group' above)
@@ -35,7 +35,7 @@ parameters {
   vector[N_groups] mu_grp_alpha_pr;           // threshold sep. group mean
   vector[N_groups] mu_grp_beta_pr;            // start point group mean
   vector[N_groups] mu_grp_delta_pr;           // drift rate group mean
-  vector[N_groups] mu_grp_ndt_pr;             // non-decision time group mean 
+  vector[N_groups] mu_grp_ndt_pr;             // non-decision time group mean in sec
   
   vector<lower=0>[N_groups] sig_grp_alpha_pr; // threshold sep. group SD 
   vector<lower=0>[N_groups] sig_grp_beta_pr;  // start point group SD
@@ -87,7 +87,7 @@ model {
   
   // loop through observations
   for (i in 1:N_obs){ 
-    real drift; // trial level-drift rate nuisance parameter
+    real drift; // trial level-drift rate 
     if(choice[i]==1){ //if response is YES 
       drift = Phi(sub_delta[subj[i]])*10-5;
       RT[i] ~ wiener(sub_alpha[subj[i]], sub_ndt[subj[i]], sub_beta[subj[i]], drift);
@@ -104,19 +104,17 @@ generated quantities {
   vector<lower=0,upper=4>[N_groups] mu_alpha = 0.1 + 3.9*Phi(mu_grp_alpha_pr);  // threshold sep group mean
   vector<lower=0,upper=1>[N_groups] mu_beta = Phi(mu_grp_beta_pr);              // start point group mean
   vector<lower=-5,upper=5>[N_groups] mu_delta = -5 + 10*Phi(mu_grp_delta_pr);   // drift rate group mean
-  vector<lower=0, upper=0.98>[N_groups] mu_ndt = Phi(mu_grp_ndt_pr);            // NDT group, proportion
+  vector<lower=0, upper=0.98>[N_groups] mu_ndt = Phi(mu_grp_ndt_pr);            // NDT group mean, proportion
 
-  //calculate loglik for each subject
-  {
-    for (i in 1:N_obs){ 
-      real drift; // trial level-drift rate nuisance parameter
-      if(choice[i]==1){ //if response is YES 
-        drift = Phi(sub_delta[subj[i]])*10-5;
-        log_lik[i] += wiener_lpdf(RT[i]|sub_alpha[subj[i]], sub_ndt[subj[i]], sub_beta[subj[i]], drift);
-      } else { //if response is NO 
-        drift = Phi(sub_delta[subj[i]])*10-5;
-        log_lik[i] += wiener_lpdf(RT[i]|sub_alpha[subj[i]], sub_ndt[subj[i]], 1-sub_beta[subj[i]], -drift);
-      }
+  //calculate loglik 
+  for (i in 1:N_obs){ 
+    real drift; // trial level-drift rate 
+    if(choice[i]==1){ //if response is YES 
+      drift = Phi(sub_delta[subj[i]])*10-5;
+      log_lik[i] += wiener_lpdf(RT[i]|sub_alpha[subj[i]], sub_ndt[subj[i]], sub_beta[subj[i]], drift);
+    } else { //if response is NO 
+      drift = Phi(sub_delta[subj[i]])*10-5;
+      log_lik[i] += wiener_lpdf(RT[i]|sub_alpha[subj[i]], sub_ndt[subj[i]], 1-sub_beta[subj[i]], -drift);
     }
   }
 }
