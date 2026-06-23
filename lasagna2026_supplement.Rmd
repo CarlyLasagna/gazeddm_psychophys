@@ -34,15 +34,13 @@ Code used to perform all modeling, simulation, and analysis is available on OSF 
 
 # [METHODS SUPPLEMENT] {.unnumbered}
 
-# Behavioral Tasks
+# Measures
 
 ## Eye Contact Detection Task
 
 Below are sample stimuli for the eye contact detection task. For modeling, "Yes" responses were recoded as 1 (upper boundary responses), "No" responses were recoded as 2 (lower boundary responses), and the eye contact signal strengths (shown below) were mean-centered. 
 
 ![](/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/manuscript/figures and tables/gaze_stimuli.png)
-
-
 ## Gender Identification Task
 
 Below are sample stimuli for the gender identification task. During modeling, gender was effects coded such that "female" responses were coded as 2 (lower boundary responses) and "male" responses were coded as 1 (upper boundary responses).  
@@ -56,14 +54,13 @@ Below are sample stimuli for the Visual Integration task. In the upper plot, sti
 For modeling, "Left" responses were recoded as 1 (upper boundary responses), "Right" responses were recoded as 2 (lower boundary responses), and the stimulus signal strengths (shown below) were recoded as follows: 1) first we added a small constant value of .0001 to the lowest signal strength (indicated by "^" below) to make all signals positive, 2) then we multiplied these signal strengths by the effects coded direction of each stimulus (1=Left, -1=Right). This generated a mean centered signal strength for each trial where higher magnitude signals (i.e., more positive or more negative) meant stronger visual signal strengths, values > 0 indexed left-facing stimuli, and values < 0 indexed right-facing stimuli. As shown below, this captured stimulus direction and signal strength within a single variable. 
 
 ![](/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/manuscript/figures and tables/jovi_stimuli.png)
-
 # [MODELING SUPPLEMENT] {.unnumbered}
 
 *__Note:__ Throughout this section, "Model 2 (Eye Contact)" refers to the  model for the eye contact detection task described in the main text, "Model 3 (Gender)" refers to the model for the gender identification task described in the main text, and "Model 5 (Visual Integration)" refers to the model for the visual integration task described in the main text.*
 
 ```{r id1, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE, out.width='1500px'}
 
-########################################################
+#########################################################
 # SETUP ENVIRONMENT
 ########################################################
 library(ggplot2)
@@ -1614,7 +1611,7 @@ Initial fits of all models were run on a high performance computing cluster usin
 
 # Model Specification
 
-Model 2 (Eye Contact) is the model for the eye contact detection task described in the main text, Model 3 (Gender) is the model for the gender identification task described in the main text, and Model 5 (Visual Integration) is the model Visual Integration task described in the main text. Note that Model 2 (Eye Contact) and Model 5 (Visual Integration) share the same structure.
+Model 2 (Eye Contact) is the model for the eye contact detection task described in the main text, Model 3 (Gender) is the model for the gender identification task described in the main text, and Model 5 (Visual Integration) is the model Visual Integration task described in the main text. Note that Model 2 (Eye Contact) and Model 5 (Visual Integration) share the same structure. Stimulus-coding is used to characterize participants' responses on all tasks. All models used weakly information priors which included N(0,1) for all group- and subject-level mean parameters and positively bound N(0,0.2) for all variance parameters.
 
 __Note on gender model parameterization:__ For the gender models in which gender was allowed to categorically modulate drift rates (Gender Model 3 [winning model from main text] and 4), we originally estimated separate drift rates for male and female faces. To recast those parameters to match the parameterization of the winning Eye Contact Model (Eye Contact: Model 2), which is equivalent to the effects-coding approach described in the main text, we calculated drift sensitivity and drift biases in the gender identification task as follows:
 
@@ -1624,7 +1621,7 @@ Drift Bias (Gender) = (Drift Rate<sup>Male</sup> + Drift Rate<sup>Female</sup>)/
 As such, the model evaluation steps are performed on the gender models with separate male/female drift rate parameters. For  analyses  we recast those parameters in the gender identification task to drift sensitivity (discriminability) and drift bias (as shown above).
 
 ```{r id12433333422222, echo=FALSE, fig.height=5, fig.show="hold", fig.width=5, message=FALSE, warning=FALSE, cache=TRUE, dpi=500, out.width='1500px'}
-
+#
 model_table<-read.csv("/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/manuscript/figures and tables/all_models.csv")
   
 model_table$Condition<-""
@@ -1643,12 +1640,14 @@ model_table %>%
 
 ## Eye Contact Models
 
-For the eye contact detection task, the winning model ("Model 2: Eye Contact") assumed that eye contact signals continuously modulated evidence accumulation. This allowed the model to capture two aspects of the evidence accumulation process. Drift sensitivity indexed how evidence accumulation was continuously modulated by physical changes in Eye Contact signals. Those with higher values are more attuned to eye contact signals, as they better translate stronger eye contact signals into more efficient decision-making. Drift bias captured information processing bias for self-referential/non-self-referential decisions, regardless of physical changes in eye contact signals. As “looking at me” and “not looking at me” responses were coded as the top and bottom boundaries, respectively, drift bias > 0 indicates a information processing bias for self-referential decisions, and drift bias < 0 indicates a information processing bias for non-self-referential decisions. The DDM assumes that the remaining processes—threshold separation (response caution), start point (expectancy bias), and NDT (motor/sensory processes)—are set before the stimulus appears. This means that they can only vary based on stimulus features that can be anticipated before the stimulus onset. As such, threshold separation, start point, and NDT operated as trait-level processes that did not vary based on changes in eye contact, which varied trial-by-trial. 
+For the eye contact detection task, model comparisons results differed between HC and SZ. In both groups it was necessary to model the impact of gaze direction on evidence accumulation to fully account for behavior (i.e., Model 2 > Model 1 in SZ and HC). However, the more complex model (Model 6)--that accounted for the influence of task-irrelevant cues (i.e., stimulus gender) on evidence accumulation during gaze perception--better accounted for behavioral performance in HC, but not in SZ. To account for the discrepancy in model comparison results, we opted to select and analyze more parsimonious model (Model 2) as our "winning model" in the main text. Then, we supplemented our group differences analyses with sensitivity analyses on the second best performing model (Model 6) to ensure that our results were still observed regardless of the model used.
+
+The winning model ("Model 2: Eye Contact") described in the main text assumed that eye contact signals continuously modulated evidence accumulation. This allowed the model to capture two aspects of the evidence accumulation process. Drift sensitivity indexed how evidence accumulation was continuously modulated by physical changes in Eye Contact signals. Those with higher values are more attuned to eye contact signals, as they better translate stronger eye contact signals into more efficient decision-making. Drift bias captured information processing bias for self-referential/non-self-referential decisions, regardless of physical changes in eye contact signals. As “looking at me” and “not looking at me” responses were coded as the top and bottom boundaries, respectively, drift bias > 0 indicates a information processing bias for self-referential decisions, and drift bias < 0 indicates a information processing bias for non-self-referential decisions. The DDM assumes that the remaining processes—threshold separation (response caution), start point (expectancy bias), and NDT (motor/sensory processes)—are set before the stimulus appears. This means that they can only vary based on stimulus features that can be anticipated before the stimulus onset. As such, threshold separation, start point, and NDT operated as trait-level processes that did not vary based on changes in eye contact, which varied trial-by-trial. 
  
 ```{r id3924321387324, echo=FALSE, cache=TRUE}
 
 outpath <- '/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/ddm/output/hddm_'
-models<-c('m1_psychophys','m2_psychophys')
+models<-c('m1_psychophys','m2_psychophys','m6_psychophys')
 groupnames<-c('HC','SZ')
 loo_headers<-c('group','model','elpd_loo','delta_elpd','delta_elpd_se')
 all_loo<-data.frame(matrix(data=NA,nrow=length(models),ncol=length(loo_headers)))
@@ -1710,7 +1709,7 @@ all_loo_combined %>%
  
 ## Gender Models
 
-For the gender identification task, the winning model (“Model 3: Gender”) was one in which evidence accumulation (drift rate) was influenced by the gender of stimuli, but not other task-irrelevant social cues (i.e., Eye Contact). The effect of gender on evidence accumulation was captured in the original models via separate drift rates for male and female stimuli (drift rate<sup>gend-M</sup> and drift rate<sup>gend-F</sup>). As “male” responses were coded as the top boundary and “female” responses were coded as the bottom boundary, higher values for drift rate<sup>gend-M</sup> and lower values for drift rate<sup>gend-F</sup> reflected more efficient evidence accumulation. 
+For the gender identification task, the winning model (“Model 3: Gender”) was one in which evidence accumulation (drift rate) was influenced by the gender of stimuli, but not other task-irrelevant social cues (i.e., Eye Contact). The effect of gender on evidence accumulation was captured in the original models via separate drift rates for male and female stimuli (drift rate<sup>gend-M</sup> and drift rate<sup>gend-F</sup>). As “male” responses were coded as the top boundary and “female” responses were coded as the bottom boundary, higher values for drift rate<sup>gend-M</sup> and lower values for drift rate<sup>gend-F</sup> reflected more efficient evidence accumulation. __(Note: Similar to analyses of the eye contact detection condition described above, we also supplemented our group differences analyses of the winning gender model (Model 3) with sensitivity analyses on the second best performing gender model (Model 4) to ensure that our results were still observed regardless of the model used).__
 
 We then recast these parameters into the same parameterization as the eye contact detection model described in the main text, even though gender was manipulated categorically. To achieve this, when calculating trial-level drift sensitivity in the gender identification task using the equation in Figure 1 (main text), we replaced the Eye Contact signal on each trial i with the effects-coded gender of the stimulus on each trial (1=male, -1=female). As a result, during gender identification, drift sensitivity captured the categorical modulation of drift rates by gender, where larger values indicated greater discriminability between male and female faces. Although drift sensitivity parameters were highly similar, they capture slightly different processes: in the gender identification task, they capture evidence accumulation rates and sensitivity to changes in gender cues; in the Eye Contact and Visual Integration tasks, they are a purer measure of sensitivity to changes in signal strength. Additionally, during gender identification, the drift bias reflected a information processing bias for male/female. As “male” and “female” responses were coded as the top and bottom boundaries, respectively, drift bias > 0 indicates a information processing bias for male, and drift bias < 0 indicates a information processing bias for female. All other parameters were the same as in the Eye Contact Model. 
 
@@ -3449,7 +3448,7 @@ print(plot)
 # [ANALYSIS SUPPLEMENT] {.unnumbered}
 
 ```{r id9933221912, echo=FALSE, cache=T,fig.width=4,fig.height=3.75}
-
+#
 # Preprocess Data
 n_subj<-81
 
@@ -3547,7 +3546,29 @@ sub_samples_jovi<-data.frame(alpha_jovi=jovi_sub_alpha,
                              delta_bias_jovi=jovi_sub_delta_bias,
                              delta_b1_jovi=jovi_sub_delta_b1)
 
-all_sub_data<-cbind(all_sub_data,sub_samples_jovi)
+#Visual Integration MODEL (with censoring)
+jovi_all_samples_censor<-as.data.frame(fread('/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/ddm/output/hddm_m7_psychophys/jovi/init_fit/allgroups_init_fit_samples.csv'))
+
+colnames(jovi_all_samples_censor) <- gsub("\\[|\\]", ".", colnames(jovi_all_samples_censor))
+
+for(i in 1:n_subj){
+  temp_col1<-paste0("sub_delta.",i)
+  jovi_all_samples_censor[[temp_col1]]<-pnorm(jovi_all_samples_censor[[temp_col1]])*10-5
+}
+
+jovi_sub_alpha<-colMeans(jovi_all_samples_censor[,grep("sub_alpha.",fixed=T,colnames(jovi_all_samples_censor))])
+jovi_sub_beta<-colMeans(jovi_all_samples_censor[,grep("sub_beta.",fixed=T,colnames(jovi_all_samples_censor))])
+jovi_sub_ndt<-colMeans(jovi_all_samples_censor[,grep("sub_ndt.",fixed=T,colnames(jovi_all_samples_censor))])
+
+jovi_sub_delta_bias<-colMeans(jovi_all_samples_censor[,grep("sub_delta.",fixed=T,colnames(jovi_all_samples_censor))])
+jovi_sub_delta_b1<-colMeans(jovi_all_samples_censor[,grep("sub_b1.",fixed=T,colnames(jovi_all_samples_censor))])
+
+sub_samples_jovi_censor<-data.frame(alpha_jovi_c=jovi_sub_alpha,
+                             beta_jovi_c=jovi_sub_beta,
+                             delta_bias_jovi_c=jovi_sub_delta_bias,
+                             delta_b1_jovi_c=jovi_sub_delta_b1)
+
+all_sub_data<-cbind(all_sub_data,sub_samples_jovi,sub_samples_jovi_censor)
 
 all_sub_data$sz_dummy<-ifelse(all_sub_data$group=="SZ",1,0)
 all_sub_data$female_dummy<-ifelse(all_sub_data$gender=="Female",1,0)
@@ -3558,11 +3579,58 @@ all_sub_data<-read.csv("/Users/carlylasagna/University of Michigan Dropbox/Carly
 
 ```
 
-# Demographics
+# Preliminary
+
+## Demographics
 
 Tests below are Bayesian t-tests, ANOVA, and proportion analyses run using ttestBF, anovaBF, and proportion BF in the 'BayesFactor' R package (Morey, 2015). 
 
 ```{r id1243333322222, echo=FALSE, fig.height=5, fig.show="hold", fig.width=5, message=FALSE, warning=FALSE, cache=TRUE, dpi=500, out.width='1500px'}
+
+all_sub_data<-read.csv("/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/ddm/data/schizgaze2_all_sub_params_w_correlates.csv")
+
+outfile<-paste(datadir,"/schizgaze12_gaze_beh.csv",sep="")
+gaze_data<-read.csv(outfile)
+gaze_data<-subset(gaze_data,gaze_data$Study=="schizgaze2")
+gaze_data<-subset(gaze_data,gaze_data$Task=="Eyes")
+
+gaze <- gaze_data %>% 
+  dplyr::group_by(Subj) %>% 
+  dplyr::summarize(gaze_rt = mean(RT,na.rm=TRUE))
+
+gaze$subj<-gaze$Subj
+gaze$Subj<-NULL
+all_sub_data<-merge(all_sub_data, gaze,all.x=TRUE,by.x = "subj",by.y = "subj", no.dups = T)
+
+outfile<-paste(datadir,"/schizgaze12_gaze_beh.csv",sep="")
+gend_data<-read.csv(outfile)
+gend_data<-subset(gend_data,gend_data$Study=="schizgaze2")
+gend_data<-subset(gend_data,gend_data$Task=="GenderID")
+
+gend <- gend_data %>% 
+  dplyr::group_by(Subj) %>% 
+  dplyr::summarize(gend_rt = mean(RT,na.rm=TRUE),
+                   gend_acc = mean(Acc,na.rm=TRUE))
+
+gend$subj<-gend$Subj
+gend$Subj<-NULL
+all_sub_data<-merge(all_sub_data, gend,all.x=TRUE,by.x = "subj",by.y = "subj", no.dups = T)
+
+# outfile<-paste(datadir,"/schizgaze2_jovi_beh.csv",sep="")
+# jovi_data<-read.csv(outfile)
+# jovi_data<-subset(jovi_data,jovi_data$Study=="schizgaze2")
+# 
+# jovi <- jovi_data %>% 
+#   dplyr::group_by(Subj) %>% 
+#   dplyr::summarize(jovi_rt = mean(RT,na.rm=TRUE),
+#                    jovi_acc = mean(Acc,na.rm=TRUE))
+# 
+# jovi<-as.data.frame(jovi)
+# 
+# jovi$subj<-jovi$Subj
+# jovi$Subj<-NULL
+# 
+# all_sub_data<-merge(all_sub_data, jovi,all.x=TRUE,by.x = "subj",by.y = "subj", no.dups = T)
 
 # Demographics
 demo_table<-dplyr::select(all_sub_data,c('subj','group','age','female_dummy','edu','parent_edu',
@@ -3573,7 +3641,10 @@ demo_table<-dplyr::select(all_sub_data,c('subj','group','age','female_dummy','ed
                                          'antidepressant_user','moodstab_user',
                                          'stimulant_user','anticholinergic_user',
                                          'cpzeq',
-                                         'matrics','soc_cog_pc_wrt'))
+                                         'matrics','soc_cog_pc_wrt',
+                                         'gazebayesnew_thres50','gazebayesnew_slope','gaze_rt',
+                                         'gend_acc','gend_rt',
+                                         'jovi_acc','jovi_rt'))
 
 colnames(demo_table)<-c('Subj','Group','Age','Sex (% Female)','Education (Years)','Parent Education (Years)',
                                          'White (%)','African American (%)','Asian (%)',
@@ -3584,7 +3655,10 @@ colnames(demo_table)<-c('Subj','Group','Age','Sex (% Female)','Education (Years)
                                          'Antidepressant User (%)','Mood Stabilizer User (%)',
                                          'Stimulant User (%)','Anticholinergic User (%)',
                                          'CPZeq',
-                                         'General Cognition (MCCB PC)','Social Cognition (MSCEIT/RME/ER40 PC)')
+                                         'General Cognition (MCCB PC)','Social Cognition (MSCEIT/RME/ER40 PC)',
+                        'Gaze: Bias','Gaze: Sensitivity','Gaze: RT',
+                        'Gender: Accuracy','Gender: RT',
+                        'Visual Integration: Accuracy','Visual Integration: RT')
 
 demo_table_hc<-subset(demo_table,demo_table$Group=="HC")
 demo_table_sz<-subset(demo_table,demo_table$Group=="SZ")
@@ -3653,7 +3727,50 @@ demo_table_all %>%
   pack_rows("Symptoms", 15, 16,hline_before = T,italic=T,bold=F) %>%
   pack_rows("Medications", 17, 22,hline_before = T,italic=T,bold=F) %>%
   pack_rows("General/Social Cognition", 23, 24) %>%
+  pack_rows("Task Performance", 25, 31) %>%
+  pack_rows("Eye Contact Detection", 25, 27,hline_before = T,italic=T,bold=F) %>%
+  pack_rows("Gender Identification", 28, 29,hline_before = T,italic=T,bold=F) %>%
+  pack_rows("Visual Integration", 30, 31,hline_before = T,italic=T,bold=F) %>%
   kable_styling(full_width=T)
+
+```
+ 
+## RT Distributions by Group
+ 
+```{r id12433322332222222, echo=FALSE, fig.height=4,fig.width=4, message=FALSE, warning=FALSE, cache=TRUE}
+
+library(ggplot2)
+library(ggbeeswarm)  # for jittered points
+
+outfile<-paste(datadir,"/schizgaze12_gaze_beh.csv",sep="")
+plot_data<-read.csv(outfile)
+plot_data<-subset(plot_data,plot_data$Study=="schizgaze2")
+
+plot_data1<-subset(plot_data,plot_data$Task=="Eyes")
+
+ggplot(plot_data1, aes(x = Group, y = RT, fill = Group)) +
+  geom_point(position = position_jitter(width = 0.05, height = 0),alpha = 0.3, size = .5) +
+  geom_violin(alpha = 0.6, trim = FALSE, color = NA) +
+  labs(x = "Group", y = "RT (ms)") +
+  guides(fill = "none", color = "none")+theme_bw()+ggtitle("Gaze Perception Task:\nRT Distribution")
+
+plot_data1<-subset(plot_data,plot_data$Task=="GenderID")
+
+ggplot(plot_data1, aes(x = Group, y = RT, fill = Group)) +
+  geom_point(position = position_jitter(width = 0.05, height = 0),alpha = 0.3, size = .5) +
+  geom_violin(alpha = 0.6, trim = FALSE, color = NA) +
+  labs(x = "Group", y = "RT (ms)") +
+  guides(fill = "none", color = "none")+theme_bw()+ggtitle("Gender Identification Task:\nRT Distribution")
+
+outfile<-paste(datadir,"/schizgaze2_jovi_beh.csv",sep="")
+plot_data<-read.csv(outfile)
+
+ggplot(plot_data, aes(x = Group, y = RT, fill = Group)) +
+  geom_point(position = position_jitter(width = 0.05, height = 0),alpha = 0.3, size = .5) +
+  geom_violin(alpha = 0.6, trim = FALSE, color = NA) +
+  labs(x = "Group", y = "RT (ms)") +
+  guides(fill = "none", color = "none")+theme_bw()+ggtitle("Visual Integration Task:\nRT Distribution")
+
 
 ```
  
@@ -3946,7 +4063,7 @@ for(i in 1:length(params)){
 
 ```
 
-```{r id99332122322999, fig.height=3.3, fig.width=1.5, cache=TRUE, dpi=500, include=FALSE}
+```{r id99332122322999, fig.height=2.5, fig.width=1.5, cache=TRUE, dpi=500, include=FALSE}
 
 ## Plots for Figure 2
 
@@ -4063,6 +4180,317 @@ for(i in 1:length(params)){
 
 ```
 
+## Bayesian Mixed ANOVA (Task Specificity of Group Effects)
+ 
+### Drift Sensitivity
+ 
+```{r id124333223322222322, fig.height=4, fig.width=4, message=FALSE, warning=FALSE, cache=TRUE, include=FALSE}
+
+gaze<-all_sub_data[,c("subj","sz_dummy","delta_b1","delta_bias","beta","alpha")]
+gaze$task<-"gaze"
+colnames(gaze)<-c("subj","group","delta","delta_bias","beta","alpha","task")
+gaze$delta<-scale(gaze$delta)
+
+gend<-all_sub_data[,c("subj","sz_dummy","delta_gend","delta_bias_gend","beta_gend","alpha_gend")]
+gend$task<-"gend"
+colnames(gend)<-c("subj","group","delta","delta_bias","beta","alpha","task")
+gend$delta<-scale(gend$delta)
+
+jovi<-all_sub_data[,c("subj","sz_dummy","delta_b1_jovi","delta_bias_jovi","beta_jovi","alpha_jovi")]
+jovi$task<-"jovi"
+colnames(jovi)<-c("subj","group","delta","delta_bias","beta","alpha","task")
+jovi$delta<-scale(jovi$delta)
+
+alltask<-rbind(gaze,gend,jovi)
+alltask$group<-as.factor(ifelse(alltask$group==1,"SZ","HC"))
+alltask$task<-factor(alltask$task,levels=c("gaze","gend","jovi"))
+
+library(brms)
+
+alltask$group<-factor(alltask$group)
+
+out <- brm(
+  delta ~ task * group +  (1 | subj),
+  data   = alltask,
+  family = gaussian(),   # same as lm() default
+  cores  = 4,silent=2
+)
+
+out<-summary(out)
+out<-out$fixed
+
+out<-data.frame(Parameter=rownames(out),
+                Estimate=round(as.numeric(out$Estimate),2),
+                HDI_Low=round(out$`l-95% CI`,2),
+                HDI_High=round(out$`u-95% CI`,2))
+
+out$Credible<-""
+
+for(i in 1:nrow(out)){
+  if(out$HDI_Low[i]<0&out$HDI_High[i]<0){
+    out$Credible[i]<-"*"
+  }
+  if(out$HDI_Low[i]>0&out$HDI_High[i]>0){
+    out$Credible[i]<-"*"
+  }
+}
+
+out$Parameter<-gsub("task","Task",out$Parameter)
+out$Parameter<-gsub("group","Group",out$Parameter)
+out$Parameter<-gsub("gend","Gender",out$Parameter)
+out$Parameter<-gsub("jovi","VisualIntegration",out$Parameter)
+rownames(out)<-NULL
+
+
+```
+
+```{r id1243233223323332222322, echo=FALSE, fig.height=4, fig.width=4, message=FALSE, warning=FALSE, cache=TRUE}
+###
+out %>%
+  kbl(caption = "Mixed ANOVA on Drift Sensitivity\n(Reference Group=HC and Reference Task=Eye Contact Detection)",valign = "t") %>%
+  kable_classic(full_width=F, html_font = "Cambria") %>%
+  kable_styling(full_width=T) 
+
+```
+
+### Drift Bias
+
+```{r id1243233223322222322, fig.height=4, fig.width=4, message=FALSE, warning=FALSE, cache=TRUE, include=FALSE}
+
+out <- brm(
+  delta_bias ~ task * group+  (1 | subj),
+  data   = alltask,
+  family = gaussian(),   # same as lm() default
+  cores  = 4,silent=2
+)
+out<-summary(out)
+out<-out$fixed
+
+out<-data.frame(Parameter=rownames(out),
+                Estimate=round(as.numeric(out$Estimate),2),
+                HDI_Low=round(out$`l-95% CI`,2),
+                HDI_High=round(out$`u-95% CI`,2))
+
+out$Credible<-""
+
+for(i in 1:nrow(out)){
+  if(out$HDI_Low[i]<0&out$HDI_High[i]<0){
+    out$Credible[i]<-"*"
+  }
+  if(out$HDI_Low[i]>0&out$HDI_High[i]>0){
+    out$Credible[i]<-"*"
+  }
+}
+
+out$Parameter<-gsub("task","Task",out$Parameter)
+out$Parameter<-gsub("group","Group",out$Parameter)
+out$Parameter<-gsub("gend","Gender",out$Parameter)
+out$Parameter<-gsub("jovi","VisualIntegration",out$Parameter)
+rownames(out)<-NULL
+
+```
+
+```{r id12432313223322222322, echo=FALSE, fig.height=4, fig.width=4, message=FALSE, warning=FALSE, cache=TRUE}
+###
+out %>%
+  kbl(caption = "\nMixed ANOVA on Drift Bias\n(Reference Group=HC and Reference Task=Eye Contact Detection)",valign = "t") %>%
+  kable_classic(full_width=F, html_font = "Cambria") %>%
+  kable_styling(full_width=T) 
+
+```
+
+### Start Point
+
+```{r id124323323233222322322, fig.height=4, fig.width=4, message=FALSE, warning=FALSE, cache=TRUE, include=FALSE}
+
+out <- brm(
+  beta ~ task * group+  (1 | subj),
+  data   = alltask,
+  family = gaussian(),   # same as lm() default
+  cores  = 4,silent=2
+)
+out<-summary(out)
+out<-out$fixed
+
+out<-data.frame(Parameter=rownames(out),
+                Estimate=round(as.numeric(out$Estimate),2),
+                HDI_Low=round(out$`l-95% CI`,2),
+                HDI_High=round(out$`u-95% CI`,2))
+
+out$Credible<-""
+
+for(i in 1:nrow(out)){
+  if(out$HDI_Low[i]<0&out$HDI_High[i]<0){
+    out$Credible[i]<-"*"
+  }
+  if(out$HDI_Low[i]>0&out$HDI_High[i]>0){
+    out$Credible[i]<-"*"
+  }
+}
+
+out$Parameter<-gsub("task","Task",out$Parameter)
+out$Parameter<-gsub("group","Group",out$Parameter)
+out$Parameter<-gsub("gend","Gender",out$Parameter)
+out$Parameter<-gsub("jovi","VisualIntegration",out$Parameter)
+rownames(out)<-NULL
+
+```
+
+```{r id124323132233222322322, echo=FALSE, fig.height=4, fig.width=4, message=FALSE, warning=FALSE, cache=TRUE}
+###
+out %>%
+  kbl(caption = "\nMixed ANOVA on Start Point\n(Reference Group=HC and Reference Task=Eye Contact Detection)",valign = "t") %>%
+  kable_classic(full_width=F, html_font = "Cambria") %>%
+  kable_styling(full_width=T) 
+
+```
+
+## Sensitivity - Group Differences Accounting for All Gaze/Gender Effects
+
+### Model 6 (Eye Contact) + Gender Effects
+
+```{r id9933212222322999, echo=FALSE, cache=TRUE,fig.width=4,fig.height=3.75}
+
+gaze6_all_samples<-as.data.frame(fread('/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/ddm/output/hddm_m6_psychophys/gaze/init_fit/allgroups_init_fit_samples.csv'))
+
+colnames(gaze6_all_samples) <- gsub("\\[|\\]", ".", colnames(gaze6_all_samples))
+gaze6_all_samples<-gaze6_all_samples[,-grep("sub_",colnames(gaze6_all_samples))]
+
+# calculate and plot group differences
+params<-c('mu_alpha.','mu_beta.','mu_ndt.',
+          'mu_grp_b1_male_pr.','mu_grp_b1_female_pr.',
+          'mu_delta_male.','mu_delta_female.')
+
+raw_params<-c('mu_grp_alpha_pr.','mu_grp_beta_pr.','mu_grp_ndt_pr.',
+              'mu_grp_b1_male_pr.','mu_grp_b1_female_pr.',
+              'mu_grp_delta_male_pr.','mu_grp_delta_female_pr.')
+
+sig_params<-c('sig_grp_alpha_pr.','sig_grp_beta_pr.','sig_grp_ndt_pr.',
+              'sig_grp_b1_pr.','sig_grp_b1_pr.',
+              'sig_grp_delta_pr.','sig_grp_delta_pr.')
+
+param_names<-c('Threshold Separation','Start Point','NDT',
+               'Drift Sensitivity (Male)','Drift Sensitivity (Female)',
+               'Drift Bias (Male)','Drift Bias (Female)')
+
+#loop through and plot/compare group differences
+for(i in 1:length(params)){
+
+  p<-plot_posterior_diffs(
+    data=gaze6_all_samples,
+    ci=.95, #credible interval
+    par_prefix=params[i],
+    rawpar_prefix=raw_params[i],
+    sig_prefix=sig_params[i],
+    par_name = param_names[i],
+    group_nums = c(1,2),
+    group_names=c('HC','SZ'),
+    sample_sizes=c(39,42),
+    round_digits=3,
+    showtext=TRUE)
+  print(p)
+}
+
+```
+
+### Model 4 (Gender) + Gaze Effects
+
+```{r id9932ddddddd2222, echo=FALSE, cache=TRUE,fig.width=4,fig.height=3.75}
+
+gaze4_all_samples<-as.data.frame(fread('/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/ddm/output/hddm_m4_psychophys/gender/init_fit/allgroups_init_fit_samples.csv'))
+
+colnames(gaze4_all_samples) <- gsub("\\[|\\]", ".", colnames(gaze4_all_samples))
+gaze4_all_samples<-gaze4_all_samples[,-grep("sub_",colnames(gaze4_all_samples))]
+
+gaze4_all_samples$mu_grp_delta_bias_pr.1.<-(gaze4_all_samples$mu_grp_delta_male_pr.1.+gaze4_all_samples$mu_grp_delta_female_pr.1.)/2
+gaze4_all_samples$mu_grp_delta_bias_pr.2.<-(gaze4_all_samples$mu_grp_delta_male_pr.2.+gaze4_all_samples$mu_grp_delta_female_pr.2.)/2
+
+gaze4_all_samples$mu_grp_delta_pr.1.<-(gaze4_all_samples$mu_grp_delta_male_pr.1.-gaze4_all_samples$mu_grp_delta_female_pr.1.)/2
+gaze4_all_samples$mu_grp_delta_pr.2.<-(gaze4_all_samples$mu_grp_delta_male_pr.2.-gaze4_all_samples$mu_grp_delta_female_pr.2.)/2
+
+gaze4_all_samples$mu_delta.1.<-pnorm(gaze4_all_samples$mu_grp_delta_pr.1.)*10-5
+gaze4_all_samples$mu_delta.2.<-pnorm(gaze4_all_samples$mu_grp_delta_pr.2.)*10-5
+
+gaze4_all_samples$mu_delta_bias.1.<-pnorm(gaze4_all_samples$mu_grp_delta_bias_pr.1.)*10-5
+gaze4_all_samples$mu_delta_bias.2.<-pnorm(gaze4_all_samples$mu_grp_delta_bias_pr.2.)*10-5
+
+params<-c('mu_alpha.','mu_beta.','mu_ndt.','mu_delta.','mu_delta_bias.','mu_grp_b1_pr.')
+raw_params<-c('mu_grp_alpha_pr.','mu_grp_beta_pr.','mu_grp_ndt_pr.','mu_grp_delta_pr.','mu_grp_delta_bias_pr.','mu_grp_b1_pr.')
+sig_params<-c('sig_grp_alpha_pr.','sig_grp_beta_pr.','sig_grp_ndt_pr.','sig_grp_delta_pr.','sig_grp_delta_pr.','sig_grp_b1_pr.')
+param_names<-c('Threshold Separation','Start Point','NDT','Drift Sensitivity (Gender)','Drift Bias','Drift Sensitivity (Gaze)')
+
+#loop through and plot/compare group differences
+for(i in 1:length(params)){
+
+  p<-plot_posterior_diffs(
+    data=gaze4_all_samples,
+    ci=.95, #credible interval
+    par_prefix=params[i],
+    rawpar_prefix=raw_params[i],
+    sig_prefix=sig_params[i],
+    par_name = param_names[i],
+    group_nums = c(1,2),
+    group_names=c('HC','SZ'),
+    sample_sizes=c(39,42),
+    round_digits=3,
+    showtext = TRUE)
+  print(p)
+}
+#
+
+```
+
+## Sensitivity - Group Differences Accounting for Right Censoring in Visual Integration Task
+
+Due to the task design the Visual Integration task had right censoring of the data after 2500ms due to a response cutoff. We modeled the data with a DDM that also accounted for censoring to ensure the results did not change.
+
+### Model 7 (Visual Integration) + Censoring
+
+The Visual Integration task had right censoring past 2.5 ms (i.e., there was a 2.5s response window and this lead to a censoring of the RT distribution and choice data due to many responses taking longer than that). Therefore, we performed a sensitivity analysis using a DDM model that explicitly accounted for this right censoring and re-ran the group differences to ensure the results did not change.
+
+```{r id9933212233222322999, echo=FALSE, cache=TRUE,fig.width=4,fig.height=3.75}
+
+gaze7_all_samples<-as.data.frame(fread('/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/ddm/output/hddm_m7_psychophys/jovi/init_fit/allgroups_init_fit_samples.csv'))
+
+colnames(gaze7_all_samples) <- gsub("\\[|\\]", ".", colnames(gaze7_all_samples))
+gaze7_all_samples<-gaze7_all_samples[,-grep("sub_",colnames(gaze7_all_samples))]
+
+# calculate and plot group differences
+params<-c('mu_alpha.','mu_beta.','mu_ndt.','mu_grp_b1_pr.','mu_delta.')
+
+raw_params<-c('mu_grp_alpha_pr.','mu_grp_beta_pr.','mu_grp_ndt_pr.',
+              'mu_grp_b1_pr.', 'mu_grp_delta_pr.')
+
+sig_params<-c('sig_grp_alpha_pr.','sig_grp_beta_pr.','sig_grp_ndt_pr.',
+              'sig_grp_b1_pr.','sig_grp_delta_pr.')
+
+param_names<-c('Threshold Separation','Start Point','NDT',
+               'Drift Sensitivity',
+               'Drift Bias')
+
+colnames(gaze7_all_samples)<-paste0(colnames(gaze7_all_samples),".")
+
+#loop through and plot/compare group differences
+for(i in 1:length(params)){
+
+  p<-plot_posterior_diffs(
+    data=gaze7_all_samples,
+    ci=.95, #credible interval
+    par_prefix=params[i],
+    rawpar_prefix=raw_params[i],
+    sig_prefix=sig_params[i],
+    par_name = param_names[i],
+    group_nums = c(1,2),
+    group_names=c('HC','SZ'),
+    sample_sizes=c(39,42),
+    round_digits=3,
+    showtext=TRUE)
+  print(p)
+}
+
+```
+
+
 # Regressions (All) 
 
 __Do model parameters predict clinical correlates dimensionally (after controlling for age and sex) or do these relationships differ credibly between between HC and SZ?__
@@ -4074,7 +4502,7 @@ Bayesian regression models run in brms examined the effects of social cue proces
 ### Referential Thinking
  
 ```{r id9932991112121331, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE}
-#
+
 tmp_pred<-c('delta_bias','delta_bias_gend','delta_bias_jovi',
             'delta_b1','delta_gend','delta_b1_jovi',
             'beta','beta_gend','beta_jovi','sz_dummy',
@@ -4113,6 +4541,51 @@ result_glm_ddm %>%
   kbl(caption = "Bayesian Regression: Predicting GPTS Referential Thinking (Full Sample, Controlling for Age, Sex)",valign = "t") %>%
   kable_classic(full_width=F, html_font = "Cambria") %>%
   kable_styling(full_width=T) 
+
+```
+
+```{r id99329291112121331, fig.height=4, fig.width=4.5, message=FALSE, warning=FALSE, cache=TRUE, include=FALSE}
+
+library(ggeffects)
+library(ggplot2)
+
+clean_data$group<-factor(clean_data$sz_dummy,levels=c(0,1),labels=c("HC","SZ"))
+
+plot_data<-data.frame(age=clean_data$age,
+                      female_dummy=clean_data$female_dummy,
+                      Group=clean_data$group,
+                      Drift_Sensitivity=clean_data$delta_b1,
+                      GPTS_RefThinking=clean_data$gpts_socref)
+
+out<-lm(GPTS_RefThinking~age+female_dummy+Group+Drift_Sensitivity+Group:Drift_Sensitivity,data=plot_data)
+
+ggpredict(out, terms = c("Drift_Sensitivity", "Group")) |>
+  plot(add.data = TRUE, dot.alpha = 0.8, dot.size = 2) +
+  theme_bw(base_size = 14) +ggtitle("")+xlab("Drift Sensitivity")+ylab("GPTS Referential Thinking")+scale_color_manual(values=c('#57b6c9','#966acc'))+scale_fill_manual(values=c('#57b6c9','#966acc'))
+
+plot_data<-data.frame(age=clean_data$age,
+                      female_dummy=clean_data$female_dummy,
+                      Group=clean_data$group,
+                      Drift_Sensitivity=clean_data$delta_gend,
+                      GPTS_RefThinking=clean_data$gpts_socref)
+
+out<-lm(GPTS_RefThinking~age+female_dummy+Group+Drift_Sensitivity+Group:Drift_Sensitivity,data=plot_data)
+
+ggpredict(out, terms = c("Drift_Sensitivity", "Group")) |>
+  plot(add.data = TRUE, dot.alpha = 0.8, dot.size = 2) +
+  theme_bw(base_size = 14) +ggtitle("")+xlab("Drift Sensitivity")+ylab("GPTS Referential Thinking")+scale_color_manual(values=c('#57b6c9','#966acc'))+scale_fill_manual(values=c('#57b6c9','#966acc'))
+
+plot_data<-data.frame(age=clean_data$age,
+                      female_dummy=clean_data$female_dummy,
+                      Group=clean_data$group,
+                      Drift_Sensitivity=clean_data$delta_b1_jovi,
+                      GPTS_RefThinking=clean_data$gpts_socref)
+
+out<-lm(GPTS_RefThinking~age+female_dummy+Group+Drift_Sensitivity+Group:Drift_Sensitivity,data=plot_data)
+
+ggpredict(out, terms = c("Drift_Sensitivity", "Group")) |>
+  plot(add.data = TRUE, dot.alpha = 0.8, dot.size = 2) +
+  theme_bw(base_size = 14) +ggtitle("")+xlab("Drift Sensitivity")+ylab("GPTS Referential Thinking")+scale_color_manual(values=c('#57b6c9','#966acc'))+scale_fill_manual(values=c('#57b6c9','#966acc'))
 
 ```
 
@@ -4158,6 +4631,68 @@ result_glm_ddm %>%
   kbl(caption = "Bayesian Regression: Predicting GPTS Persecution (Full Sample, Controlling for Age, Sex)",valign = "t") %>%
   kable_classic(full_width=F, html_font = "Cambria") %>%
   kable_styling(full_width=T)
+
+#PLOT
+
+clean_data$group<-factor(clean_data$sz_dummy,levels=c(0,1),labels=c("HC","SZ"))
+
+plot_data<-data_frame(age=clean_data$age,
+                      female_dummy=clean_data$female_dummy,
+                      Group=clean_data$group,
+                      Drift_Sensitivity=clean_data$delta_b1,
+                      GPTS_Persecution=clean_data$gpts_persec)
+
+out<-lm(GPTS_Persecution~age+female_dummy+Group+Drift_Sensitivity+Group:Drift_Sensitivity,data=plot_data)
+summary(out)
+
+ggpredict(out, terms = c("Drift_Sensitivity", "Group")) |>
+  plot(add.data = TRUE, dot.alpha = 0.8, dot.size = 1.8) +
+  theme_bw(base_size = 11) 
+
+```
+
+```{r id993292222911121331121, fig.height=4, fig.width=4.5, message=FALSE, warning=FALSE, cache=TRUE, include=FALSE}
+
+#PLOT
+
+clean_data$group<-factor(clean_data$sz_dummy,levels=c(0,1),labels=c("HC","SZ"))
+
+plot_data<-data_frame(age=clean_data$age,
+                      female_dummy=clean_data$female_dummy,
+                      Group=clean_data$group,
+                      Drift_Sensitivity=clean_data$delta_b1,
+                      GPTS_Persecution=clean_data$gpts_persec)
+
+out<-lm(GPTS_Persecution~age+female_dummy+Group+Drift_Sensitivity+Group:Drift_Sensitivity,data=plot_data)
+
+ggpredict(out, terms = c("Drift_Sensitivity", "Group")) |>
+  plot(add.data = TRUE, dot.alpha = 0.8, dot.size = 2) +
+  theme_bw(base_size = 14) +ggtitle("")+xlab("Drift Sensitivity")+ylab("GPTS Persecution")+scale_color_manual(values=c('#57b6c9','#966acc'))+scale_fill_manual(values=c('#57b6c9','#966acc'))
+
+plot_data<-data_frame(age=clean_data$age,
+                      female_dummy=clean_data$female_dummy,
+                      Group=clean_data$group,
+                      Drift_Sensitivity=clean_data$delta_gend,
+                      GPTS_Persecution=clean_data$gpts_persec)
+
+out<-lm(GPTS_Persecution~age+female_dummy+Group+Drift_Sensitivity+Group:Drift_Sensitivity,data=plot_data)
+
+ggpredict(out, terms = c("Drift_Sensitivity", "Group")) |>
+  plot(add.data = TRUE, dot.alpha = 0.8, dot.size = 2) +
+  theme_bw(base_size = 14) +ggtitle("")+xlab("Drift Sensitivity")+ylab("GPTS Persecution")+scale_color_manual(values=c('#57b6c9','#966acc'))+scale_fill_manual(values=c('#57b6c9','#966acc'))
+
+plot_data<-data_frame(age=clean_data$age,
+                      female_dummy=clean_data$female_dummy,
+                      Group=clean_data$group,
+                      Drift_Sensitivity=clean_data$delta_b1_jovi,
+                      GPTS_Persecution=clean_data$gpts_persec)
+
+out<-lm(GPTS_Persecution~age+female_dummy+Group+Drift_Sensitivity+Group:Drift_Sensitivity,data=plot_data)
+
+ggpredict(out, terms = c("Drift_Sensitivity", "Group")) |>
+  plot(add.data = TRUE, dot.alpha = 0.8, dot.size = 2) +
+  theme_bw(base_size = 14) +ggtitle("")+xlab("Drift Sensitivity")+ylab("GPTS Persecution")+scale_color_manual(values=c('#57b6c9','#966acc'))+scale_fill_manual(values=c('#57b6c9','#966acc'))
+
 
 ```
 
@@ -4366,7 +4901,92 @@ result_glm_ddm %>%
 
 ```
 
+## Sensitivity - Controlling for General Perceptual Processing (+ Censoring) {.tabset}
 
+The Visual Integration task had right censoring past 2.5 ms (i.e., there was a 2.5s response window and this lead to a censoring of the RT distribution and choice data due to many responses taking longer than that). Therefore, we performed a sensitivity analysis using a DDM model that explicitly accounted for this right censoring and re-ran the regressions to ensure the results did not change.
+
+### Referential Thinking
+
+```{r id993299111221ss9221331, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE}
+#
+all_sub_data<-read.csv("/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/ddm/data/schizgaze2_all_sub_params_w_correlates.csv")
+
+tmp_pred<-c('delta_b1','delta_gend','sz_dummy','female_dummy','age','delta_b1_jovi_c')
+tmp_outcome<-c('gpts_socref')
+
+tmp_data<-subset(all_sub_data,all_sub_data$group=="SZ"|all_sub_data$group=="HC")
+tmp_corr_data<-dplyr::select(tmp_data,c(tmp_pred,tmp_outcome))
+clean_data<-na.omit(tmp_corr_data) #keep complete cases only
+cols_to_zscore <- c(tmp_pred,tmp_outcome)
+cols_to_zscore<-cols_to_zscore[-grep("dummy",cols_to_zscore)]
+clean_data[cols_to_zscore] <- scale(clean_data[cols_to_zscore])
+
+#define models to test (list predictors in order they should be entered)
+test_models<-list(c("age","female_dummy","sz_dummy","delta_b1_jovi_c"),
+                  c("age","female_dummy","sz_dummy","delta_b1_jovi_c","delta_b1","sz_dummy:delta_b1"),
+                  c("age","female_dummy","sz_dummy","delta_b1_jovi_c","delta_gend","sz_dummy:delta_gend"))
+
+outcome<-"gpts_socref" #outcome variable
+outfile<-paste0(dirname,"/analysis/full/saved_brms_models_1a2bb.rds")
+
+result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
+                         test_models = test_models,
+                         outcome=outcome,
+                         outfile=outfile,
+                         credMass=.95,
+                         nu=4) 
+
+result_glm_ddm$Pred<-rename_corr_pars(result_glm_ddm$Pred)
+
+result_glm_ddm$Pred<-gsub("_c",": Censor Model",result_glm_ddm$Pred)
+
+result_glm_ddm %>%
+  kbl(caption = "Bayesian Regression: Predicting GPTS Referential Thinking (Full Sample, Controlling for Age, Sex, General Perceptual Processing [Visual Integration + Censoring])",valign = "t") %>%
+  kable_classic(full_width=F, html_font = "Cambria") %>%
+  kable_styling(full_width=T)
+
+```
+
+### Persecution
+
+```{r id9932991112122222239312121, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE}
+#
+all_sub_data<-read.csv("/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/ddm/data/schizgaze2_all_sub_params_w_correlates.csv")
+
+tmp_pred<-c('delta_b1','delta_gend','delta_b1_jovi_c','sz_dummy','female_dummy','age')
+tmp_outcome<-c('gpts_persec')
+
+tmp_data<-subset(all_sub_data,all_sub_data$group=="SZ"|all_sub_data$group=="HC")
+tmp_corr_data<-dplyr::select(tmp_data,c(tmp_pred,tmp_outcome))
+clean_data<-na.omit(tmp_corr_data) #keep complete cases only
+cols_to_zscore <- c(tmp_pred,tmp_outcome)
+cols_to_zscore<-cols_to_zscore[-grep("dummy",cols_to_zscore)]
+clean_data[cols_to_zscore] <- scale(clean_data[cols_to_zscore])
+
+#define models to test (list predictors in order they should be entered)
+test_models<-list(c("age","female_dummy","sz_dummy","delta_b1_jovi_c"),
+                  c("age","female_dummy","sz_dummy","delta_b1_jovi_c","delta_b1","sz_dummy:delta_b1"),
+                  c("age","female_dummy","sz_dummy","delta_b1_jovi_c","delta_gend","sz_dummy:delta_gend"))
+
+outcome<-"gpts_persec" #outcome
+outfile<-paste0(dirname,"/analysis/full/saved_brms_models_2a2bb.rds")
+
+result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
+                         test_models = test_models,
+                         outcome=outcome,
+                         outfile=outfile,
+                         credMass=.95,
+                         nu=4) 
+
+result_glm_ddm$Pred<-rename_corr_pars(result_glm_ddm$Pred)
+result_glm_ddm$Pred<-gsub("_c",": Censor Model",result_glm_ddm$Pred)
+
+result_glm_ddm %>%
+  kbl(caption = "Bayesian Regression: Predicting GPTS Persecution (Full Sample, Controlling for Age, Sex, General Perceptual Processing [Visual Integration + Censoring])",valign = "t") %>%
+  kable_classic(full_width=F, html_font = "Cambria") %>%
+  kable_styling(full_width=T)
+
+```
 
 # Regressions (SZ Only)
 
@@ -4827,6 +5447,145 @@ for(i in 1:length(pars)){
 
 rownames(all_result_glm_ddm)<-NULL
 all_result_glm_ddm$Pred<-rename_corr_pars(all_result_glm_ddm$Pred)
+
+print(all_result_glm_ddm %>%
+  kbl(caption = paste0("Bayesian Regression: Predicting ", outcome_name),valign = "t") %>%
+  kable_classic(full_width=F, html_font = "Cambria") %>%
+  kable_styling(full_width=T))
+```
+
+## Sensitivity - Controlling for General Perceptual Processing (+ Censoring) {.tabset}
+
+The Visual Integration task had right censoring past 2.5 ms (i.e., there was a 2.5s response window and this lead to a censoring of the RT distribution and choice data due to many responses taking longer than that). Therefore, we performed a sensitivity analysis using a DDM model that explicitly accounted for this right censoring and re-ran the regressions to ensure the results did not change.
+
+### GPTS-Referential Thinking
+
+```{r id9932922222222222911129, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE,fig.show='asis',results='asis'}
+#
+all_sub_data<-read.csv("/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/ddm/data/schizgaze2_all_sub_params_w_correlates.csv")
+
+show_modelchange<-TRUE
+options(mc.cores = parallel::detectCores())
+tmp_pred<-c('delta_b1','delta_gend','age','female_dummy','delta_b1_jovi_c')
+tmp_outcome<-c('gpts_socref')
+tmp_data<-subset(all_sub_data,all_sub_data$group=="SZ")
+tmp_corr_data<-dplyr::select(tmp_data,c(tmp_pred,tmp_outcome))
+clean_data<-na.omit(tmp_corr_data) #keep complete cases only
+cols_to_zscore <- c(tmp_pred,tmp_outcome)
+cols_to_zscore<-cols_to_zscore[-grep("dummy",cols_to_zscore)]
+clean_data[cols_to_zscore] <- scale(clean_data[cols_to_zscore])
+pars<-c("delta_b1","delta_gend")
+mod_suffix<-c("w","x")
+outcome<-"gpts_socref"
+outcome_name<-"GPTS Referential Thinking (SZ Only)"
+outcome_prefix<-"1.1.1.1"
+
+for(i in 1:length(pars)){
+
+  #define models to test (list predictors in order they should be entered)
+  test_models<-list(c("age","female_dummy","delta_b1_jovi_c"),
+                    c("age","female_dummy","delta_b1_jovi_c",pars[i]))
+
+  result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
+                         test_models = test_models,
+                         outcome=outcome,
+                         outfile=paste0(dirname,
+                                        paste0("/analysis/full/saved_brms_models_",
+                                                       outcome_prefix,
+                                                       mod_suffix[i],".rds")),
+                         credMass=.95,
+                         nu=4)
+
+    if(i!=1){
+    startrow<-which(result_glm_ddm$Model==2)
+    endrow<-nrow(result_glm_ddm)
+    result_glm_ddm<-result_glm_ddm[c(startrow:endrow),]
+  }
+
+  if(show_modelchange==FALSE){
+    startcol<-which(colnames(result_glm_ddm)=="Ref Model")
+    endcol<-which(colnames(result_glm_ddm)=="Pred")-1
+    result_glm_ddm<-result_glm_ddm[,-c(startcol:endcol)]
+    result_glm_ddm$Model[1]<-i
+  }
+
+  if(i==1){
+    all_result_glm_ddm<-result_glm_ddm
+  }else{
+    all_result_glm_ddm<-rbind(all_result_glm_ddm,result_glm_ddm)
+  }
+}
+
+rownames(all_result_glm_ddm)<-NULL
+all_result_glm_ddm$Pred<-rename_corr_pars(all_result_glm_ddm$Pred)
+result_glm_ddm$Pred<-gsub("_c",": Censor Model",result_glm_ddm$Pred)
+
+print(all_result_glm_ddm %>%
+  kbl(caption = paste0("Bayesian Regression: Predicting ", outcome_name),valign = "t") %>%
+  kable_classic(full_width=F, html_font = "Cambria") %>%
+  kable_styling(full_width=T))
+
+```
+
+### GPTS-Persecution
+
+```{r id993299111222222222222218, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE, cache=TRUE,fig.show='asis',results='asis'}
+#
+all_sub_data<-read.csv("/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/ddm/data/schizgaze2_all_sub_params_w_correlates.csv")
+
+show_modelchange<-TRUE
+tmp_pred<-c('delta_b1','delta_gend','age','female_dummy','delta_b1_jovi_c')
+tmp_outcome<-c('gpts_persec')
+tmp_data<-subset(all_sub_data,all_sub_data$group=="SZ")
+tmp_corr_data<-dplyr::select(tmp_data,c(tmp_pred,tmp_outcome))
+clean_data<-na.omit(tmp_corr_data) #keep complete cases only
+cols_to_zscore <- c(tmp_pred,tmp_outcome)
+cols_to_zscore<-cols_to_zscore[-grep("dummy",cols_to_zscore)]
+clean_data[cols_to_zscore] <- scale(clean_data[cols_to_zscore])
+pars<-c("delta_b1","delta_gend")
+mod_suffix<-c("w","x")
+outcome<-"gpts_persec"
+outcome_name<-"GPTS Persecution (SZ Only)"
+outcome_prefix<-"2.1.1.1"
+
+for(i in 1:length(pars)){
+
+  #define models to test (list predictors in order they should be entered)
+  test_models<-list(c("age","female_dummy","delta_b1_jovi_c"),
+                    c("age","female_dummy","delta_b1_jovi_c",pars[i]))
+
+  result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
+                         test_models = test_models,
+                         outcome=outcome,
+                         outfile=paste0(dirname,paste0("/analysis/full/saved_brms_models_",
+                                                       outcome_prefix,
+                                                       mod_suffix[i],".rds")),
+                         credMass=.95,
+                         nu=4)
+
+    if(i!=1){
+    startrow<-which(result_glm_ddm$Model==2)
+    endrow<-nrow(result_glm_ddm)
+    result_glm_ddm<-result_glm_ddm[c(startrow:endrow),]
+  }
+
+  if(show_modelchange==FALSE){
+    startcol<-which(colnames(result_glm_ddm)=="Ref Model")
+    endcol<-which(colnames(result_glm_ddm)=="Pred")-1
+    result_glm_ddm<-result_glm_ddm[,-c(startcol:endcol)]
+    result_glm_ddm$Model[1]<-i
+  }
+
+  if(i==1){
+    all_result_glm_ddm<-result_glm_ddm
+  }else{
+    all_result_glm_ddm<-rbind(all_result_glm_ddm,result_glm_ddm)
+  }
+}
+
+rownames(all_result_glm_ddm)<-NULL
+all_result_glm_ddm$Pred<-rename_corr_pars(all_result_glm_ddm$Pred)
+result_glm_ddm$Pred<-gsub("_c",": Censor Model",result_glm_ddm$Pred)
 
 print(all_result_glm_ddm %>%
   kbl(caption = paste0("Bayesian Regression: Predicting ", outcome_name),valign = "t") %>%
@@ -5297,15 +6056,507 @@ print(all_result_glm_ddm %>%
 
 ```
 
+## Sensitivity - Controlling for General Perceptual Processing (+ Censoring) {.tabset}
+
+The Visual Integration task had right censoring past 2.5 ms (i.e., there was a 2.5s response window and this lead to a censoring of the RT distribution and choice data due to many responses taking longer than that). Therefore, we performed a sensitivity analysis using a DDM model that explicitly accounted for this right censoring and re-ran the regressions to ensure the results did not change.
+
+### GPTS-Referential Thinking
+
+```{r id9932993423424234131121, echo=FALSE, fig.height=4, fig.show='asis', fig.width=5, message=FALSE, warning=FALSE, cache=TRUE, results='asis'}
+#
+all_sub_data<-read.csv("/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/ddm/data/schizgaze2_all_sub_params_w_correlates.csv")
+
+show_modelchange<-TRUE
+tmp_pred<-c('delta_b1','delta_gend','age','female_dummy','delta_b1_jovi_c')
+tmp_outcome<-c('gpts_socref')
+tmp_data<-subset(all_sub_data,all_sub_data$group=="HC")
+tmp_corr_data<-dplyr::select(tmp_data,c(tmp_pred,tmp_outcome))
+clean_data<-na.omit(tmp_corr_data) #keep complete cases only
+cols_to_zscore <- c(tmp_pred,tmp_outcome)
+cols_to_zscore<-cols_to_zscore[-grep("dummy",cols_to_zscore)]
+clean_data[cols_to_zscore] <- scale(clean_data[cols_to_zscore])
+pars<-c("delta_b1","delta_gend")
+mod_suffix<-c("y","z")
+outcome<-"gpts_socref"
+outcome_name<-"GPTS Referential Thinking (HC Only)"
+outcome_prefix<-"1.1.1.1"
+
+for(i in 1:length(pars)){
+
+  #define models to test (list predictors in order they should be entered)
+  test_models<-list(c("age","female_dummy","delta_b1_jovi_c"),
+                    c("age","female_dummy","delta_b1_jovi_c",pars[i]))
+
+  result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
+                         test_models = test_models,
+                         outcome=outcome,
+                         outfile=paste0(dirname,paste0("/analysis/full/saved_brms_models_",
+                                                       outcome_prefix,
+                                                       mod_suffix[i],".rds")),
+                         credMass=.95,
+                         nu=4)
+
+  if(i!=1){
+    startrow<-which(result_glm_ddm$Model==2)
+    endrow<-nrow(result_glm_ddm)
+    result_glm_ddm<-result_glm_ddm[c(startrow:endrow),]
+  }
+
+  if(show_modelchange==FALSE){
+    startcol<-which(colnames(result_glm_ddm)=="Ref Model")
+    endcol<-which(colnames(result_glm_ddm)=="Pred")-1
+    result_glm_ddm<-result_glm_ddm[,-c(startcol:endcol)]
+    result_glm_ddm$Model[1]<-i
+  }
+
+  if(i==1){
+    all_result_glm_ddm<-result_glm_ddm
+  }else{
+    all_result_glm_ddm<-rbind(all_result_glm_ddm,result_glm_ddm)
+  }
+}
+
+rownames(all_result_glm_ddm)<-NULL
+all_result_glm_ddm$Pred<-rename_corr_pars(all_result_glm_ddm$Pred)
+result_glm_ddm$Pred<-gsub("_c",": Censor Model",result_glm_ddm$Pred)
+
+print(all_result_glm_ddm %>%
+  kbl(caption = paste0("Bayesian Regression: Predicting ", outcome_name),valign = "t") %>%
+  kable_classic(full_width=F, html_font = "Cambria") %>%
+  kable_styling(full_width=T))
+
+```
+
+### GPTS-Persecution
+
+```{r id9983299111212233333322891, echo=FALSE, fig.height=4, fig.show='asis', fig.width=5, message=FALSE, warning=FALSE, cache=TRUE, results='asis'}
+#
+all_sub_data<-read.csv("/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/ddm/data/schizgaze2_all_sub_params_w_correlates.csv")
+
+show_modelchange<-TRUE
+tmp_pred<-c('delta_b1','delta_gend','age','female_dummy','delta_b1_jovi_c')
+tmp_outcome<-c('gpts_persec')
+tmp_data<-subset(all_sub_data,all_sub_data$group=="HC")
+tmp_corr_data<-dplyr::select(tmp_data,c(tmp_pred,tmp_outcome))
+clean_data<-na.omit(tmp_corr_data) #keep complete cases only
+cols_to_zscore <- c(tmp_pred,tmp_outcome)
+cols_to_zscore<-cols_to_zscore[-grep("dummy",cols_to_zscore)]
+clean_data[cols_to_zscore] <- scale(clean_data[cols_to_zscore])
+pars<-c("delta_b1","delta_gend")
+mod_suffix<-c("y","z")
+outcome<-"gpts_persec"
+outcome_name<-"GPTS Persecution (HC Only)"
+outcome_prefix<-"2.1.1.1"
+
+for(i in 1:length(pars)){
+
+  #define models to test (list predictors in order they should be entered)
+  test_models<-list(c("age","female_dummy","delta_b1_jovi_c"),
+                    c("age","female_dummy","delta_b1_jovi_c",pars[i]))
+
+  result_glm_ddm<-brms_robust_glm_compare(data=clean_data,
+                         test_models = test_models,
+                         outcome=outcome,
+                         outfile=paste0(dirname,paste0("/analysis/full/saved_brms_models_",
+                                                       outcome_prefix,
+                                                       mod_suffix[i],".rds")),
+                         credMass=.95,
+                         nu=4)
+
+  if(i!=1){
+    startrow<-which(result_glm_ddm$Model==2)
+    endrow<-nrow(result_glm_ddm)
+    result_glm_ddm<-result_glm_ddm[c(startrow:endrow),]
+  }
+
+  if(show_modelchange==FALSE){
+    startcol<-which(colnames(result_glm_ddm)=="Ref Model")
+    endcol<-which(colnames(result_glm_ddm)=="Pred")-1
+    result_glm_ddm<-result_glm_ddm[,-c(startcol:endcol)]
+    result_glm_ddm$Model[1]<-i
+  }
+
+  if(i==1){
+    all_result_glm_ddm<-result_glm_ddm
+  }else{
+    all_result_glm_ddm<-rbind(all_result_glm_ddm,result_glm_ddm)
+  }
+}
+
+rownames(all_result_glm_ddm)<-NULL
+all_result_glm_ddm$Pred<-rename_corr_pars(all_result_glm_ddm$Pred)
+result_glm_ddm$Pred<-gsub("_c",": Censor Model",result_glm_ddm$Pred)
+
+print(all_result_glm_ddm %>%
+  kbl(caption = paste0("Bayesian Regression: Predicting ", outcome_name),valign = "t") %>%
+  kable_classic(full_width=F, html_font = "Cambria") %>%
+  kable_styling(full_width=T))
+
+```
+
+# Exploratory Correlations with Other Clinical Measures in SZ
+
+```{r id99832992222111212222891, echo=FALSE, fig.height=8.5, fig.show='asis', fig.width=9, message=FALSE, warning=FALSE, cache=TRUE, results='asis'}
+
+all_sub_data<-read.csv("/Users/carlylasagna/University of Michigan Dropbox/Carly Lasagna/ddm_gaze_psychophys/ddm/data/schizgaze2_all_sub_params_w_correlates.csv")
+
+bayes_corr_matrix<-function(data,credMass){
+
+  library(bayestestR)
+  library(HDInterval)
+  library(BayesFactor)
+  options(scipen = 999) #deters r from using scientific notation
+  
+  n_vars<-ncol(data)
+  vars<-colnames(data)
+  
+  # create empty correlation matrix to hold outputs
+  corr_mat<-as.data.frame(matrix(data="",ncol=n_vars,nrow=n_vars))
+  rownames(corr_mat)<-colnames(corr_mat)<-vars
+  
+  #create correlation matrices to hold mean rho estimates, bayes factors, rho ci's, and bf ranges
+  corr_mat_credible<-corr_mat_rho<-corr_mat_bf<-corr_mat_ci<-corr_mat_bf_range<-corr_mat
+  
+  iteration<-0
+  
+  for (i in 1:n_vars){ #var1 / rows
+    for (j in 1:n_vars){ #var2 / cols
+      var1<-vars[i] #name of variable1
+      var2<-vars[j] #name of variable2
+      data1<-as.numeric(data[[var1]]) #get data for variable1
+      data2<-as.numeric(data[[var2]]) #get data for variable2
+      
+      n_obs<-nrow(na.omit(cbind(data1,data2)))#number of complete observations
+      
+      if(var1==var2){ #if variables match, set rho (corr coefficient) to 1, otherwise run bayes correlations
+        corr_mat_rho[i,j]<-1
+      }else{
+        
+        if(n_obs>2){ #if at least 3 observations, set rho to NA and skip
+          iteration<-iteration+1
+          
+          result <- correlationBF(data1, data2) #calculate BF
+          output<-describe_posterior(result, ci=credMass, centrality = "mean",ci_method="HDI") #get output 
+          rho<-round(output$Mean,2) #mean of rho (correlation coefficient estimate)
+          ci_lo<-round(output$CI_low,2) #lower bound of credible interval around rho
+          ci_hi<-round(output$CI_high,2) #upper bound of credible interval around rho
+          bf<-output$BF #bayes factor
+          bf_direction<-ifelse(bf<1,"Null","Alternative")
+          
+          # ranges from Lee and Wagenmakers (2014)
+          if(is.na(bf)){
+            bf_range<-""
+          }else if(bf >= 100){
+            bf_range <- "Extreme"
+          }else if(bf >= 30 && bf < 100){
+            bf_range <- "Very Strong"
+          }else if(bf >= 10 && bf < 30){
+            bf_range <- "Strong"
+          }else if(bf >= 3 && bf < 10){
+            bf_range <- "Moderate"
+          }else if(bf >= 1 && bf < 3){
+            bf_range <- "Anecdotal"
+          }else if(bf == 1){
+            bf_range <- "No Evidence"
+          }else if(bf >= 0.33 && bf < 1){
+            bf_range <- "Anecdotal"
+          }else if(bf >= 0.1 && bf < 0.33){
+            bf_range <- "Moderate"
+          }else if(bf >= 0.03 && bf < 0.1){
+            bf_range <- "Strong"
+          }else if(bf >= 0.01 && bf < 0.03){
+            bf_range <- "Very Strong"
+          }else if(bf < 0.01){
+            bf_range <- "Extreme"
+          }else{
+            bf_range <- ""
+          }
+          
+          if((ci_lo>0&&ci_hi>0)|(ci_lo<0&&ci_hi<0)){
+            credible<-"*"
+          }else{
+            credible<-""
+          }
+          
+          tmp_long_summary<-data.frame(Variable1=var1,
+                                       Variable2=var2,
+                                       Mean=rho,
+                                       HDI=paste("[",ci_lo,",",ci_hi,"]",credible,sep=""),
+                                       BF=round(bf,2),
+                                       BF_Evidence_Strength=bf_range,
+                                       BF_Evidence_Favors=bf_direction,
+                                       N=n_obs)
+          
+          corr_mat_rho[i,j]<-rho
+          corr_mat_bf[i,j]<-bf
+          corr_mat_bf_range[i,j]<-bf_range
+          corr_mat_ci[i,j]<-paste("[",ci_lo,",",ci_hi,"]",sep="")
+          corr_mat_credible[i,j]<-credible
+          
+          if(iteration==1){
+            all_long_summary<-tmp_long_summary
+          }else{
+            all_long_summary<-rbind(all_long_summary,tmp_long_summary)
+          }
+        }else{
+          corr_mat_rho[i,j]<-NA #if fewer than 3 observations, set rho to NA
+          corr_mat_credible[i,j]<-""
+        }
+      }
+    }
+  }
+  
+  var_list<-data.frame(Variable=rownames(corr_mat_rho))
+  
+  # Convert dataframe to long format for Rho values
+  corr_mat_rho<-cbind(var_list,corr_mat_rho)
+  df_long <- melt(corr_mat_rho,id="Variable",varnames = c("Variable","value"))
+  colnames(df_long)<-c("Variable1","Variable2","Mean")
+  df_long$Mean<-as.numeric(df_long$Mean)
+  
+  #do the same for CI's
+  corr_mat_ci<-cbind(var_list,corr_mat_ci)
+  df_long_ci <- melt(corr_mat_ci,id="Variable",varnames = c("Variable","value"))
+  colnames(df_long_ci)<-c("Variable1","Variable2","CI")
+  
+  #do the same for BF
+  corr_mat_bf<-cbind(var_list,corr_mat_bf)
+  df_long_bf <- melt(corr_mat_bf,id="Variable",varnames = c("Variable","value"))
+  colnames(df_long_bf)<-c("Variable1","Variable2","BF")
+  
+  #do the same for BF range
+  corr_mat_bf_range<-cbind(var_list,corr_mat_bf_range)
+  df_long_bf_range <- melt(corr_mat_bf_range,id="Variable",varnames = c("Variable","value"))
+  colnames(df_long_bf_range)<-c("Variable1","Variable2","BF_Range")
+  
+  #do the same for credible
+  corr_mat_credible<-cbind(var_list,corr_mat_credible)
+  df_long_credible <- melt(corr_mat_credible,id="Variable",varnames = c("Variable","value"))
+  colnames(df_long_credible)<-c("Variable1","Variable2","Credible")
+  
+  # Create the plot with separate labels for Rho and corr_mat_credible
+  p <- ggplot(df_long, aes(x = factor(Variable1, levels = vars), y = factor(Variable2, levels = vars))) +
+    geom_tile(aes(fill = Mean), color = "black") +
+    geom_text(aes(label = round(Mean, 2)), color = "black", vjust = 0.3) +  # Add Rho values
+    geom_text(data = df_long_credible, aes(label = Credible), color = "black", vjust = 1.5,size=6) +  # Add credible values
+    scale_fill_gradient2(low = "steelblue", high = "firebrick", midpoint = 0, na.value = "transparent", guide = "legend") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    labs(title = "Correlation Matrix",
+         x = "", y = "",
+         fill = "Correlation\nStrength")
+  
+  rownames(all_long_summary)<-NULL
+  
+  combined<-list(long_summary=all_long_summary,
+                 corr_mat_rho=corr_mat_rho,
+                 corr_mat_ci=corr_mat_ci,
+                 corr_mat_bf_range=corr_mat_bf_range,
+                 corr_mat_bf=corr_mat_bf,
+                 corr_mat_credible=corr_mat_credible,
+                 plot=p)
+
+  return(combined)
+}
+lm_matrix<-function(outcomes,covariates,predictors,data){
+
+  library(reshape2)
+
+  n_pred<-length(predictors)
+  n_outcome<-length(outcomes)
+  n_cov<-length(covariates)
+  
+  # create empty matrix to hold outputs
+  corr_mat<-as.data.frame(matrix(data="",ncol=n_outcome,nrow=n_pred))
+  rownames(corr_mat)<-predictors
+  colnames(corr_mat)<-outcomes
+  
+  #create correlation matrices to hold summary stats
+  corr_mat_range<-corr_mat_r<-corr_mat_p<-corr_mat
+  
+  iteration<-0
+  
+  for (i in 1:n_pred){ #var1 / predictors
+    for (j in 1:n_outcome){ #var2 / outcomes
+      
+      var1<-predictors[i] #name of variable1
+      var2<-outcomes[j] #name of variable2
+      
+      data1<-as.numeric(data[[var1]]) #get data for variable1
+      data2<-as.numeric(data[[var2]]) #get data for variable2
+      
+      n_obs<-nrow(na.omit(cbind(data1,data2)))#number of complete observations
+      
+      if(var1!=var2){ #if are not equal, run regressions
+          iteration<-iteration+1
+          
+          form <- as.formula(paste("scale(",var2, ")~",paste(covariates,collapse="+"),"+scale(", var1,")"))
+          mod <- lm(form, data = data)
+          mod_summary <- summary(mod)
+          r<-round(mod_summary$coefficients[paste0("scale(",var1,")"), "Estimate"],2)
+          p<-mod_summary$coefficients[paste0("scale(",var1,")"), "Pr(>|t|)"]
+          
+          if(p<.001){
+            range<-"***"
+          }else if(p<.01){
+            range<-"**"
+          }else if(p<.05){
+            range<-"*"
+          }else{
+            range<-""
+          }
+          
+          tmp_long_summary<-data.frame(Variable1=var1,
+                                       Variable2=var2,
+                                       r=r,
+                                       p=round(p,3),
+                                       range=range,
+                                       N=n_obs)
+          
+          corr_mat_r[i,j]<-r
+          corr_mat_p[i,j]<-p
+          corr_mat_range[i,j]<-range
+          
+          if(iteration==1){
+            all_long_summary<-tmp_long_summary
+          }else{
+            all_long_summary<-rbind(all_long_summary,tmp_long_summary)
+          }
+        }
+      }
+  }
+
+  var_list<-data.frame(Variable=rownames(corr_mat_r))
+  
+  library(tidyr)
+  library(dplyr)
+
+  tmp <- as.data.frame(corr_mat_r)
+  tmp$Variable <- rownames(corr_mat_r)
+  
+  df_long <- tmp %>% 
+    tidyr::pivot_longer(
+      cols = -Variable,
+      names_to = "Column",
+      values_to = "Value")
+  
+  colnames(df_long)<-c("Predictor","Outcome","r")
+  df_long$r<-as.numeric(df_long$r)
+  
+  #do the same for p
+  tmp <- as.data.frame(corr_mat_p)
+  tmp$Variable <- rownames(corr_mat_p)
+  
+  df_long_p <- tmp %>% 
+    tidyr::pivot_longer(
+      cols = -Variable,
+      names_to = "Column",
+      values_to = "Value")
+  
+  colnames(df_long_p)<-c("Predictor","Outcome","p")
+  df_long_p$p<-as.numeric(df_long_p$p)
+  
+  #do the same for p range
+  tmp <- as.data.frame(corr_mat_range)
+  tmp$Variable <- rownames(corr_mat_range)
+  
+  df_long_range <- tmp %>% 
+    tidyr::pivot_longer(
+      cols = -Variable,
+      names_to = "Column",
+      values_to = "Value")
+  
+  colnames(df_long_range)<-c("Predictor","Outcome","range")
+  
+  # Create the plot 
+  p <- ggplot(df_long, aes(x = factor(Predictor, levels = predictors), y = factor(Outcome, levels = outcomes))) +
+    geom_tile(aes(fill = r), color = "black") +
+    geom_text(aes(label = round(r, 2)), color = "black", vjust = 0.3) +  # Add r values
+    geom_text(data = df_long_range, aes(label = range), color = "black", vjust = 1.5,size=6) +  # Add credible values
+    scale_fill_gradient2(low = "steelblue", high = "firebrick", midpoint = 0, na.value = "transparent", guide = "legend") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    labs(title = "Regression Summary",
+         x = "", y = "",
+         fill = "Standardized Betas")
+  
+  rownames(all_long_summary)<-NULL
+  
+  combined<-list(long_summary=all_long_summary,
+                 corr_mat_r=corr_mat_r,
+                 corr_mat_range=corr_mat_range,
+                 corr_mat_p=corr_mat_p,
+                 plot=p)
+
+  return(combined)
+}
+
+corr_data<-all_sub_data[c("subj","group","bprs","sans","saps_delus_persec","saps_delus_idea_ref","gf_role","gf_social","bdi","stai_state","delta_b1","delta_b1_jovi","delta_gend","age","gender")]
+
+corr_data$gender<-ifelse(corr_data$gender=="Male",0,1)
+
+corr_sz<-subset(corr_data,corr_data$group=="SZ")
+
+corr_sz$group<-corr_sz$subj<-NULL
+# 
+# out<-lm_matrix(outcomes=c("bprs","sans","saps_delus_persec","saps_delus_idea_ref","gf_role","gf_social","stai_state"),
+#                covariates=c("age","gender"),
+#                predictors=c("delta_b1","delta_gend","delta_b1_jovi"),
+#                data=corr_sz)
+# 
+# out[["plot"]]
+
+corr<-corr_sz[,c("delta_b1","delta_gend","delta_b1_jovi",
+                 "bprs","sans","saps_delus_persec","saps_delus_idea_ref",
+                 "gf_role","gf_social","stai_state","bdi")]
+
+colnames(corr)<-c("Drift Sensitivity (Gaze)","Drift Sensitivity (Gender)","Drift Sensitivity (Visual Integ.)",
+                 "BPRS","SANS","SAPS Persecution","SAPS Ideas of Reference",
+                 "GF Role","GF Social","STAI (Anxiety)","BDI (Depression)")
+
+out<-bayes_corr_matrix(data=corr,credMass=.95)
+out[["plot"]]
+
+```
+
+
+
+
 {-}
 
 # References
 
+Andreasen, N. (1984a). Scale for the assessment of positive symptoms (SAPS). The University of Iowa. https://iro.uiowa.edu/esploro/outputs/other/Scale-for-the-assessment-of-positive/9984097080502771
+
+Andreasen, N. C. (1984b). Scale for the Assessment of Negative Symptoms (SANS). University of Iowa.
+
+Beck, A. T., Steer, R. A., & Brown, G. (1996). Beck Depression Inventory–II. American Psychological Association (APA). https://doi.org/10.1037/t00742-000
+
 Cohen. (1988). Dedekind completion of positive concatenation structures: Necessary and sufficient conditions. Journal of Mathematical Psychology, 32(1), 64–71. https://doi.org/10.1016/0022-2496(88)90038-7
+
+Cornblatt, B. A., Auther, A. M., Niendam, T., Smith, C. W., Zinberg, J., Bearden, C. E., & Cannon, T. D. (2007). Preliminary findings for two new measures of social and role functioning in the prodromal phase of schizophrenia. Schizophrenia Bulletin, 33(3), 688–702. https://doi.org/10.1093/schbul/sbm029
+
+Couture, S., Grant, P., Beck, A., & Morrison, A. (2007). Success and resource appraisals questionnaire (SARA-Q). Unpublished.
 
 Morey, R., & Rouder, J. (2015). BayesFactor: Computation of Bayes Factors for common  designs. R package version 0.9.12–12.
 
+Overall, J. E., & Gorham, D. R. (1962). The brief psychiatric rating scale. Psychological Reports, 10(3), 799–812.
+
+Patterson, T. L., Goldman, S., McKibbin, C. L., Hughs, T., & Jeste, D. V. (2001). UCSD Performance-Based Skills Assessment: Development of a new measure of everyday functioning for severely mentally ill adults. Schizophrenia Bulletin, 27(2), 235–245. https://doi.org/10.1093/oxfordjournals.schbul.a006870
+
+Patterson, T. L., Moscona, S., McKibbin, C. L., Davidson, K., & Jeste, D. V. (2001). Social skills performance assessment among older patients with schizophrenia. Schizophrenia Research, 48(2), 351–360. https://doi.org/10.1016/S0920-9964(00)00109-2
+
+Pedersen, M. L., Frank, M. J., & Biele, G. (2017). The drift diffusion model as the choice rule in reinforcement learning. Psychonomic Bulletin & Review, 24(4), 1234–1251. https://doi.org/10.3758/s13423-016-1199-y
+
+Reniers, R., Corcoran, R., Drake, R., Shryane, N., & Völlm, B. (2011). The QCAE: A questionnaire of cognitive and affective empathy. Journal of Personality Assessment, 93(1), 84–95.
+
 Silverstein SM, Keane BP, Barch DM, Carter CS, Gold JM, Kovács I, MacDonald A 3rd, Ragland JD, Strauss ME. (2012). Optimization and validation of a visual integration test for schizophrenia research. Schizophrenia Bulletin. doi: 10.1093/schbul/sbr141.
 
+Snelbaker, A. J., Wilkinson, G. S., Robertson, G. J., & Glutting, J. J. (2001). Wide Range Achievement Test 3 (wrat3). In Understanding Psychological Assessment (pp. 259–274). Springer US. https://doi.org/10.1007/978-1-4615-1185-4_13
+
+Spielberger, C. D., Gorsuch, R. L., Lushene, R., Vagg, P. R., & Jacobs, G. A. (2003). State–Trait Anxiety Inventory Self Evaluation Questionnaire, Form Y (STAI) (P. Lindley & D. Bartram, Eds.). British Psychological Society. https://doi.org/10.53841/bpstest.2003.stai
+
 Stacklies, W., Redestig, H., Scholz, M., Walther, D., & Selbig, J. (2007). pcaMethods—A bioconductor package providing PCA methods for incomplete data. Bioinformatics, 23(9), 1164–1167. https://doi.org/10.1093/bioinformatics/btm069
+
+Tso, I. F., Grove, T. B., & Taylor, S. F. (2012). Self-assessment of psychological stress in schizophrenia: Preliminary evidence of reliability and validity. Psychiatry Research, 195(1–2), 39–44. https://doi.org/10.1016/j.psychres.2011.07.009
 
