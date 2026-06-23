@@ -33,9 +33,9 @@ for (i in input_models) {
                                      "\n#SBATCH --partition=general",
                                      "\n\n#Set up environment",
                                      "\npwd; hostname; date",
-                                     "\necho \"Running init fit m", i," group ",k," ",l," for m", i, '_run',j,n, " on IU Quartz HPC\"",
+                                     "\necho \"Running init fit m", i," group ",k," ",l," for m", i, '_run',j,n, "\"",
                                      "\n\nmodule load r/4.3",
-                                     "\nexport LD_LIBRARY_PATH=\"/geode2/soft/hps/rhel8/gcc/12.2.0/lib64/:$LD_LIBRARY_PATH\"",
+                                     "\nexport LD_LIBRARY_PATH=\"[PATH TO GCC LIBRARY]:$LD_LIBRARY_PATH\"",
                                      "\n\n#Define variables",
                                      "\nrun=", j, 
                                      "\ngroup=",k,
@@ -43,7 +43,7 @@ for (i in input_models) {
                                      "\ntask=",m,
                                      "\ngend_group=",n,
                                      "\n\n#Commands to run",
-                                     "\nRscript [PATH TO FIT DIRECTORY]/output/run4_supplement_bygend.R $run $group $modelname $task $gend_group")
+                                     "\nRscript [PATH TO RUN FILE]/run4_supplement_bygend.R $run $group $modelname $task $gend_group")
             
             # Write to file
             writeLines(script_content, script_name)

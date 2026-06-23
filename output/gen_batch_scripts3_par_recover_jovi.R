@@ -1,13 +1,13 @@
-# generate and run batch scripts for initial model fit
-
-input_models <- c('3')
-runs <- c(1)
-type<-c('init_fit')#par_recovery or #init_fit, ppc, par_recover, or final_fit. 
-task<-c('gaze','gender') #gaze or gender
+# Define input models, fit models, and runs
+input_models <- c(5)
+runs <- c(1,2,3,4,5)
+type<-c('par_recover')#par_recovery or #init_fit, ppc, par_recover, or final_fit. init fit includes loglik extract and loo calc
+task<-c('jovi')
 groups<-c('all')
 run<-c(1) #1=run batch scripts after generating; 0=1 dont run batch scripts
 fitpath<-'[PATH TO FIT DIRECTORY]'
 
+# Iterate over combinations to generate and run batch scripts for initial model fit
 for (i in input_models) {
   for (j in runs) {
     for (k in groups){
@@ -17,22 +17,24 @@ for (i in input_models) {
           setwd(current_dir<-paste0(fitpath,'/output/hddm_m',i,'_psychophys/',m,'/',l,'/'))
           script_name <- paste0("batch",i,"_",l, "_g",k,"_r", j,".sh")
           script_content <- paste0("#!/bin/bash",
-                                   "\n#SBATCH -J INm", i, "r", j, "_",m,l,
-                                   "\n#SBATCH -A rXXXXX", # allocation ID on cluster
+                                   "\n#SBATCH -J PRm", i, "r", j, "_",m,l,
+                                   "\n#SBATCH -A XXXX",
                                    "\n#SBATCH -o jobname_%j.txt",
                                    "\n#SBATCH -e jobname_%j.err",
+                                   "\n#SBATCH --requeue",
                                    "\n#SBATCH --nodes=1",
-                                   "\n#SBATCH --ntasks=10",
+                                   "\n#SBATCH --ntasks=8",
                                    "\n#SBATCH --cpus-per-task=1",
-                                   "\n#SBATCH --time=0-06:00:00",
-                                   "\n#SBATCH --mail-user=XXXXXXX", #email address
+                                   "\n#SBATCH --time=1-20:00:00",
+                                   "\n#SBATCH --mail-user=XXXX",
                                    "\n#SBATCH --mail-type=BEGIN,FAIL,END",
                                    "\n#SBATCH --mem=75G",
                                    "\n#SBATCH --partition=general",
+                                   "\n#note: mem is total memory for entire job. mem-per-cpu is memory for each core",
                                    "\n\n#Set up environment",
                                    "\npwd; hostname; date",
-                                   "\necho \"Running init fit m", i," group ",k," ",l," for m", i, '_run',j, "\"",
-                                   "\n\nmodule load r/4.3",
+                                   "\necho \"Running ",l," ",m," m", i," group ",k," ",l," for m", i, '_run',j, "\"",
+                                   "\n\nmodule load r/4.2",
                                    "\nexport LD_LIBRARY_PATH=\"[PATH TO GCC LIBRARY]:$LD_LIBRARY_PATH\"",
                                    "\n\n#Define variables",
                                    "\nrun=", j, 
@@ -40,7 +42,7 @@ for (i in input_models) {
                                    "\nmodelname='hddm_m", i, "_psychophys'",
                                    "\ntask=",m,
                                    "\n\n#Commands to run",
-                                   "\nRscript /[PATH TO RUN FILE]/run1_init_fit.R $run $group $modelname $task")
+                                   "\nRscript [PATH TO RUN FILE]run3_par_recover_jovi.R $run $group $modelname $task")
           
           # Write to file
           writeLines(script_content, script_name)
